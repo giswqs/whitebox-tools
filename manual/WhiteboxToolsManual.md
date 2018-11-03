@@ -36,12 +36,12 @@ documentclass: report
 \newpage
 
 
-WhiteboxTools Version 0.9  \
+WhiteboxTools Version 0.12  \
 Dr. John B. Lindsay &#169; 2017-2018  \
 Geomorphometry and Hydrogeomatics Research Group  \
 University of Guelph  \
 Guelph, Canada \
-August 21, 2018  \
+October 10, 2018  \
 
 ![](./img/GHRGLogoSm.png){width=54% height=54%}
 
@@ -59,6 +59,15 @@ Although *WhiteboxTools* was first developed with to serve as a source of plugin
 The current version of *Whitebox GAT* contains many equivelent tools to those found in the *WhiteboxTools* library, although they are developed using the Java programming language. A future version of *Whitebox GAT* will replace these previous tools with the new *WhiteboxTools* backend. This transition will occur over the next several releases. Eventually most of the approximately 450 tools contained within *Whitebox GAT* [will be ported](tool_porting.md) to *WhiteboxTools*. In addition to separating the processing capabilities and the user-interface (and thereby reducing the reliance on Java), this migration should significantly improve processing efficiency. This is because [Rust](https://www.rust-lang.org/en-US/), the programming language used to develop *WhiteboxTools*, is generally [faster than the equivalent Java code](https://benchmarksgame-team.pages.debian.net/benchmarksgame/faster/rust-java.html) and because many of the *WhiteboxTools* functions are designed to process data in parallel wherever possible. In contrast, the older Java codebase included largely single-threaded applications.
 
 In addition to *Whitebox GAT*, the *WhiteboxTools* project is related to other GHRG software projects including, the [*GoSpatial*](https://github.com/jblindsay/go-spatial) project, which has similar goals but is designed using the Go programming language instead of Rust. *WhiteboxTools* has however superseded the *GoSpatial* project, having subsumed all of its functionality. *GoSpatial* users should now transition to *WhiteboxTools*.
+
+### 1.1 Why is it named *WhiteboxTools*?
+
+The project name *WhiteboxTools* clearly takes it inspiration from the related project Whitebox GAT. However, the name *Whitebox* is intended to convey opposition to a 'black box' system, one for which only the inputs and outputs may be observed and the internal workings may not be scrutinized. *WhiteboxTools* is inspired by the concept of *open-access software*, the tenants of which were described by Lindsay (2014)[^1]. Open-*access* software can be viewed as a complimentary extension to the traditional open-*source* software (OSS) model of development. The concept of open access has been previously defined in the context of publishing scholarly literature in a way that removes financial, legal, and technical access barriers to knowledge transfer. Lindsay (2014) argued that the stated goals of reducing barriers associated with knowledge transfer applies equally to the software used in research. Open-access software is distinct from other OSS in that it has an explicitly stated design goal of reducing barriers to the transfer of knowledge to the user community. Direct insight into the workings of algorithm design and implementation allows for educational opportunities and increases the potential for rapid innovation, experimentation with algorithms, and community-directed development. This is particularly important in geomatics because many geospatial algorithms are complex and are strongly affected by implementation details. Also, there are often multiple competing algorithms for accomplishing the same task and the choice of one method over another can greatly impact the outcome of a workflow.
+
+All OSS allow users the opportunity to download the source code and inspect the software’s internal workings. However, traditional OSS often does not lend itself to end-user source code inspection. Open-access software, by comparison, is *designed from the project's inception in a way that reduces the barriers that typically discourage end-users from examining the algorithm and implementation details associated with specific software artifacts*. WhiteboxTools attempts to address some of the barriers to knowledge transfer by allowing users to view the source code associated with each tool directly (e.g. `--viewcode=ExtendVectorLines`). This functionality removes the need to download separate, and often large, project source code files and eliminates the requisite familiarity with the project to identify the code sections related to the operation of the tool of interest. The `viewcode` flag is the embodiment of a design philosophy that is intended to empower the user community. Each tool included in the library has been written in a way to isolate the major functionality within a single file, thereby easing the task of interpreting the code (traditional coding style would split complex code among numerous files). This design goal is also why the developers have chosen to exclude external libraries commonly found in other similarly software (e.g. GDAL), thereby simplifying the installation process and code interpretation. This approach has the potential to encourage further community involvement and experimentation with geospatial analysis techniques. 
+
+ [^1]: Lindsay, JB. 2014. [The Whitebox Geospatial Analysis Tools project and open-access GIS](https://www.researchgate.net/publication/271205138_The_Whitebox_Geospatial_Analysis_Tools_project_and_open-access_GIS). Proceedings of the GIS Research UK 22nd Annual Conference, The University of Glasgow, 16-18 April, DOI: 10.13140/RG.2.1.1010.8962.
+
 
 ## 2. Downloads and Installation
 
@@ -358,6 +367,8 @@ wbt.view_code('watershed')
 
 For a working example of how to call functions and run tools from Python, see the *whitebox_example.py* Python script, which is distributed with the *WhiteboxTools* library.
 
+> Additional resources for using *WhiteboxTools*' Python interface can be found on the [Tutorials](https://www.uoguelph.ca/~hydrogeo/WhiteboxTools/tutorials.html) site of the *WhiteboxTools* home page. This site contains in-depth tutorials on topics such as, '*Interpolating LiDAR data*'.
+
 ### 5.4 An example WhiteboxTools Python project
 
 In this section, we will create a Python project that utilizes the *WhiteboxTools* library to interpolate a LiDAR point-cloud, to process the resulting digital elevation model (DEM) to make it suitable for hydrological applications, and to perform a simple flow-accumulation operation. I suggest using an advanced coding text editor, such as *Visual Studio Code* or *Atom*, for this tutorial, but Python code can be written using any basic text editor.
@@ -485,7 +496,20 @@ The *WhiteboxTools Runner* does not rely on the *Whitebox GAT* user interface at
 
 Eventually most of *Whitebox GAT's* approximately 400 tools [will be ported](https://github.com/jblindsay/whitebox-tools/blob/master/tool_porting.md) to *WhiteboxTools*, although this is an immense task. Opportunities to parallelize algorithms will be sought during porting. All new plugin tools will be added to *Whitebox GAT* using this library of functions.
 
-The library currently contains more than 325 tools, which are each grouped into themed toolboxes including: *Data Tools*, *Geomorphometric Analysis* (i.e. digital terrain analysis), *GIS Analysis*, *Hydrological Analysis*, *Image Analysis*, *LiDAR Analysis*, *Mathematical and Statistical Analysis*, and *Stream Network Analysis*. To retrieve detailed information about a tool's input arguments and example usage, either use the ```toolhelp``` command from the terminal, or the ```tool_help('tool_name')``` function from the *whitebox_tools.py* script. The following is a complete listing of available tools, with brief descriptions, tool parameter, and example usage.
+The library currently contains more than 370 tools, which are each grouped into themed toolboxes including: *Data Tools*, *Geomorphometric Analysis* (i.e. digital terrain analysis), *GIS Analysis*, *Hydrological Analysis*, *Image Analysis*, *LiDAR Analysis*, *Mathematical and Statistical Analysis*, and *Stream Network Analysis*. To retrieve detailed information about a tool's input arguments and example usage, either use the ```toolhelp``` command from the terminal, or the ```tool_help('tool_name')``` function from the *whitebox_tools.py* script. The following is a complete listing of available tools, with brief descriptions, tool parameter, and example usage.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -496,9 +520,39 @@ The library currently contains more than 325 tools, which are each grouped into 
 
 ### 8.1 Data Tools
 
-#### 8.1.1 ConvertNodataToZero
+#### 8.1.1 AddPointCoordinatesToTable
 
-Converts nodata values in a raster to zero..
+This tool modifies the attribute table of a vector of POINT ShapeType by adding two fields,
+XCOORD and YCOORD, containing each point's X and Y coordinates respectively.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector Points file
+
+
+*Python function*:
+
+~~~~{.python}
+add_point_coordinates_to_table(
+    i, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=AddPointCoordinatesToTable -v ^
+--wd="/path/to/data/" --input=points.shp 
+
+
+```
+
+
+#### 8.1.2 ConvertNodataToZero
+
+Converts nodata values in a raster to zero.
 
 *Parameters*:
 
@@ -512,8 +566,8 @@ Converts nodata values in a raster to zero..
 
 ~~~~{.python}
 convert_nodata_to_zero(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -521,15 +575,15 @@ convert_nodata_to_zero(
 
 ```
 >>./whitebox_tools -r=ConvertNodataToZero -v ^
---wd="/path/to/data/" --input=in.tif -o=NewRaster.tif
+--wd="/path/to/data/" --input=in.tif -o=NewRaster.tif 
 
 
 ```
 
 
-#### 8.1.2 ConvertRasterFormat
+#### 8.1.3 ConvertRasterFormat
 
-Converts raster data from one format to another..
+Converts raster data from one format to another.
 
 *Parameters*:
 
@@ -543,8 +597,8 @@ Converts raster data from one format to another..
 
 ~~~~{.python}
 convert_raster_format(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -552,15 +606,24 @@ convert_raster_format(
 
 ```
 >>./whitebox_tools -r=ConvertRasterFormat -v ^
---wd="/path/to/data/" --input=DEM.tif -o=output.tif
+--wd="/path/to/data/" --input=DEM.tif -o=output.tif 
 
 
 ```
 
 
-#### 8.1.3 ExportTableToCsv
+#### 8.1.4 ExportTableToCsv
 
-Exports an attribute table to a CSV text file..
+This tool can be used to export a vector's attribute table to a comma separated values (CSV)
+file. CSV files stores tabular data (numbers and text) in plain-text form such that each row
+corresponds to a record and each column to a field. Fields are typically separated by commas
+within records. The user must specify the name of the vector (and associated attribute file),
+the name of the output CSV file, and whether or not to include the field names as a header
+column in the output CSV file.
+
+*See Also*:
+
+`MergeTableWithCsv`
 
 *Parameters*:
 
@@ -575,9 +638,9 @@ Exports an attribute table to a CSV text file..
 
 ~~~~{.python}
 export_table_to_csv(
-    i,
-    output,
-    headers=True,
+    i, 
+    output, 
+    headers=True, 
     callback=default_callback)
 ~~~~
 
@@ -585,67 +648,293 @@ export_table_to_csv(
 
 ```
 >>./whitebox_tools -r=ExportTableToCsv -v ^
---wd="/path/to/data/" -i=lines.shp -o=output.csv --headers
+--wd="/path/to/data/" -i=lines.shp -o=output.csv --headers 
 
 
 ```
 
 
-#### 8.1.4 IdwInterpolation
+#### 8.1.5 JoinTables
 
-Interpolates vector points into a raster surface using an inverse-distance weighted scheme..
+This tool can be used to join (i.e. merge) a vector's attribute table with a second table. The
+user must specify the name of the vector file (and associated attribute file) as well as the
+*primary key* within the table. The *primary key* (`--pkey` flag) is the field
+within the table that is being appended to that serves as the identifier. Additionally, the user
+must specify the name of a second vector from which the data appended into the first table will be
+derived. The *foreign key* (`--fkey` flag), the identifying field within the
+second table that corresponds with the data contained within the primary key in the table, must be
+specified. Both the primary and foreign keys should either be strings (text) or integer values.
+*Fields containing decimal values are not good candidates for keys.* Lastly, the names of the field
+within the second file to include in the merge operation can also be input (`--import`). If the
+`--import` field is not input, all fields in the attribute table of the second file, that are not
+the foreign key nor FID, will be imported to the first table.
+
+Merging works for one-to-one and many-to-one database relations. A *one-to-one* relations exists when
+each record in the attribute table corresponds to one record in the second table and each primary
+key is unique. Since each record in the attribute table is associated with a geospatial feature in
+the vector, an example of a one-to-one relation may be where the second file contains AREA and
+PERIMETER fields for each polygon feature in the vector. This is the most basic type of relation.
+A many-to-one relation would exist when each record in the first attribute table corresponds to one
+record in the second file and the primary key is NOT unique. Consider as an example a vector and
+attribute table associated with a world map of countries. Each country has one or more more polygon
+features in the shapefile, e.g. Canada has its mainland and many hundred large islands. You may want
+to append a table containing data about the population and area of each country. In this case, the
+COUNTRY columns in the attribute table and the second file serve as the primary and foreign keys
+respectively. While there may be many duplicate primary keys (all of those Canadian polygons) each
+will correspond to only one foreign key containing the population and area data. This is a
+*many-to-one* relation. The `JoinTables` tool does not support one-to-many nor many-to-many relations.
+
+*See Also*:
+
+`MergeTableWithCsv`, `ReinitializeAttributeTable`, `ExportTableToCsv`
 
 *Parameters*:
 
 **Flag**             **Description**
 -------------------  ---------------
--i, -\-input         Input vector Points file
--\-field             Input field name in attribute table
--\-use_z             Use z-coordinate instead of field?
--o, -\-output        Output raster file
--\-weight            IDW weight value
--\-radius            Search Radius
--\-min_points        Minimum number of points
--\-cell_size         Optionally specified cell size of output raster. Not used when base raster is
-                     specified
--\-base              Optionally specified input base raster file. Not used when a cell size is
-                     specified
+-\-i1, -\-input1     Input primary vector file (i.e. the table to be modified)
+-\-pkey              Primary key field
+-\-i2, -\-input2     Input foreign vector file (i.e. source of data to be imported)
+-\-fkey              Foreign key field
+-\-import            Imported field (all fields will be imported if not specified)
 
 
 *Python function*:
 
 ~~~~{.python}
-idw_interpolation(
-    i,
-    field,
-    output,
-    use_z=False,
-    weight=2.0,
-    radius=None,
-    min_points=None,
-    cell_size=None,
-    base=None,
+join_tables(
+    input1, 
+    pkey, 
+    input2, 
+    fkey, 
+    import, 
     callback=default_callback)
 ~~~~
 
 *Command-line Interface*:
 
 ```
->>./whitebox_tools -r=IdwInterpolation -v ^
---wd="/path/to/data/" -i=points.shp --field=ELEV -o=output.tif ^
---assign=min --nodata ^
---cell_size=10.0
-        >>./whitebox_tools -r=IdwInterpolation ^
--v --wd="/path/to/data/" -i=points.shp --field=FID ^
--o=output.tif --assign=last --base=existing_raster.tif
+>>./whitebox_tools -r=JoinTables -v --wd="/path/to/data/" ^
+--i1=properties.shp --pkey=TYPE --i2=land_class.shp ^
+--fkey=VALUE --import=NEW_VALUE 
 
 
 ```
 
 
-#### 8.1.5 NewRasterFromBase
+#### 8.1.6 LinesToPolygons
 
-Creates a new raster using a base image..
+Converts vector polylines into polygons. Note that this tool will close polygons
+that are open and will ensure that the first part of an input line is interpreted
+as the polygon hull and subsequent parts are considered holes. The tool does not
+examine input lines for line crossings (self intersections), which are topological
+errors.
+
+*See Also*:
+
+`PolygonsToLines`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector line file
+-o, -\-output        Output vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+lines_to_polygons(
+    i, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=LinesToPolygons -v ^
+--wd="/path/to/data/" -i=input.shp -o=output.shp 
+
+
+```
+
+
+#### 8.1.7 MergeTableWithCsv
+
+This tool can be used to merge a vector's attribute table with data contained within a comma
+separated values (CSV) text file. CSV files stores tabular data (numbers and text) in plain-text
+form such that each row is a record and each column a field. Fields are typically separated by
+commas although the tool will also support seimi-colon, tab, and space delimited files. The user
+must specify the name of the vector (and associated attribute file) as well as the *primary key*
+within the table. The *primary key* (`--pkey` flag) is the field within the
+table that is being appended to that serves as the unique identifier. Additionally, the user must
+specify the name of a CSV text file with either a *.csv or *.txt extension. The file must possess a
+header row, i.e. the first row must contain information about the names of the various fields. The
+*foreign key* (`--fkey` flag), that is the identifying field within the
+CSV file that corresponds with the data contained within the *primary key* in the table, must also
+be specified. Both the primary and foreign keys should either be strings (text) or integer values.
+*Fields containing decimal values are not good candidates for keys.* Lastly, the user may optionally
+specify the name of a field within the CSV file to import in the merge operation (`--import` flag).
+If this flag is not specified, all of the fields within the CSV, with the exception of the foreign
+key, will be appended to the attribute table.
+
+Merging works for one-to-one and many-to-one database relations. A *one-to-one* relations exists when
+each record in the attribute table corresponds to one record in the second table and each primary
+key is unique. Since each record in the attribute table is associated with a geospatial feature in
+the vector, an example of a one-to-one relation may be where the second file contains AREA and
+PERIMETER fields for each polygon feature in the vector. This is the most basic type of relation.
+A many-to-one relation would exist when each record in the first attribute table corresponds to one
+record in the second file and the primary key is NOT unique. Consider as an example a vector and
+attribute table associated with a world map of countries. Each country has one or more more polygon
+features in the shapefile, e.g. Canada has its mainland and many hundred large islands. You may want
+to append a table containing data about the population and area of each country. In this case, the
+COUNTRY columns in the attribute table and the second file serve as the primary and foreign keys
+respectively. While there may be many duplicate primary keys (all of those Canadian polygons) each
+will correspond to only one foreign key containing the population and area data. This is a
+*many-to-one* relation. The `JoinTables` tool does not support one-to-many nor many-to-many relations.
+
+*See Also*:
+
+`JoinTables`, `ReinitializeAttributeTable`, `ExportTableToCsv`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input primary vector file (i.e. the table to be modified)
+-\-pkey              Primary key field
+-\-csv               Input CSV file (i.e. source of data to be imported)
+-\-fkey              Foreign key field
+-\-import            Imported field (all fields will be imported if not specified)
+
+
+*Python function*:
+
+~~~~{.python}
+merge_table_with_csv(
+    i, 
+    pkey, 
+    csv, 
+    fkey, 
+    import=None, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=MergeTableWithCsv -v ^
+--wd="/path/to/data/" -i=properties.shp --pkey=TYPE ^
+--csv=land_class.csv --fkey=VALUE ^
+--import=NEW_VALUE
+>>./whitebox_tools -r=MergeTableWithCsv -v ^
+--wd="/path/to/data/" -i=properties.shp --pkey=TYPE ^
+--csv=land_class.csv --fkey=VALUE 
+
+
+```
+
+
+#### 8.1.8 MergeVectors
+
+Combines two or more input vectors of the same ShapeType creating a single, new output
+vector. Importantly, the attribute table of the output vector will contain the ubiquitous
+file-specific FID, the parent file name, the parent FID, and the list of attribute fields
+that are shared among each of the input files. For a field to be considered common
+between tables, it must have the same `name` and `field_type` (i.e. data type and
+precision).
+
+Overlapping features will not be identified nor handled in the merging. If you have
+significant areas of overlap, it is advisable to use one of the vector overlay tools
+instead.
+
+The difference between `MergeVectors` and the `Append` tool is that merging takes two
+or more files and creates one new file containing the features of all inputs, and
+`Append` places the features of a single vector into another existing (appended) vector.
+
+This tool only operates on vector files. Use the `Mosaic` tool to combine raster data.
+
+*See Also*:
+
+`Append`, `Mosaic`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-inputs        Input vector files
+-o, -\-output        Output vector file
+
+
+*Python function*:
+
+~~~~{.python}
+merge_vectors(
+    inputs, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=MergeVectors -v --wd="/path/to/data/" ^
+-i='polys1.shp;polys2.shp;polys3.shp' -o=out_file.shp 
+
+
+```
+
+
+#### 8.1.9 MultiPartToSinglePart
+
+This tool can be used to convert a vector file containing multi-part features into a vector
+containing only single-part features. Any multi-part polygons or lines within the input
+vector file will be split into seperate features in the output file, each possessing their
+own entry in the associated attribute file. For polygon-type vectors, the user may optionally
+choose to exclude hole-parts from being separated from their containing polygons. That is,
+with the `--exclude_holes` flag, hole parts in the input vector will continue to belong to
+their enclosing polygon in the output vector.
+
+*See Also*:
+
+`SinglePartToMultiPart`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector line or polygon file
+-o, -\-output        Output vector line or polygon file
+-\-exclude_holes     Exclude hole parts from the feature splitting? (holes will continue to belong 
+                     to their features in output.) 
+
+
+*Python function*:
+
+~~~~{.python}
+multi_part_to_single_part(
+    i, 
+    output, 
+    exclude_holes=True, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=MultiPartToSinglePart -v ^
+--wd="/path/to/data/" -i=input.shp -o=output.shp ^
+--exclude_holes 
+
+
+```
+
+
+#### 8.1.10 NewRasterFromBase
+
+Creates a new raster using a base image.
 
 *Parameters*:
 
@@ -654,18 +943,18 @@ Creates a new raster using a base image..
 -i, -\-base          Input base raster file
 -o, -\-output        Output raster file
 -\-value             Constant value to fill raster with; either 'nodata' or numeric value
--\-data_type         Output raster data type; options include 'double' (64-bit), 'float' (32-bit),
-                     and 'integer' (signed 16-bit) (default is 'float')
+-\-data_type         Output raster data type; options include 'double' (64-bit), 'float' (32-bit), 
+                     and 'integer' (signed 16-bit) (default is 'float') 
 
 
 *Python function*:
 
 ~~~~{.python}
 new_raster_from_base(
-    base,
-    output,
-    value="nodata",
-    data_type="float",
+    base, 
+    output, 
+    value="nodata", 
+    data_type="float", 
     callback=default_callback)
 ~~~~
 
@@ -677,15 +966,46 @@ new_raster_from_base(
 --value=0.0 --data_type=integer
 >>./whitebox_tools ^
 -r=NewRasterFromBase -v --wd="/path/to/data/" --base=base.tif ^
--o=NewRaster.tif --value=nodata
+-o=NewRaster.tif --value=nodata 
 
 
 ```
 
 
-#### 8.1.6 PrintGeoTiffTags
+#### 8.1.11 PolygonsToLines
 
-Prints the tags within a GeoTIFF..
+Converts vector polygons into polylines.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector polygon file
+-o, -\-output        Output vector lines file
+
+
+*Python function*:
+
+~~~~{.python}
+polygons_to_lines(
+    i, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=PolygonsToLines -v ^
+--wd="/path/to/data/" -i=input.shp -o=output.shp 
+
+
+```
+
+
+#### 8.1.12 PrintGeoTiffTags
+
+Prints the tags within a GeoTIFF.
 
 *Parameters*:
 
@@ -698,7 +1018,7 @@ Prints the tags within a GeoTIFF..
 
 ~~~~{.python}
 print_geo_tiff_tags(
-    i,
+    i, 
     callback=default_callback)
 ~~~~
 
@@ -706,15 +1026,159 @@ print_geo_tiff_tags(
 
 ```
 >>./whitebox_tools -r=PrintGeoTiffTags -v ^
---wd="/path/to/data/" --input=DEM.tiff
+--wd="/path/to/data/" --input=DEM.tiff 
 
 
 ```
 
 
-#### 8.1.7 SetNodataValue
+#### 8.1.13 RasterToVectorLines
 
-Assign a specified value in an input image to the NoData value..
+This tool converts raster lines features into a vector of the POLYLINE ShapeType.
+Grid cells associated with line features will contain non-zero, non-NoData cell
+values. The algorithm requires three passes of the raster. The first pass counts
+the number of line neighbours of each line cell; the second pass traces line
+segments starting from line ends (i.e. line cells with only one neighbouring line
+cell); lastly, the final pass traces any remaining line segments, which are likely
+forming closed loops (and therefore do not have line ends).
+
+If the line raster contains streams, it is preferable to use the `RasterStreamsToVector`
+instead. This tool will use knowledge of flow directions to ensure connections
+between stream segments at confluence sites, whereas `RasterToVectorLines` will not.
+
+*See Also*:
+
+`RasterToVectorPoints`, `RasterStreamsToVector`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input raster lines file
+-o, -\-output        Output raster file
+
+
+*Python function*:
+
+~~~~{.python}
+raster_to_vector_lines(
+    i, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=RasterToVectorLines -v ^
+--wd="/path/to/data/" -i=lines.tif -o=lines.shp 
+
+
+```
+
+
+#### 8.1.14 RasterToVectorPoints
+
+Converts a raster dataset to a vector of the POINT shapetype. The user must specify
+the name of a raster file and the name of the output vector. Points will correspond
+with grid cell centre points. All grid cells containing non-zero, non-NoData values
+will be considered a point. The vector's attribute table will contain a field called
+'VALUE' that will contain the cell value for each point feature.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input raster file
+-o, -\-output        Output vector points file
+
+
+*Python function*:
+
+~~~~{.python}
+raster_to_vector_points(
+    i, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=RasterToVectorPoints -v ^
+--wd="/path/to/data/" --input=points.tif -o=out.shp 
+
+
+```
+
+
+#### 8.1.15 ReinitializeAttributeTable
+
+Reinitializes a vector's attribute table deleting all fields but the feature ID (FID).
+Caution: this tool overwrites the input file's attribute table.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector file
+
+
+*Python function*:
+
+~~~~{.python}
+reinitialize_attribute_table(
+    i, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=ReinitializeAttributeTable -v ^
+--wd="/path/to/data/" -i=input.shp 
+
+
+```
+
+
+#### 8.1.16 RemovePolygonHoles
+
+This tool can be used to remove holes from the features within a vector
+polygon file. The user must specify the name of the input vector file,
+which must be of a polygon shapetype, and the name of the output file.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector polygon file
+-o, -\-output        Output vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+remove_polygon_holes(
+    i, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=RemovePolygonHoles -v ^
+--wd="/path/to/data/" --input=polygons.shp ^
+--output=no_holes.shp 
+
+
+```
+
+
+#### 8.1.17 SetNodataValue
+
+Assign a specified value in an input image to the NoData value.
 
 *Parameters*:
 
@@ -729,9 +1193,9 @@ Assign a specified value in an input image to the NoData value..
 
 ~~~~{.python}
 set_nodata_value(
-    i,
-    output,
-    back_value=0.0,
+    i, 
+    output, 
+    back_value=0.0, 
     callback=default_callback)
 ~~~~
 
@@ -739,15 +1203,67 @@ set_nodata_value(
 
 ```
 >>./whitebox_tools -r=SetNodataValue -v --wd="/path/to/data/" ^
--i=in.tif -o=newRaster.tif --back_value=1.0
+-i=in.tif -o=newRaster.tif --back_value=1.0 
 
 
 ```
 
 
-#### 8.1.8 VectorLinesToRaster
+#### 8.1.18 SinglePartToMultiPart
 
-Converts a vector containing polylines into a raster..
+This tool can be used to convert a vector file containing single-part features into a vector
+containing multi-part features. The user has the option to either group features based on an
+ID Field (`--field` flag), which is a categorical field within the vector's attribute table.
+The ID Field should either be of String (text) or Integer type. Fields containing decimal values
+are not good candidates for the ID Field. **If no `--field` flag is specified, all features will
+be grouped together into one large multi-part vector**.
+
+This tool works for vectors containing either point, line, or polygon features.
+Since vectors of a POINT ShapeType cannot represent multi-part features, the ShapeType of the
+output file will be modified to a MULTIPOINT ShapeType if the input file is of a POINT ShapeType.
+If the input vector is of a POLYGON ShapeType, the user can optionally set the algorithm to search
+for polygons that should be represented as hole parts. In the case of grouping based on an ID Field,
+hole parts are polygon features contained within larger polygons of the same ID Field value. Please
+note that searching for polygon holes may significantly increase processing time for larger polygon
+coverages.
+
+*See Also*:
+
+`MultiPartToSinglePart`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector line or polygon file
+-\-field             Grouping ID field name in attribute table
+-o, -\-output        Output vector line or polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+single_part_to_multi_part(
+    i, 
+    output, 
+    field=None, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=SinglePartToMultiPart -v ^
+--wd="/path/to/data/" -i=input.shp -o=output.shp ^
+--field='COUNTRY' 
+
+
+```
+
+
+#### 8.1.19 VectorLinesToRaster
+
+Converts a vector containing polylines into a raster.
 
 *Parameters*:
 
@@ -757,22 +1273,22 @@ Converts a vector containing polylines into a raster..
 -\-field             Input field name in attribute table
 -o, -\-output        Output raster file
 -\-nodata            Background value to set to NoData. Without this flag, it will be set to 0.0
--\-cell_size         Optionally specified cell size of output raster. Not used when base raster is
-                     specified
--\-base              Optionally specified input base raster file. Not used when a cell size is
-                     specified
+-\-cell_size         Optionally specified cell size of output raster. Not used when base raster is 
+                     specified 
+-\-base              Optionally specified input base raster file. Not used when a cell size is 
+                     specified 
 
 
 *Python function*:
 
 ~~~~{.python}
 vector_lines_to_raster(
-    i,
-    output,
-    field="FID",
-    nodata=True,
-    cell_size=None,
-    base=None,
+    i, 
+    output, 
+    field="FID", 
+    nodata=True, 
+    cell_size=None, 
+    base=None, 
     callback=default_callback)
 ~~~~
 
@@ -784,15 +1300,15 @@ vector_lines_to_raster(
 --nodata --cell_size=10.0
         >>./whitebox_tools ^
 -r=VectorLinesToRaster -v --wd="/path/to/data/" -i=lines.shp ^
---field=FID -o=output.tif --base=existing_raster.tif
+--field=FID -o=output.tif --base=existing_raster.tif 
 
 
 ```
 
 
-#### 8.1.9 VectorPointsToRaster
+#### 8.1.20 VectorPointsToRaster
 
-Converts a vector containing points into a raster..
+Converts a vector containing points into a raster.
 
 *Parameters*:
 
@@ -801,26 +1317,26 @@ Converts a vector containing points into a raster..
 -i, -\-input         Input vector Points file
 -\-field             Input field name in attribute table
 -o, -\-output        Output raster file
--\-assign            Assignment operation, where multiple points are in the same grid cell; options
-                     include 'first', 'last' (default), 'min', 'max', 'sum'
+-\-assign            Assignment operation, where multiple points are in the same grid cell; options 
+                     include 'first', 'last' (default), 'min', 'max', 'sum' 
 -\-nodata            Background value to set to NoData. Without this flag, it will be set to 0.0
--\-cell_size         Optionally specified cell size of output raster. Not used when base raster is
-                     specified
--\-base              Optionally specified input base raster file. Not used when a cell size is
-                     specified
+-\-cell_size         Optionally specified cell size of output raster. Not used when base raster is 
+                     specified 
+-\-base              Optionally specified input base raster file. Not used when a cell size is 
+                     specified 
 
 
 *Python function*:
 
 ~~~~{.python}
 vector_points_to_raster(
-    i,
-    output,
-    field="FID",
-    assign="last",
-    nodata=True,
-    cell_size=None,
-    base=None,
+    i, 
+    output, 
+    field="FID", 
+    assign="last", 
+    nodata=True, 
+    cell_size=None, 
+    base=None, 
     callback=default_callback)
 ~~~~
 
@@ -834,15 +1350,15 @@ vector_points_to_raster(
         >>./whitebox_tools ^
 -r=VectorPointsToRaster -v --wd="/path/to/data/" -i=points.shp ^
 --field=FID -o=output.tif --assign=last ^
---base=existing_raster.tif
+--base=existing_raster.tif 
 
 
 ```
 
 
-#### 8.1.10 VectorPolygonsToRaster
+#### 8.1.21 VectorPolygonsToRaster
 
-Converts a vector containing polygons into a raster..
+Converts a vector containing polygons into a raster.
 
 *Parameters*:
 
@@ -852,22 +1368,22 @@ Converts a vector containing polygons into a raster..
 -\-field             Input field name in attribute table
 -o, -\-output        Output raster file
 -\-nodata            Background value to set to NoData. Without this flag, it will be set to 0.0
--\-cell_size         Optionally specified cell size of output raster. Not used when base raster is
-                     specified
--\-base              Optionally specified input base raster file. Not used when a cell size is
-                     specified
+-\-cell_size         Optionally specified cell size of output raster. Not used when base raster is 
+                     specified 
+-\-base              Optionally specified input base raster file. Not used when a cell size is 
+                     specified 
 
 
 *Python function*:
 
 ~~~~{.python}
 vector_polygons_to_raster(
-    i,
-    output,
-    field="FID",
-    nodata=True,
-    cell_size=None,
-    base=None,
+    i, 
+    output, 
+    field="FID", 
+    nodata=True, 
+    cell_size=None, 
+    base=None, 
     callback=default_callback)
 ~~~~
 
@@ -880,7 +1396,7 @@ vector_polygons_to_raster(
         >>./whitebox_tools ^
 -r=VectorPolygonsToRaster -v --wd="/path/to/data/" ^
 -i=lakes.shp --field=ELEV -o=output.tif ^
---base=existing_raster.tif
+--base=existing_raster.tif 
 
 
 ```
@@ -889,7 +1405,7 @@ vector_polygons_to_raster(
 
 #### 8.2.1 AggregateRaster
 
-Aggregates a raster to a lower resolution..
+Aggregates a raster to a lower resolution.
 
 *Parameters*:
 
@@ -905,10 +1421,10 @@ Aggregates a raster to a lower resolution..
 
 ~~~~{.python}
 aggregate_raster(
-    i,
-    output,
-    agg_factor=2,
-    type="mean",
+    i, 
+    output, 
+    agg_factor=2, 
+    type="mean", 
     callback=default_callback)
 ~~~~
 
@@ -917,15 +1433,110 @@ aggregate_raster(
 ```
 >>./whitebox_tools -r=AggregateRaster -v ^
 --wd="/path/to/data/" -i=input.tif -o=output.tif ^
---output_text
+--output_text 
 
 
 ```
 
 
-#### 8.2.2 Centroid
+#### 8.2.2 BlockMaximumGridding
 
-Calculates the centroid, or average location, of raster polygon objects..
+Creates a raster grid based on a set of vector points and assigns grid values using a block maximum scheme.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector Points file
+-\-field             Input field name in attribute table
+-\-use_z             Use z-coordinate instead of field?
+-o, -\-output        Output raster file
+-\-cell_size         Optionally specified cell size of output raster. Not used when base raster is 
+                     specified 
+-\-base              Optionally specified input base raster file. Not used when a cell size is 
+                     specified 
+
+
+*Python function*:
+
+~~~~{.python}
+block_maximum_gridding(
+    i, 
+    field, 
+    output, 
+    use_z=False, 
+    cell_size=None, 
+    base=None, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=BlockMaximumGridding -v ^
+--wd="/path/to/data/" -i=points.shp --field=ELEV -o=output.tif ^
+--cell_size=1.0
+>>./whitebox_tools -r=BlockMaximumGridding -v ^
+--wd="/path/to/data/" -i=points.shp --use_z -o=output.tif ^
+--base=existing_raster.tif 
+
+
+```
+
+
+#### 8.2.3 BlockMinimumGridding
+
+Creates a raster grid based on a set of vector points and assigns grid values using a block minimum scheme.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector Points file
+-\-field             Input field name in attribute table
+-\-use_z             Use z-coordinate instead of field?
+-o, -\-output        Output raster file
+-\-cell_size         Optionally specified cell size of output raster. Not used when base raster is 
+                     specified 
+-\-base              Optionally specified input base raster file. Not used when a cell size is 
+                     specified 
+
+
+*Python function*:
+
+~~~~{.python}
+block_minimum_gridding(
+    i, 
+    field, 
+    output, 
+    use_z=False, 
+    cell_size=None, 
+    base=None, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=BlockMinimumGridding -v ^
+--wd="/path/to/data/" -i=points.shp --field=ELEV -o=output.tif ^
+--cell_size=1.0
+>>./whitebox_tools -r=BlockMinimumGridding -v ^
+--wd="/path/to/data/" -i=points.shp --use_z -o=output.tif ^
+--base=existing_raster.tif 
+
+
+```
+
+
+#### 8.2.4 Centroid
+
+This tool calculates the centroid, or average location, of raster polygon objects.
+For vector features, use the `CentroidVector` tool instead.
+
+*See Also*:
+
+`CentroidVector`
 
 *Parameters*:
 
@@ -940,9 +1551,9 @@ Calculates the centroid, or average location, of raster polygon objects..
 
 ~~~~{.python}
 centroid(
-    i,
-    output,
-    text_output=False,
+    i, 
+    output, 
+    text_output=False, 
     callback=default_callback)
 ~~~~
 
@@ -953,15 +1564,55 @@ centroid(
 -i=polygons.tif -o=output.tif
 >>./whitebox_tools -r=Centroid ^
 -v --wd="/path/to/data/" -i=polygons.tif -o=output.tif ^
---text_output
+--text_output 
 
 
 ```
 
 
-#### 8.2.3 Clump
+#### 8.2.5 CentroidVector
 
-Groups cells that form physically discrete areas, assigning them unique identifiers..
+This can be used to identify the centroid point of a vector polyline or polygon feature or a group of
+vector points. The output is a vector shapefile of points. For multi-part polyline or polygon features,
+the user can optionally specify whether to identify the centroid of each part. The default is to treat
+multi-part features a single entity.
+
+For raster features, use the `Centroid` tool instead.
+
+*See Also*:
+
+`Centroid`, `Medoid`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector file
+-o, -\-output        Output vector file
+
+
+*Python function*:
+
+~~~~{.python}
+centroid_vector(
+    i, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=CentroidVector -v --wd="/path/to/data/" ^
+-i=in_file.shp -o=out_file.shp 
+
+
+```
+
+
+#### 8.2.6 Clump
+
+Groups cells that form physically discrete areas, assigning them unique identifiers.
 
 *Parameters*:
 
@@ -977,10 +1628,10 @@ Groups cells that form physically discrete areas, assigning them unique identifi
 
 ~~~~{.python}
 clump(
-    i,
-    output,
-    diag=True,
-    zero_back=False,
+    i, 
+    output, 
+    diag=True, 
+    zero_back=False, 
     callback=default_callback)
 ~~~~
 
@@ -988,15 +1639,92 @@ clump(
 
 ```
 >>./whitebox_tools -r=Clump -v --wd="/path/to/data/" ^
--i=input.tif -o=output.tif --diag
+-i=input.tif -o=output.tif --diag 
 
 
 ```
 
 
-#### 8.2.4 CreatePlane
+#### 8.2.7 ConstructVectorTin
 
-Creates a raster image based on the equation for a simple plane..
+This tool creates a vector triangular irregular network (TIN) for a set of vector points.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector points file
+-\-field             Input field name in attribute table
+-\-use_z             Use the 'z' dimension of the Shapefile's geometry instead of an attribute field?
+-o, -\-output        Output vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+construct_vector_tin(
+    i, 
+    output, 
+    field=None, 
+    use_z=False, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=ConstructVectorTIN -v ^
+--wd="/path/to/data/" -i=points.shp --field=HEIGHT ^
+-o=tin.shp
+>>./whitebox_tools -r=ConstructVectorTIN -v ^
+--wd="/path/to/data/" -i=points.shp --use_z -o=tin.shp 
+
+
+```
+
+
+#### 8.2.8 CreateHexagonalVectorGrid
+
+This tool can be used to create a hexagonal vector grid. The extent of the hexagonal
+grid is based on the extent of a user-specified base file (any supported raster format,
+shapefiles, or LAS files). The user must also specify the origin of the grid (x and y
+coordinates) and the hexagonal cell width.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input base file
+-o, -\-output        Output vector polygon file
+-\-width             The grid cell width
+-\-orientation       Grid Orientation, 'horizontal' or 'vertical'
+
+
+*Python function*:
+
+~~~~{.python}
+create_hexagonal_vector_grid(
+    i, 
+    output, 
+    width, 
+    orientation="horizontal", 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=CreateHexagonalVectorGrid -v ^
+--wd="/path/to/data/" -i=file.shp -o=outfile.shp --width=10.0 ^
+--orientation=vertical 
+
+
+```
+
+
+#### 8.2.9 CreatePlane
+
+Creates a raster image based on the equation for a simple plane.
 
 *Parameters*:
 
@@ -1013,11 +1741,11 @@ Creates a raster image based on the equation for a simple plane..
 
 ~~~~{.python}
 create_plane(
-    base,
-    output,
-    gradient=15.0,
-    aspect=90.0,
-    constant=0.0,
+    base, 
+    output, 
+    gradient=15.0, 
+    aspect=90.0, 
+    constant=0.0, 
     callback=default_callback)
 ~~~~
 
@@ -1026,15 +1754,167 @@ create_plane(
 ```
 >>./whitebox_tools -r=CreatePlane -v --wd="/path/to/data/" ^
 --base=base.tif -o=NewRaster.tif --gradient=15.0 ^
---aspect=315.0
+--aspect=315.0 
 
 
 ```
 
 
-#### 8.2.5 ExtractRasterValuesAtPoints
+#### 8.2.10 CreateRectangularVectorGrid
 
-Extracts the values of raster(s) at vector point locations..
+This tool can be used to create a rectangular vector grid. The extent of the rectangular
+grid is based on the extent of a user-specified base file (any supported raster format,
+shapefiles, or LAS files). The user must also specify the origin of the grid (x and y
+coordinates) and the grid cell width and height.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input base file
+-o, -\-output        Output vector polygon file
+-\-width             The grid cell width
+-\-height            The grid cell height
+-\-xorig             The grid origin x-coordinate
+-\-yorig             The grid origin y-coordinate
+
+
+*Python function*:
+
+~~~~{.python}
+create_rectangular_vector_grid(
+    i, 
+    output, 
+    width, 
+    height, 
+    xorig=0, 
+    yorig=0, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=CreateRectangularVectorGrid -v ^
+--wd="/path/to/data/" -i=file.shp -o=outfile.shp --width=10.0 ^
+--height=10.0 --xorig=0.0 --yorig=0.0 
+
+
+```
+
+
+#### 8.2.11 EliminateCoincidentPoints
+
+This tool can be used to remove any coincident, or nearly coincident, points
+from a vector points file. The user must specify the name of the input file,
+which must be of a POINTS ShapeType, the output file name, and the tolerance
+distance. All points that are within the specified tolerance distance will be
+eliminated from the output file. A tolerance distance of 0.0 indicates that
+points must be exactly coincident to be removed.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector file
+-o, -\-output        Output vector polygon file
+-\-tolerance         The distance tolerance for points
+
+
+*Python function*:
+
+~~~~{.python}
+eliminate_coincident_points(
+    i, 
+    output, 
+    tolerance, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=EliminateCoincidentPoints -v ^
+--wd="/path/to/data/" -i=input_file.shp -o=out_file.shp ^
+--tolerance=0.01 
+
+
+```
+
+
+#### 8.2.12 ExtendVectorLines
+
+This tool can be used to extend vector lines by a specified distance. The user must
+input the names of the input and output shapefiles, the distance to extend features
+by, and whether to extend both ends, line starts, or line ends. The input shapefile
+must be of a POLYLINE base shape type and should be in a projected coordinate system.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector polyline file
+-o, -\-output        Output vector polyline file
+-\-dist              The distance to extend
+-\-extend            Extend direction, 'both ends' (default), 'line start', 'line end'
+
+
+*Python function*:
+
+~~~~{.python}
+extend_vector_lines(
+    i, 
+    output, 
+    dist, 
+    extend="both ends", 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=ExtendVectorLines -v ^
+--wd="/path/to/data/" -i=in_file.shp -o=out_file.shp ^
+--dist=10.0 --extend='both ends' 
+
+
+```
+
+
+#### 8.2.13 ExtractNodes
+
+Converts vector lines or polygons into vertex points.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector lines or polygon file
+-o, -\-output        Output vector points file
+
+
+*Python function*:
+
+~~~~{.python}
+extract_nodes(
+    i, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=ExtractNodes -v --wd="/path/to/data/" ^
+-i=file.shp -o=outfile.shp 
+
+
+```
+
+
+#### 8.2.14 ExtractRasterValuesAtPoints
+
+Extracts the values of raster(s) at vector point locations.
 
 *Parameters*:
 
@@ -1048,8 +1928,8 @@ Extracts the values of raster(s) at vector point locations..
 
 ~~~~{.python}
 extract_raster_values_at_points(
-    inputs,
-    points,
+    inputs, 
+    points, 
     callback=default_callback)
 ~~~~
 
@@ -1058,15 +1938,15 @@ extract_raster_values_at_points(
 ```
 >>./whitebox_tools -r=ExtractRasterValuesAtPoints -v ^
 --wd="/path/to/data/" -i='image1.tif;image2.tif;image3.tif' ^
--points=points.shp
+-points=points.shp 
 
 
 ```
 
 
-#### 8.2.6 FindLowestOrHighestPoints
+#### 8.2.15 FindLowestOrHighestPoints
 
-Locates the lowest and/or highest valued cells in a raster..
+Locates the lowest and/or highest valued cells in a raster.
 
 *Parameters*:
 
@@ -1081,9 +1961,9 @@ Locates the lowest and/or highest valued cells in a raster..
 
 ~~~~{.python}
 find_lowest_or_highest_points(
-    i,
-    output,
-    out_type="lowest",
+    i, 
+    output, 
+    out_type="lowest", 
     callback=default_callback)
 ~~~~
 
@@ -1092,15 +1972,505 @@ find_lowest_or_highest_points(
 ```
 >>./whitebox_tools -r=FindLowestOrHighestPoints -v ^
 --wd="/path/to/data/" --input=DEM.tif -o=out.shp ^
---out_type=highest
+--out_type=highest 
 
 
 ```
 
 
-#### 8.2.7 RasterCellAssignment
+#### 8.2.16 IdwInterpolation
 
-Assign row or column number to cells..
+Interpolates vector points into a raster surface using an inverse-distance weighted scheme.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector Points file
+-\-field             Input field name in attribute table
+-\-use_z             Use z-coordinate instead of field?
+-o, -\-output        Output raster file
+-\-weight            IDW weight value
+-\-radius            Search Radius
+-\-min_points        Minimum number of points
+-\-cell_size         Optionally specified cell size of output raster. Not used when base raster is 
+                     specified 
+-\-base              Optionally specified input base raster file. Not used when a cell size is 
+                     specified 
+
+
+*Python function*:
+
+~~~~{.python}
+idw_interpolation(
+    i, 
+    field, 
+    output, 
+    use_z=False, 
+    weight=2.0, 
+    radius=None, 
+    min_points=None, 
+    cell_size=None, 
+    base=None, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=IdwInterpolation -v ^
+--wd="/path/to/data/" -i=points.shp --field=ELEV -o=output.tif ^
+--weight=2.0 --radius=4.0 --min_points=3 ^
+--cell_size=1.0
+>>./whitebox_tools -r=IdwInterpolation -v ^
+--wd="/path/to/data/" -i=points.shp --use_z -o=output.tif ^
+--weight=2.0 --radius=4.0 --min_points=3 ^
+--base=existing_raster.tif 
+
+
+```
+
+
+#### 8.2.17 LayerFootprint
+
+This tool creates a vector polygon footprint of the area covered by a raster grid or vector
+layer. It will create a vector rectangle corresponding to the bounding box. The user must
+specify the name of the input file, which may be either a Whitebox raster or a vector, and
+the name of the output file.
+
+If an input raster grid is specified which has an irregular shape, i.e. it contains NoData
+values at the edges, the resulting vector will still correspond to the full grid extent,
+ignoring the irregular boundary. If this is not the desired effect, you should reclass the
+grid such that all cells containing valid values are assigned some positive, non-zero value,
+and then use the `RasterToVectorPolygons` tool to vectorize the irregular-shaped extent
+boundary.
+
+*See Also*:
+
+`MinimumBoundingEnvelope`, `RasterToVectorPolygons`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input raster or vector file
+-o, -\-output        Output vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+layer_footprint(
+    i, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=LayerFootprint -v --wd="/path/to/data/" ^
+-i=file.shp -o=outfile.shp 
+
+
+```
+
+
+#### 8.2.18 Medoid
+
+This tool calculates the medoid for a series of vector features contained in a shapefile. The medoid
+of a two-dimensional feature is conceptually similar its centroid, or mean position, but the medoid
+is always a members of the input feature data set. Thus, the medoid is a measure of central tendency
+that is robust in the presence of outliers. If the input vector is of a POLYLINE or POLYGON ShapeType,
+the nodes of each feature will be used to estimate the feature medoid. If the input vector is of a
+POINT base ShapeType, the medoid will be calculated for the collection of points. While there are
+more than one competing method of calculating the medoid, this tool uses an algorithm that works as follows:
+
+1. The x-coordinate and y-coordinate of each point/node are placed into two arrays.
+2. The x- and y-coordinate arrays are then sorted and the median x-coordinate (Med X) and median
+y-coordinate (Med Y) are calculated.
+3. The point/node in the dataset that is nearest the point (Med X, Med Y) is identified as the medoid.
+
+*See Also*:
+
+`CentroidVector`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector file
+-o, -\-output        Output vector file
+
+
+*Python function*:
+
+~~~~{.python}
+medoid(
+    i, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=Medoid -v --wd="/path/to/data/" ^
+-i=in_file.shp -o=out_file.shp 
+
+
+```
+
+
+#### 8.2.19 MinimumBoundingBox
+
+This tool delineates the minimum bounding box (MBB) for a group of vectors. The MBB is the smallest box to
+completely enclose a feature. The algorithm works by rotating the feature, calculating the axis-aligned
+bounding box for each rotation, and finding the box with the smallest area, length, width, or perimeter. The
+MBB is needed to compute several shape indices, such as the Elongation Ratio. The `MinimumBoundingEnvelop`
+tool can be used to calculate the axis-aligned bounding rectangle around each feature in a vector file.
+
+*See Also*:
+
+`MinimumBoundingCircle`, `MinimumBoundingEnvelope`, `MinimumConvexHull`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector file
+-o, -\-output        Output vector polygon file
+-\-criterion         Minimization criterion; options include 'area' (default), 'length', 'width', 
+                     and 'perimeter' 
+-\-features          Find the minimum bounding rectangles around each individual vector feature
+
+
+*Python function*:
+
+~~~~{.python}
+minimum_bounding_box(
+    i, 
+    output, 
+    criterion="area", 
+    features=True, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=MinimumBoundingBox -v ^
+--wd="/path/to/data/" -i=file.shp -o=outfile.shp ^
+--criterion=length --features 
+
+
+```
+
+
+#### 8.2.20 MinimumBoundingCircle
+
+This tool delineates the minimum bounding circle (MBC) for a group of vectors. The MBC is the smallest enclosing
+circle to completely enclose a feature.
+
+*See Also*:
+
+`MinimumBoundingBox`, `MinimumBoundingEnvelope`, `MinimumConvexHull`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector file
+-o, -\-output        Output vector polygon file
+-\-features          Find the minimum bounding circle around each individual vector feature
+
+
+*Python function*:
+
+~~~~{.python}
+minimum_bounding_circle(
+    i, 
+    output, 
+    features=True, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=MinimumBoundingCircle -v ^
+--wd="/path/to/data/" -i=file.shp -o=outfile.shp --features 
+
+
+```
+
+
+#### 8.2.21 MinimumBoundingEnvelope
+
+This tool delineates the minimum bounding axis-aligned box for a group of vector features. The is the smallest
+rectangle to completely enclose a feature, in which the sides of the envelope are aligned with the x and y
+axis of the coordinate system. The `MinimumBoundingBox` can be used instead to find the smallest possible
+non-axis aligned rectangular envelope.
+
+*See Also*:
+
+`MinimumBoundingBox`, `MinimumBoundingCircle`, `MinimumConvexHull`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector file
+-o, -\-output        Output vector polygon file
+-\-features          Find the minimum bounding envelop around each individual vector feature
+
+
+*Python function*:
+
+~~~~{.python}
+minimum_bounding_envelope(
+    i, 
+    output, 
+    features=True, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=MinimumBoundingEnvelope -v ^
+--wd="/path/to/data/" -i=file.shp -o=outfile.shp --features 
+
+
+```
+
+
+#### 8.2.22 MinimumConvexHull
+
+This tool creates a vector convex polygon around vector features. The convex hull
+is a convex closure of a set of points or polygon verticies and can be may be
+conceptualized as the shape enclosed by a rubber band stretched around the point
+set. The convex hull has many applications and is most notably used in various
+shape indices. The Delaunay triangulation of a point set and its dual, the
+Voronoi diagram, are mathematically related to convex hulls.
+
+*See Also*:
+
+`MinimumBoundingBox`, `MinimumBoundingCircle`, `MinimumBoundingEnvelope`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector file
+-o, -\-output        Output vector polygon file
+-\-features          Find the hulls around each vector feature
+
+
+*Python function*:
+
+~~~~{.python}
+minimum_convex_hull(
+    i, 
+    output, 
+    features=True, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=MinimumConvexHull -v ^
+--wd="/path/to/data/" -i=file.shp -o=outfile.shp --features 
+
+
+```
+
+
+#### 8.2.23 NearestNeighbourGridding
+
+Creates a raster grid based on a set of vector points and assigns grid values using the nearest neighbour.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector Points file
+-\-field             Input field name in attribute table
+-\-use_z             Use z-coordinate instead of field?
+-o, -\-output        Output raster file
+-\-cell_size         Optionally specified cell size of output raster. Not used when base raster is 
+                     specified 
+-\-base              Optionally specified input base raster file. Not used when a cell size is 
+                     specified 
+-\-max_dist          Maximum search distance (optional)
+
+
+*Python function*:
+
+~~~~{.python}
+nearest_neighbour_gridding(
+    i, 
+    field, 
+    output, 
+    use_z=False, 
+    cell_size=None, 
+    base=None, 
+    max_dist=None, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=NearestNeighbourGridding -v ^
+--wd="/path/to/data/" -i=points.shp --field=ELEV -o=output.tif ^
+--cell_size=1.0
+>>./whitebox_tools -r=NearestNeighbourGridding ^
+-v --wd="/path/to/data/" -i=points.shp --use_z -o=output.tif ^
+--base=existing_raster.tif --max_dist=5.5 
+
+
+```
+
+
+#### 8.2.24 PolygonArea
+
+This tool calculates the area of vector polygons, adding the result to the
+vector's attribute table (AREA field). The area calculation will account
+for any holes contained within polygons. The vector should be in a
+projected coordinate system.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+polygon_area(
+    i, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=PolygonArea -v --wd="/path/to/data/" ^
+--input=polygons.shp 
+
+
+```
+
+
+#### 8.2.25 PolygonLongAxis
+
+This tool can be used to map the long axis of polygon features. The long axis is the
+longer of the two primary axes of the minimum bounding box (MBB), i.e. the smallest box
+to completely enclose a feature. The long axis is drawn for each polygon in the input
+vector file such that it passes through the centre point of the MBB. The output file is
+therefore a vector of simple two-point polylines forming a vector field.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector polygons file
+-o, -\-output        Output vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+polygon_long_axis(
+    i, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=PolygonLongAxis -v ^
+--wd="/path/to/data/" -i=file.shp -o=outfile.shp 
+
+
+```
+
+
+#### 8.2.26 PolygonPerimeter
+
+This tool calculates the perimeter of vector polygons, adding the result
+to the vector's attribute table (PERIMETER field). The area calculation will
+account for any holes contained within polygons. The vector should be in a
+a projected coordinate system.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+polygon_perimeter(
+    i, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=PolygonPerimeter -v ^
+--wd="/path/to/data/" --input=polygons.shp 
+
+
+```
+
+
+#### 8.2.27 PolygonShortAxis
+
+This tool can be used to map the short axis of polygon features. The short axis is the
+shorter of the two primary axes of the minimum bounding box (MBB), i.e. the smallest box
+to completely enclose a feature. The short axis is drawn for each polygon in the input
+vector file such that it passes through the centre point of the MBB. The output file is
+therefore a vector of simple two-point polylines forming a vector field.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector polygons file
+-o, -\-output        Output vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+polygon_short_axis(
+    i, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=PolygonShortAxis -v ^
+--wd="/path/to/data/" -i=file.shp -o=outfile.shp 
+
+
+```
+
+
+#### 8.2.28 RasterCellAssignment
+
+Assign row or column number to cells.
 
 *Parameters*:
 
@@ -1108,17 +2478,17 @@ Assign row or column number to cells..
 -------------------  ---------------
 -i, -\-input         Input raster file
 -o, -\-output        Output raster file
--a, -\-assign        Which variable would you like to assign to grid cells? Options include
-                     'column', 'row', 'x', and 'y'
+-a, -\-assign        Which variable would you like to assign to grid cells? Options include 
+                     'column', 'row', 'x', and 'y' 
 
 
 *Python function*:
 
 ~~~~{.python}
 raster_cell_assignment(
-    i,
-    output,
-    assign="column",
+    i, 
+    output, 
+    assign="column", 
     callback=default_callback)
 ~~~~
 
@@ -1127,15 +2497,15 @@ raster_cell_assignment(
 ```
 >>./whitebox_tools -r=RasterCellAssignment -v ^
 --wd="/path/to/data/" -i='input.tif' -o=output.tif ^
---assign='column'
+--assign='column' 
 
 
 ```
 
 
-#### 8.2.8 Reclass
+#### 8.2.29 Reclass
 
-Reclassifies the values in a raster image..
+Reclassifies the values in a raster image.
 
 *Parameters*:
 
@@ -1143,20 +2513,20 @@ Reclassifies the values in a raster image..
 -------------------  ---------------
 -i, -\-input         Input raster file
 -o, -\-output        Output raster file
--\-reclass_vals      Reclassification triplet values (new value; from value; to less than), e.g.
-                     '0.0;0.0;1.0;1.0;1.0;2.0'
--\-assign_mode       Optional Boolean flag indicating whether to operate in assign mode,
-                     reclass_vals values are interpreted as new value; old value pairs
+-\-reclass_vals      Reclassification triplet values (new value; from value; to less than), e.g. 
+                     '0.0;0.0;1.0;1.0;1.0;2.0' 
+-\-assign_mode       Optional Boolean flag indicating whether to operate in assign mode, 
+                     reclass_vals values are interpreted as new value; old value pairs 
 
 
 *Python function*:
 
 ~~~~{.python}
 reclass(
-    i,
-    output,
-    reclass_vals,
-    assign_mode=False,
+    i, 
+    output, 
+    reclass_vals, 
+    assign_mode=False, 
     callback=default_callback)
 ~~~~
 
@@ -1169,15 +2539,15 @@ reclass(
 >>./whitebox_tools ^
 -r=Reclass -v --wd="/path/to/data/" -i='input.tif' ^
 -o=output.tif --reclass_vals='10;1;20;2;30;3;40;4' ^
---assign_mode
+--assign_mode 
 
 
 ```
 
 
-#### 8.2.9 ReclassEqualInterval
+#### 8.2.30 ReclassEqualInterval
 
-Reclassifies the values in a raster image based on equal-ranges..
+Reclassifies the values in a raster image based on equal-ranges.
 
 *Parameters*:
 
@@ -1194,11 +2564,11 @@ Reclassifies the values in a raster image based on equal-ranges..
 
 ~~~~{.python}
 reclass_equal_interval(
-    i,
-    output,
-    interval=10.0,
-    start_val=None,
-    end_val=None,
+    i, 
+    output, 
+    interval=10.0, 
+    start_val=None, 
+    end_val=None, 
     callback=default_callback)
 ~~~~
 
@@ -1207,15 +2577,15 @@ reclass_equal_interval(
 ```
 >>./whitebox_tools -r=ReclassEqualInterval -v ^
 --wd="/path/to/data/" -i='input.tif' -o=output.tif ^
---interval=10.0 --start_val=0.0
+--interval=10.0 --start_val=0.0 
 
 
 ```
 
 
-#### 8.2.10 ReclassFromFile
+#### 8.2.31 ReclassFromFile
 
-Reclassifies the values in a raster image using reclass ranges in a text file..
+Reclassifies the values in a raster image using reclass ranges in a text file.
 
 *Parameters*:
 
@@ -1230,9 +2600,9 @@ Reclassifies the values in a raster image using reclass ranges in a text file..
 
 ~~~~{.python}
 reclass_from_file(
-    i,
-    reclass_file,
-    output,
+    i, 
+    reclass_file, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1241,7 +2611,200 @@ reclass_from_file(
 ```
 >>./whitebox_tools -r=ReclassFromFile -v ^
 --wd="/path/to/data/" -i='input.tif' ^
---reclass_file='reclass.txt' -o=output.tif
+--reclass_file='reclass.txt' -o=output.tif 
+
+
+```
+
+
+#### 8.2.32 SmoothVectors
+
+This tool smooths a vector coverage of either a POLYLINE or POLYGON base ShapeType. The algorithm
+uses a simple moving average method for smoothing, where the size of the averaging window is specified
+by the user. The default filter size is 3 and can be any odd integer larger than or equal to 3. The
+larger the averaging window, the greater the degree of line smoothing.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector POLYLINE or POLYGON file
+-o, -\-output        Output vector file
+-\-filter            The filter size, any odd integer greater than or equal to 3; default is 3
+
+
+*Python function*:
+
+~~~~{.python}
+smooth_vectors(
+    i, 
+    output, 
+    filter=3, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=SmoothVectors -v --wd="/path/to/data/" ^
+-i=in_file.shp -o=out_file.shp --filter=9 
+
+
+```
+
+
+#### 8.2.33 TinGridding
+
+Creates a raster grid based on a triangular irregular network (TIN) fitted to vector points
+and linear interpolation within each triangular-shaped plane.
+
+*See Also*:
+
+`LidarTINGridding`, `ConstructVectorTIN`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector points file
+-\-field             Input field name in attribute table
+-\-use_z             Use the 'z' dimension of the Shapefile's geometry instead of an attribute field?
+-o, -\-output        Output raster file
+-\-resolution        Output raster's grid resolution
+
+
+*Python function*:
+
+~~~~{.python}
+tin_gridding(
+    i, 
+    output, 
+    resolution, 
+    field=None, 
+    use_z=False, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=TINGridding -v --wd="/path/to/data/" ^
+-i=points.shp --field=HEIGHT -o=tin.shp ^
+--resolution=10.0
+>>./whitebox_tools -r=TINGridding -v ^
+--wd="/path/to/data/" -i=points.shp --use_z -o=tin.shp ^
+--resolution=5.0 
+
+
+```
+
+
+#### 8.2.34 VectorHexBinning
+
+The practice of binning point data to form a type of 2D histogram, density plot,
+or what is sometimes called a heatmap, is quite useful as an alternative for the
+cartographic display of of very dense points sets. This is particularly the case
+when the points experience significant overlap at the displayed scale. The
+`PointDensity` tool can be used to perform binning based on a regular grid (raster
+output). This tool, by comparison, bases the binning on a hexagonal grid.
+
+The tool is similar to the `CreateHexagonalVectorGrid` tool, however instead will
+create an output hexagonal grid in which each hexagonal cell possesses a `COUNT`
+attribute which specifies the number of points from an input points file (Shapefile
+vector) that are contained within the hexagonal cell.
+
+In addition to the names of the input points file and the output Shapefile, the user
+must also specify the desired hexagon width (w), which is the distance between opposing
+sides of each hexagon. The size (s) each side of the hexagon can then be calculated as,
+s = w / [2 x cos(PI / 6)]. The area of each hexagon (A) is, A = 3s(w / 2). The user must
+also specify the orientation of the grid with options of horizontal (pointy side up) and
+vertical (flat side up).
+
+*See Also*:
+
+`LidarHexBinning`, `PointDensity`, `CreateHexagonalVectorGrid`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input base file
+-o, -\-output        Output vector polygon file
+-\-width             The grid cell width
+-\-orientation       Grid Orientation, 'horizontal' or 'vertical'
+
+
+*Python function*:
+
+~~~~{.python}
+vector_hex_binning(
+    i, 
+    output, 
+    width, 
+    orientation="horizontal", 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=VectorHexBinning -v ^
+--wd="/path/to/data/" -i=file.shp -o=outfile.shp --width=10.0 ^
+--orientation=vertical 
+
+
+```
+
+
+#### 8.2.35 VoronoiDiagram
+
+This tool creates a vector Voronoi diagram for a set of vector points. The
+Voronoi diagram is the dual graph of the Delaunay triangulation. The tool
+operates by first constructing the Delaunay triangulation and then
+connecting the circumcenters of each triangle. Each Voronoi cell contains
+one point of the input vector points. All locations within the cell are
+nearer to the contained point than any other input point.
+
+A dense frame of 'ghost' (hidden) points is inserted around the input point
+set to limit the spatial extent of the diagram. The frame is set back from
+the bounding box of the input points by 2 x the average point  spacing. The
+polygons of these ghost points are not output, however, points that are
+situated along the edges of the data will have somewhat rounded (paraboloic)
+exterior boundaries as a result of this edge condition. If this property is
+unacceptable for application, clipping the Voronoi diagram to the convex
+hull may be a better alternative.
+
+This tool works on vector input data only. If a Voronoi diagram is needed
+to tesselate regions associated with a set of raster points, use the
+`EuclideanAllocation` tool instead. To use Voronoi diagrams for gridding
+data (i.e. raster interpolation), use the `NearestNeighbourGridding` tool.
+
+*See Also*:
+
+`ConstructVectorTIN`, `EuclideanAllocation`, `NearestNeighbourGridding`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector points file
+-o, -\-output        Output vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+voronoi_diagram(
+    i, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=VoronoiDiagram -v --wd="/path/to/data/" ^
+-i=points.shp -o=tin.shp 
 
 
 ```
@@ -1250,7 +2813,7 @@ reclass_from_file(
 
 #### 8.3.1 BufferRaster
 
-Maps a distance-based buffer around each non-background (non-zero/non-nodata) grid cell in an input image..
+Maps a distance-based buffer around each non-background (non-zero/non-nodata) grid cell in an input image.
 
 *Parameters*:
 
@@ -1259,18 +2822,18 @@ Maps a distance-based buffer around each non-background (non-zero/non-nodata) gr
 -i, -\-input         Input raster file
 -o, -\-output        Output raster file
 -\-size              Buffer size
--\-gridcells         Optional flag to indicate that the 'size' threshold should be measured in grid
-                     cells instead of the default map units
+-\-gridcells         Optional flag to indicate that the 'size' threshold should be measured in grid 
+                     cells instead of the default map units 
 
 
 *Python function*:
 
 ~~~~{.python}
 buffer_raster(
-    i,
-    output,
-    size,
-    gridcells=False,
+    i, 
+    output, 
+    size, 
+    gridcells=False, 
     callback=default_callback)
 ~~~~
 
@@ -1278,7 +2841,7 @@ buffer_raster(
 
 ```
 >>./whitebox_tools -r=BufferRaster -v --wd="/path/to/data/" ^
--i=DEM.tif -o=output.tif
+-i=DEM.tif -o=output.tif 
 
 
 ```
@@ -1286,7 +2849,7 @@ buffer_raster(
 
 #### 8.3.2 CostAllocation
 
-Identifies the source cell to which each grid cell is connected by a least-cost pathway in a cost-distance analysis..
+Identifies the source cell to which each grid cell is connected by a least-cost pathway in a cost-distance analysis.
 
 *Parameters*:
 
@@ -1301,9 +2864,9 @@ Identifies the source cell to which each grid cell is connected by a least-cost 
 
 ~~~~{.python}
 cost_allocation(
-    source,
-    backlink,
-    output,
+    source, 
+    backlink, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1312,7 +2875,7 @@ cost_allocation(
 ```
 >>./whitebox_tools -r=CostAllocation -v --wd="/path/to/data/" ^
 --source='source.tif' --backlink='backlink.tif' ^
--o='output.tif'
+-o='output.tif' 
 
 
 ```
@@ -1320,7 +2883,7 @@ cost_allocation(
 
 #### 8.3.3 CostDistance
 
-Performs cost-distance accumulation on a cost surface and a group of source cells..
+Performs cost-distance accumulation on a cost surface and a group of source cells.
 
 *Parameters*:
 
@@ -1336,10 +2899,10 @@ Performs cost-distance accumulation on a cost surface and a group of source cell
 
 ~~~~{.python}
 cost_distance(
-    source,
-    cost,
-    out_accum,
-    out_backlink,
+    source, 
+    cost, 
+    out_accum, 
+    out_backlink, 
     callback=default_callback)
 ~~~~
 
@@ -1348,7 +2911,7 @@ cost_distance(
 ```
 >>./whitebox_tools -r=CostDistance -v --wd="/path/to/data/" ^
 --source=src.tif --cost=cost.tif --out_accum=accum.tif ^
---out_backlink=backlink.tif
+--out_backlink=backlink.tif 
 
 
 ```
@@ -1356,7 +2919,7 @@ cost_distance(
 
 #### 8.3.4 CostPathway
 
-Performs cost-distance pathway analysis using a series of destination grid cells..
+Performs cost-distance pathway analysis using a series of destination grid cells.
 
 *Parameters*:
 
@@ -1372,10 +2935,10 @@ Performs cost-distance pathway analysis using a series of destination grid cells
 
 ~~~~{.python}
 cost_pathway(
-    destination,
-    backlink,
-    output,
-    zero_background=False,
+    destination, 
+    backlink, 
+    output, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -1384,7 +2947,7 @@ cost_pathway(
 ```
 >>./whitebox_tools -r=CostPathway -v --wd="/path/to/data/" ^
 --destination=dst.tif --backlink=backlink.tif ^
---output=cost_path.tif
+--output=cost_path.tif 
 
 
 ```
@@ -1392,7 +2955,7 @@ cost_pathway(
 
 #### 8.3.5 EuclideanAllocation
 
-Assigns grid cells in the output raster the value of the nearest target cell in the input image, measured by the Shih and Wu (2004) Euclidean distance transform..
+Assigns grid cells in the output raster the value of the nearest target cell in the input image, measured by the Shih and Wu (2004) Euclidean distance transform.
 
 *Parameters*:
 
@@ -1406,8 +2969,8 @@ Assigns grid cells in the output raster the value of the nearest target cell in 
 
 ~~~~{.python}
 euclidean_allocation(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1415,7 +2978,7 @@ euclidean_allocation(
 
 ```
 >>./whitebox_tools -r=EuclideanAllocation -v ^
---wd="/path/to/data/" -i=DEM.tif -o=output.tif
+--wd="/path/to/data/" -i=DEM.tif -o=output.tif 
 
 
 ```
@@ -1423,7 +2986,7 @@ euclidean_allocation(
 
 #### 8.3.6 EuclideanDistance
 
-Calculates the Shih and Wu (2004) Euclidean distance transform..
+Calculates the Shih and Wu (2004) Euclidean distance transform.
 
 *Parameters*:
 
@@ -1437,8 +3000,8 @@ Calculates the Shih and Wu (2004) Euclidean distance transform..
 
 ~~~~{.python}
 euclidean_distance(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1446,7 +3009,7 @@ euclidean_distance(
 
 ```
 >>./whitebox_tools -r=EuclideanDistance -v ^
---wd="/path/to/data/" -i=DEM.tif -o=output.tif
+--wd="/path/to/data/" -i=DEM.tif -o=output.tif 
 
 
 ```
@@ -1455,7 +3018,7 @@ euclidean_distance(
 
 #### 8.4.1 AverageOverlay
 
-Calculates the average for each grid cell from a group of raster images..
+Calculates the average for each grid cell from a group of raster images.
 
 *Parameters*:
 
@@ -1469,8 +3032,8 @@ Calculates the average for each grid cell from a group of raster images..
 
 ~~~~{.python}
 average_overlay(
-    inputs,
-    output,
+    inputs, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1478,7 +3041,7 @@ average_overlay(
 
 ```
 >>./whitebox_tools -r=AverageOverlay -v --wd='/path/to/data/' ^
--i='image1.dep;image2.dep;image3.tif' -o=output.tif
+-i='image1.dep;image2.dep;image3.tif' -o=output.tif 
 
 
 ```
@@ -1486,7 +3049,7 @@ average_overlay(
 
 #### 8.4.2 ClipRasterToPolygon
 
-Clips a raster to a vector polygon..
+Clips a raster to a vector polygon.
 
 *Parameters*:
 
@@ -1502,10 +3065,10 @@ Clips a raster to a vector polygon..
 
 ~~~~{.python}
 clip_raster_to_polygon(
-    i,
-    polygons,
-    output,
-    maintain_dimensions=False,
+    i, 
+    polygons, 
+    output, 
+    maintain_dimensions=False, 
     callback=default_callback)
 ~~~~
 
@@ -1514,7 +3077,7 @@ clip_raster_to_polygon(
 ```
 >>./whitebox_tools -r=ClipRasterToPolygon -v ^
 --wd="/path/to/data/" -i=raster.tif --polygons=poly.shp ^
--o=output.tif --maintain_dimensions
+-o=output.tif --maintain_dimensions 
 
 
 ```
@@ -1522,7 +3085,7 @@ clip_raster_to_polygon(
 
 #### 8.4.3 CountIf
 
-Counts the number of occurrences of a specified value in a cell-stack of rasters..
+Counts the number of occurrences of a specified value in a cell-stack of rasters.
 
 *Parameters*:
 
@@ -1537,9 +3100,9 @@ Counts the number of occurrences of a specified value in a cell-stack of rasters
 
 ~~~~{.python}
 count_if(
-    inputs,
-    output,
-    value,
+    inputs, 
+    output, 
+    value, 
     callback=default_callback)
 ~~~~
 
@@ -1548,7 +3111,7 @@ count_if(
 ```
 >>./whitebox_tools -r=CountIf -v --wd='/path/to/data/' ^
 -i='image1.dep;image2.dep;image3.tif' -o=output.tif ^
---value=5.0
+--value=5.0 
 
 
 ```
@@ -1556,7 +3119,7 @@ count_if(
 
 #### 8.4.4 ErasePolygonFromRaster
 
-Erases (cuts out) a vector polygon from a raster..
+Erases (cuts out) a vector polygon from a raster.
 
 *Parameters*:
 
@@ -1571,9 +3134,9 @@ Erases (cuts out) a vector polygon from a raster..
 
 ~~~~{.python}
 erase_polygon_from_raster(
-    i,
-    polygons,
-    output,
+    i, 
+    polygons, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1582,7 +3145,7 @@ erase_polygon_from_raster(
 ```
 >>./whitebox_tools -r=ErasePolygonFromRaster -v ^
 --wd="/path/to/data/" -i='DEM.tif' --polygons='lakes.shp' ^
--o='output.tif'
+-o='output.tif' 
 
 
 ```
@@ -1590,7 +3153,7 @@ erase_polygon_from_raster(
 
 #### 8.4.5 HighestPosition
 
-Identifies the stack position of the maximum value within a raster stack on a cell-by-cell basis..
+Identifies the stack position of the maximum value within a raster stack on a cell-by-cell basis.
 
 *Parameters*:
 
@@ -1604,8 +3167,8 @@ Identifies the stack position of the maximum value within a raster stack on a ce
 
 ~~~~{.python}
 highest_position(
-    inputs,
-    output,
+    inputs, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1614,15 +3177,60 @@ highest_position(
 ```
 >>./whitebox_tools -r=HighestPosition -v ^
 --wd='/path/to/data/' -i='image1.tif;image2.tif;image3.tif' ^
--o=output.tif
+-o=output.tif 
 
 
 ```
 
 
-#### 8.4.6 LowestPosition
+#### 8.4.6 LineIntersections
 
-Identifies the stack position of the minimum value within a raster stack on a cell-by-cell basis..
+This tool identifies points where the features of two vector line layers intersect.
+The user must specify the names of two input vector line files and the output file.
+The output file will be a vector of POINT ShapeType. If the input vectors intersect
+at a line segment, the beginning and end vertices of the segment will be present in
+the output file. A warning is issued if intersection line segments are identified
+during analysis. If no intersections are found between the input line files, the
+output file will not be saved and a warning will be issued.
+
+Each intersection point will contain `PARENT1` and `PARENT2` attribute fields,
+identifying the instersecting features in the first and second input line files
+respectively. Additionally, the output attribute table will contain all of the
+attributes (excluding `FID`s) of the two parent line features.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-\-i1, -\-input1     Input vector polyline file
+-\-i2, -\-input2     Input vector polyline file
+-o, -\-output        Output vector point file
+
+
+*Python function*:
+
+~~~~{.python}
+line_intersections(
+    input1, 
+    input2, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=LineIntersections -v ^
+--wd="/path/to/data/" --i1=lines1.shp --i2=lines2.shp ^
+-o=out_file.shp 
+
+
+```
+
+
+#### 8.4.7 LowestPosition
+
+Identifies the stack position of the minimum value within a raster stack on a cell-by-cell basis.
 
 *Parameters*:
 
@@ -1636,8 +3244,8 @@ Identifies the stack position of the minimum value within a raster stack on a ce
 
 ~~~~{.python}
 lowest_position(
-    inputs,
-    output,
+    inputs, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1645,15 +3253,15 @@ lowest_position(
 
 ```
 >>./whitebox_tools -r=LowestPosition -v --wd='/path/to/data/' ^
--i='image1.tif;image2.tif;image3.tif' -o=output.tif
+-i='image1.tif;image2.tif;image3.tif' -o=output.tif 
 
 
 ```
 
 
-#### 8.4.7 MaxAbsoluteOverlay
+#### 8.4.8 MaxAbsoluteOverlay
 
-Evaluates the maximum absolute value for each grid cell from a stack of input rasters..
+Evaluates the maximum absolute value for each grid cell from a stack of input rasters.
 
 *Parameters*:
 
@@ -1667,8 +3275,8 @@ Evaluates the maximum absolute value for each grid cell from a stack of input ra
 
 ~~~~{.python}
 max_absolute_overlay(
-    inputs,
-    output,
+    inputs, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1677,15 +3285,15 @@ max_absolute_overlay(
 ```
 >>./whitebox_tools -r=MaxAbsoluteOverlay -v ^
 --wd='/path/to/data/' -i='image1.tif;image2.tif;image3.tif' ^
--o=output.tif
+-o=output.tif 
 
 
 ```
 
 
-#### 8.4.8 MaxOverlay
+#### 8.4.9 MaxOverlay
 
-Evaluates the maximum value for each grid cell from a stack of input rasters..
+Evaluates the maximum value for each grid cell from a stack of input rasters.
 
 *Parameters*:
 
@@ -1699,8 +3307,8 @@ Evaluates the maximum value for each grid cell from a stack of input rasters..
 
 ~~~~{.python}
 max_overlay(
-    inputs,
-    output,
+    inputs, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1708,15 +3316,15 @@ max_overlay(
 
 ```
 >>./whitebox_tools -r=MaxOverlay -v --wd='/path/to/data/' ^
--i='image1.tif;image2.tif;image3.tif' -o=output.tif
+-i='image1.tif;image2.tif;image3.tif' -o=output.tif 
 
 
 ```
 
 
-#### 8.4.9 MinAbsoluteOverlay
+#### 8.4.10 MinAbsoluteOverlay
 
-Evaluates the minimum absolute value for each grid cell from a stack of input rasters..
+Evaluates the minimum absolute value for each grid cell from a stack of input rasters.
 
 *Parameters*:
 
@@ -1730,8 +3338,8 @@ Evaluates the minimum absolute value for each grid cell from a stack of input ra
 
 ~~~~{.python}
 min_absolute_overlay(
-    inputs,
-    output,
+    inputs, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1740,15 +3348,15 @@ min_absolute_overlay(
 ```
 >>./whitebox_tools -r=MinAbsoluteOverlay -v ^
 --wd='/path/to/data/' -i='image1.tif;image2.tif;image3.tif' ^
--o=output.tif
+-o=output.tif 
 
 
 ```
 
 
-#### 8.4.10 MinOverlay
+#### 8.4.11 MinOverlay
 
-Evaluates the minimum value for each grid cell from a stack of input rasters..
+Evaluates the minimum value for each grid cell from a stack of input rasters.
 
 *Parameters*:
 
@@ -1762,8 +3370,8 @@ Evaluates the minimum value for each grid cell from a stack of input rasters..
 
 ~~~~{.python}
 min_overlay(
-    inputs,
-    output,
+    inputs, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1771,15 +3379,15 @@ min_overlay(
 
 ```
 >>./whitebox_tools -r=MinOverlay -v --wd='/path/to/data/' ^
--i='image1.tif;image2.tif;image3.tif' -o=output.tif
+-i='image1.tif;image2.tif;image3.tif' -o=output.tif 
 
 
 ```
 
 
-#### 8.4.11 PercentEqualTo
+#### 8.4.12 PercentEqualTo
 
-Calculates the percentage of a raster stack that have cell values equal to an input on a cell-by-cell basis..
+Calculates the percentage of a raster stack that have cell values equal to an input on a cell-by-cell basis.
 
 *Parameters*:
 
@@ -1794,9 +3402,9 @@ Calculates the percentage of a raster stack that have cell values equal to an in
 
 ~~~~{.python}
 percent_equal_to(
-    inputs,
-    comparison,
-    output,
+    inputs, 
+    comparison, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1805,15 +3413,15 @@ percent_equal_to(
 ```
 >>./whitebox_tools -r=PercentEqualTo -v --wd='/path/to/data/' ^
 -i='image1.tif;image2.tif;image3.tif' --comparison='comp.tif' ^
--o='output.tif'
+-o='output.tif' 
 
 
 ```
 
 
-#### 8.4.12 PercentGreaterThan
+#### 8.4.13 PercentGreaterThan
 
-Calculates the percentage of a raster stack that have cell values greather than an input on a cell-by-cell basis..
+Calculates the percentage of a raster stack that have cell values greather than an input on a cell-by-cell basis.
 
 *Parameters*:
 
@@ -1828,9 +3436,9 @@ Calculates the percentage of a raster stack that have cell values greather than 
 
 ~~~~{.python}
 percent_greater_than(
-    inputs,
-    comparison,
-    output,
+    inputs, 
+    comparison, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1839,15 +3447,15 @@ percent_greater_than(
 ```
 >>./whitebox_tools -r=PercentGreaterThan -v ^
 --wd='/path/to/data/' -i='image1.tif;image2.tif;image3.tif' ^
---comparison='comp.tif' -o='output.tif'
+--comparison='comp.tif' -o='output.tif' 
 
 
 ```
 
 
-#### 8.4.13 PercentLessThan
+#### 8.4.14 PercentLessThan
 
-Calculates the percentage of a raster stack that have cell values less than an input on a cell-by-cell basis..
+Calculates the percentage of a raster stack that have cell values less than an input on a cell-by-cell basis.
 
 *Parameters*:
 
@@ -1862,9 +3470,9 @@ Calculates the percentage of a raster stack that have cell values less than an i
 
 ~~~~{.python}
 percent_less_than(
-    inputs,
-    comparison,
-    output,
+    inputs, 
+    comparison, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1873,15 +3481,15 @@ percent_less_than(
 ```
 >>./whitebox_tools -r=PercentLessThan -v ^
 --wd='/path/to/data/' -i='image1.tif;image2.tif;image3.tif' ^
---comparison='comp.tif' -o='output.tif'
+--comparison='comp.tif' -o='output.tif' 
 
 
 ```
 
 
-#### 8.4.14 PickFromList
+#### 8.4.15 PickFromList
 
-Outputs the value from a raster stack specified by a position raster..
+Outputs the value from a raster stack specified by a position raster.
 
 *Parameters*:
 
@@ -1896,9 +3504,9 @@ Outputs the value from a raster stack specified by a position raster..
 
 ~~~~{.python}
 pick_from_list(
-    inputs,
-    pos_input,
-    output,
+    inputs, 
+    pos_input, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1907,25 +3515,168 @@ pick_from_list(
 ```
 >>./whitebox_tools -r=PickFromList -v --wd='/path/to/data/' ^
 --pos_input=position.tif -i='image1.tif;image2.tif;image3.tif' ^
--o=output.tif
+-o=output.tif 
 
 
 ```
 
 
-#### 8.4.15 WeightedOverlay
+#### 8.4.16 Polygonize
 
-Performs a weighted sum on multiple input rasters after converting each image to a common scale. The tool performs a multi-criteria evaluation (MCE)..
+This tool outputs a vector polygon layer from two or more intersecting line features
+contained in one or more input vector line files. Each space enclosed by the intersecting
+line set is converted to polygon added to the output layer. This tool should not be
+confused with the `LinesToPolygons` tool, which can be used to convert a vector file of
+polylines into a set of polygons, simply by closing each line feature. The `LinesToPolygons`
+tool does not deal with line intersection in the same way that the `Polygonize` tool does.
+
+*See Also*:
+
+`LinesToPolygons`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-inputs        Input vector polyline file
+-o, -\-output        Output vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+polygonize(
+    inputs, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=Polygonize -v --wd="/path/to/data/" ^
+-i='lines1.shp;lines2.shp;lines3.shp' -o=out_file.shp 
+
+
+```
+
+
+#### 8.4.17 SplitWithLines
+
+This tool splits the lines or polygons in one layer using the lines in another layer
+to define the breaking points. Intersection points between geometries in both layers
+are considered as split points. The input layer (`--input`) can be of either
+POLYLINE or POLYGON ShapeType and the output file will share this geometry type.
+The user must also specify an split layer (`--split`), of POLYLINE ShapeType, used
+to bisect the input geometries.
+
+Each split geometry's attribute record will contain `FID` and `PARENT_FID` values
+and all of the attributes (excluding `FID`'s) of the input layer.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector line or polygon file
+-\-split             Input vector polyline file
+-o, -\-output        Output vector file
+
+
+*Python function*:
+
+~~~~{.python}
+split_with_lines(
+    i, 
+    split, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=SplitWithLines -v --wd="/path/to/data/" ^
+--input=polygons.shp --split=lines.shp -o=out_file.shp 
+
+
+```
+
+
+#### 8.4.18 SumOverlay
+
+This tool calculates the sum for each grid cell from a group of raster images.
+
+*Warning*:
+
+Each of the input rasters must have the same spatial extent and number of rows
+and columns.
+
+*See Also*:
+
+`WeightedSum`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-inputs        Input raster files
+-o, -\-output        Output raster file
+
+
+*Python function*:
+
+~~~~{.python}
+sum_overlay(
+    inputs, 
+    output, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=SumOverlay -v --wd='/path/to/data/' ^
+-i='image1.dep;image2.dep;image3.tif' -o=output.tif 
+
+
+```
+
+
+#### 8.4.19 WeightedOverlay
+
+This tool performs a weighted overlay on multiple input images. It can be used to
+combine multiple factors with varying levels of weight or relative importance. The
+WeightedOverlay tool is similar to the WeightedSum tool but is more powerful because
+it automatically converts the input factors to a common user-defined scale and allows
+the user to specify benefit factors and cost factors. A benefit factor is a factor
+for which higher values are more suitable. A cost factor is a factor for which higher
+values are less suitable. By default, WeightedOverlay assumes that input images are
+benefit factors, unless a cost value of 'true' is entered in the cost array.
+Constraints are absolute restriction with values of 0 (unsuitable) and 1 (suitable).
+This tool is particularly useful for performing multi-criteria evaluations (MCE).
+
+Notice that the algorithm will convert the user-defined factor weights internally such
+that the sum of the weights is always equal to one. As such, the user can specify the
+relative weights as decimals, percentages, or relative weightings (e.g. slope is 2 times
+more important than elevation, in which case the weights may not sum to 1 or 100).
+
+NoData valued grid cells in any of the input images will be assigned NoData values in
+the output image. The output raster is of the float data type and continuous data scale.
+
+*Warning*:
+
+Each of the input rasters must have the same spatial extent and number of rows
+and columns.
 
 *Parameters*:
 
 **Flag**             **Description**
 -------------------  ---------------
 -\-factors           Input factor raster files
--w, -\-weights       Weight values, contained in quotes and separated by commas or semicolons. Must
-                     have the same number as factors
--\-cost              Weight values, contained in quotes and separated by commas or semicolons. Must
-                     have the same number as factors
+-w, -\-weights       Weight values, contained in quotes and separated by commas or semicolons. Must 
+                     have the same number as factors 
+-\-cost              Weight values, contained in quotes and separated by commas or semicolons. Must 
+                     have the same number as factors 
 -\-constraints       Input constraints raster files
 -o, -\-output        Output raster file
 -\-scale_max         Suitability scale maximum value (common values are 1.0, 100.0, and 255.0)
@@ -1935,12 +3686,12 @@ Performs a weighted sum on multiple input rasters after converting each image to
 
 ~~~~{.python}
 weighted_overlay(
-    factors,
-    weights,
-    output,
-    cost=None,
-    constraints=None,
-    scale_max=1.0,
+    factors, 
+    weights, 
+    output, 
+    cost=None, 
+    constraints=None, 
+    scale_max=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -1951,15 +3702,26 @@ weighted_overlay(
 --wd='/path/to/data/' ^
 --factors='image1.tif;image2.tif;image3.tif' ^
 --weights='0.3;0.2;0.5' --cost='false;false;true' -o=output.tif ^
---scale_max=100.0
+--scale_max=100.0 
 
 
 ```
 
 
-#### 8.4.16 WeightedSum
+#### 8.4.20 WeightedSum
 
-Performs a weighted-sum overlay on multiple input raster images..
+This tool performs a weighted-sum overlay on multiple input raster images.
+If you have a stack of rasters that you would like to sum, each with an
+equal weighting (1.0), then use the `SumOverlay` tool instead.
+
+*Warning*:
+
+Each of the input rasters must have the same spatial extent and number of rows
+and columns.
+
+*See Also*:
+
+`SumOverlay`
 
 *Parameters*:
 
@@ -1974,9 +3736,9 @@ Performs a weighted-sum overlay on multiple input raster images..
 
 ~~~~{.python}
 weighted_sum(
-    inputs,
-    weights,
-    output,
+    inputs, 
+    weights, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -1985,16 +3747,58 @@ weighted_sum(
 ```
 >>./whitebox_tools -r=WeightedSum -v --wd='/path/to/data/' ^
 -i='image1.tif;image2.tif;image3.tif' --weights='0.3;0.2;0.5' ^
--o=output.tif
+-o=output.tif 
 
 
 ```
 
 ### 8.5 GIS Analysis => Patch Shape Tools
 
-#### 8.5.1 EdgeProportion
+#### 8.5.1 CompactnessRatio
 
-Calculate the proportion of cells in a raster polygon that are edge cells..
+The compactness ratio is an indicator of polygon shape complexity. The compactness
+ratio is defined as the polygon area divided by its perimeter. Unlike some other
+shape parameters (e.g. `ShapeComplexityIndex`), compactness ratio does not standardize
+to a simple Euclidean shape. Although widely used for landscape analysis, compactness
+ratio, like its inverse, the `PerimeterAreaRatio`, exhibits the undesirable property
+of polygon size dependence (Mcgarigal et al. 2002). That is, holding shape constant,
+an increase in polygon size will cause a change in the compactness ratio.
+
+The output data will be contained in the input vector's attribute table as a new field
+(COMPACT).
+
+*See Also*:
+
+`PerimeterAreaRatio`, `ShapeComplexityIndex`, `RelatedCircumscribingCircle`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+compactness_ratio(
+    i, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=CompactnessRatio -v ^
+--wd="/path/to/data/" --input=polygons.shp 
+
+
+```
+
+
+#### 8.5.2 EdgeProportion
+
+Calculate the proportion of cells in a raster polygon that are edge cells.
 
 *Parameters*:
 
@@ -2009,9 +3813,9 @@ Calculate the proportion of cells in a raster polygon that are edge cells..
 
 ~~~~{.python}
 edge_proportion(
-    i,
-    output,
-    output_text=False,
+    i, 
+    output, 
+    output_text=False, 
     callback=default_callback)
 ~~~~
 
@@ -2019,15 +3823,58 @@ edge_proportion(
 
 ```
 >>./whitebox_tools -r=EdgeProportion -v --wd="/path/to/data/" ^
--i=input.tif -o=output.tif --output_text
+-i=input.tif -o=output.tif --output_text 
 
 
 ```
 
 
-#### 8.5.2 FindPatchOrClassEdgeCells
+#### 8.5.3 ElongationRatio
 
-Finds all cells located on the edge of patch or class features..
+This tool can be used to calculate the elongation ratio for vector polygons. The
+elongation ratio values calculated for each vector polygon feature will be placed
+in the accompanying database file (.dbf) as an elongation field (ELONGATION).
+
+The elongation ratio (`E`) is:
+
+`E = 1 - S / L`
+
+Where `S` is the short-axis length, and `L` is the long-axis length. Axes
+lengths are determined by estimating the minimum bounding box.
+
+The elongation ratio provides similar information as the Linearity Index. The
+ratio is not an adequate measure of overall polygon narrowness, because a highly
+sinuous but narrow polygon will have a low linearity (elongation) owing to the
+compact nature of these polygon.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+elongation_ratio(
+    i, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=ElongationRatio -v ^
+--wd="/path/to/data/" --input=polygons.shp 
+
+
+```
+
+
+#### 8.5.4 FindPatchOrClassEdgeCells
+
+Finds all cells located on the edge of patch or class features.
 
 *Parameters*:
 
@@ -2041,8 +3888,8 @@ Finds all cells located on the edge of patch or class features..
 
 ~~~~{.python}
 find_patch_or_class_edge_cells(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -2050,15 +3897,187 @@ find_patch_or_class_edge_cells(
 
 ```
 >>./whitebox_tools -r=FindPatchOrClassEdgeCells -v ^
---wd="/path/to/data/" -i=input.tif -o=output.tif
+--wd="/path/to/data/" -i=input.tif -o=output.tif 
 
 
 ```
 
 
-#### 8.5.3 RadiusOfGyration
+#### 8.5.5 HoleProportion
 
-Calculates the distance of cells from their polygon's centroid..
+This calculates the proportion of the total area of a polygon's holes (i.e. islands)
+relative to the area of the polygon's hull. It can be a useful measure of shape
+complexity, or how discontinuous a patch is. The user must specify the name of the
+input vector file and the output data will be contained within the input vector's
+database file as a new field (HOLE_PROP).
+
+*See Also*:
+
+`ShapeComplexityIndex`, `ElongationRatio`, `PerimeterAreaRatio`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+hole_proportion(
+    i, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=HoleProportion -v --wd="/path/to/data/" ^
+--input=polygons.shp 
+
+
+```
+
+
+#### 8.5.6 LinearityIndex
+
+This tool calculates the linearity index of polygon features based on a regression analysis.
+The index is simply the coefficient of determination (r-squared) calculated from a regression
+analysis of the x and y coordinates of the exterior hull nodes of a vector polygon. Linearity
+index is a measure of how well a polygon can be described by a straight line. It is a related
+index to the `ElongationRatio`, but is more efficient to calculate as it does not require
+finding the minimum bounding box. The Pearson correlation coefficient between linearity index
+and the elongation ratio for a large data set of lake polygons in northern Canada was found
+to be 0.656, suggesting a moderate level of association between the two measures of polygon
+linearity. Note that this index is not useful for identifying narrow yet sinuous polygons, such
+as meandering rivers.
+
+The only required input is the name of the file. The linearity values calculated for each vector
+polygon feature will be placed in the accompanying attribute table as a new field (LINEARITY).
+
+*See Also*:
+
+`ElongationRatio`, `PatchOrientation`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+linearity_index(
+    i, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=LinearityIndex -v --wd="/path/to/data/" ^
+--input=polygons.shp 
+
+
+```
+
+
+#### 8.5.7 PatchOrientation
+
+This tool calculates the orientation of polygon features based on the slope of a reduced major
+axis (RMA) regression line. The regression analysis use the vertices of the exterior hull nodes
+of a vector polygon. The only required input is the name of the vector polygon file. The
+orientation values, measured in degrees from north, will be placed in the accompanying attribute
+table as a new field (ORIENT). The value of the orientation measure for any polygon will
+depend on how elongated the feature is.
+
+Note that the output values are polygon orientations and not true directions. While directions
+may take values ranging from 0-360, orientation is expressed as an angle between 0 and 180 degrees
+clockwise from north. Lastly, the orientation measure may become unstable when polygons are
+oriented nearly vertical or horizontal.
+
+*See Also*:
+
+`LinearityIndex`, `ElongationRatio`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+patch_orientation(
+    i, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=PatchOrientation -v ^
+--wd="/path/to/data/" --input=polygons.shp 
+
+
+```
+
+
+#### 8.5.8 PerimeterAreaRatio
+
+The perimeter-area ratio is an indicator of polygon shape complexity. Unlike some
+other shape parameters (e.g. shape complexity index), perimeter-area ratio does not
+standardize to a simple Euclidean shape. Although widely used for landscape analysis,
+perimeter-area ratio exhibits the undesirable property of polygon size dependence
+(Mcgarigal et al. 2002). That is, holding shape constant, an increase in polygon
+size will cause a decrease in the perimeter-area ratio. The perimeter-area ratio is
+the inverse of the compactness ratio.
+
+The output data will be displayed as a new field (P-A_RATIO) in the input vector's
+database file.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+perimeter_area_ratio(
+    i, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=PerimeterAreaRatio -v ^
+--wd="/path/to/data/" --input=polygons.shp 
+
+
+```
+
+
+#### 8.5.9 RadiusOfGyration
+
+This can be used to calculate the radius of gyration (RoG) for the polygon
+features within a raster image. RoG measures how far across the landscape a polygon
+extends its reach on average, given by the mean distance between cells in a patch
+(Mcgarigal et al. 2002). The radius of gyration can be considered a measure of the
+average distance an organism can move within a patch before encountering the patch
+boundary from a random starting point (Mcgarigal et al. 2002). The input raster grid
+should contain polygons with unique identifiers greater than zero. The user must also
+specify the name of the output raster file (where the radius of gyration will be
+assigned to each feature in the input file) and the specified option of outputting text
+data.
 
 *Parameters*:
 
@@ -2073,9 +4092,9 @@ Calculates the distance of cells from their polygon's centroid..
 
 ~~~~{.python}
 radius_of_gyration(
-    i,
-    output,
-    text_output=False,
+    i, 
+    output, 
+    text_output=False, 
     callback=default_callback)
 ~~~~
 
@@ -2084,7 +4103,105 @@ radius_of_gyration(
 ```
 >>./whitebox_tools -r=RadiusOfGyration -v ^
 --wd="/path/to/data/" -i=polygons.tif -o=output.tif ^
---text_output
+--text_output 
+
+
+```
+
+
+#### 8.5.10 RelatedCircumscribingCircle
+
+This tool can be used to calculate the related circumscribing circle (Mcgarigal et al. 2002)
+for vector polygon features. The related circumscribing circle values calculated for each
+vector polygon feature will be placed in the accompanying attribute table as a new field
+(RC_CIRCLE).
+
+Related circumscribing circle (RCC) is defined as:
+
+`RCC = 1 - A / Ac`
+
+Where `A` is the polygon's area and `Ac` the area of the smallest circumscribing circle.
+
+Theoretically, `RelatedCircumscribingCircle` ranges from 0 to 1, where a value of 0 indicates
+a circular polygon and a value of 1 indicates a highly elongated shape. The circumscribing
+circle provides a measure of polygon elongation. Unlike the `ElongationRatio`, however, it
+does not provide a measure of polygon direction in addition to overall elongation. Like the
+`ElongationRatio` and `LinearityIndex`, `RelatedCircumscribingCircle` is not an adequate
+measure of overall polygon narrowness, because a highly sinuous but narrow patch will have
+a low related circumscribing circle index owing to the compact nature of these polygon.
+
+Note: Holes are excluded from the area calculation of polygons.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+related_circumscribing_circle(
+    i, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=RelatedCircumscribingCircle -v ^
+--wd="/path/to/data/" --input=polygons.shp 
+
+
+```
+
+
+#### 8.5.11 ShapeComplexityIndex
+
+This tool provides a measure of overall polygon shape complexity, or irregularity,
+for vector polygons. Several shape indices have been created to compare a polygon's
+shape to simple Euclidean shapes (e.g. circles, squares, etc.). One of the problems
+with this approach is that it inherently convolves the characteristics of polygon
+complexity and elongation. The Shape Complexity Index (SCI) was developed as a
+parameter for assessing the complexity of a polygon that is independent of its
+elongation.
+
+SCI relates a polygon's shape to that of an encompassing convex hull. It is
+defined as:
+
+`SCI = 1 - A / Ah`
+
+Where `A` is the polygon's area and `Ah` is the area of the convex hull containing
+the polygon. Convex polygons, i.e. those that do not contain concavities or holes,
+have a value of 0. As the shape of the polygon becomes more complex, the SCI
+approaches 1. Note that polygon shape complexity also increases with the greater
+number of holes (i.e. islands), since holes have the effect of reducing the lake
+area.
+
+The SCI values calculated for each vector polygon feature will be placed in the
+accompanying database file (.dbf) as a complexity field (COMPLEXITY).
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+shape_complexity_index(
+    i, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=ShapeComplexityIndex -v ^
+--wd="/path/to/data/" --input=polygons.shp 
 
 
 ```
@@ -2093,7 +4210,7 @@ radius_of_gyration(
 
 #### 8.6.1 Aspect
 
-Calculates an aspect raster from an input DEM..
+Calculates an aspect raster from an input DEM.
 
 *Parameters*:
 
@@ -2108,9 +4225,9 @@ Calculates an aspect raster from an input DEM..
 
 ~~~~{.python}
 aspect(
-    dem,
-    output,
-    zfactor=1.0,
+    dem, 
+    output, 
+    zfactor=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -2118,7 +4235,7 @@ aspect(
 
 ```
 >>./whitebox_tools -r=Aspect -v --wd="/path/to/data/" ^
---dem=DEM.tif -o=output.tif
+--dem=DEM.tif -o=output.tif 
 
 
 ```
@@ -2126,7 +4243,7 @@ aspect(
 
 #### 8.6.2 DevFromMeanElev
 
-Calculates deviation from mean elevation..
+Calculates deviation from mean elevation.
 
 *Parameters*:
 
@@ -2142,10 +4259,10 @@ Calculates deviation from mean elevation..
 
 ~~~~{.python}
 dev_from_mean_elev(
-    dem,
-    output,
-    filterx=11,
-    filtery=11,
+    dem, 
+    output, 
+    filterx=11, 
+    filtery=11, 
     callback=default_callback)
 ~~~~
 
@@ -2154,7 +4271,7 @@ dev_from_mean_elev(
 ```
 >>./whitebox_tools -r=DevFromMeanElev -v ^
 --wd="/path/to/data/" --dem=DEM.tif -o=output.tif ^
---filter=25
+--filter=25 
 
 
 ```
@@ -2162,7 +4279,7 @@ dev_from_mean_elev(
 
 #### 8.6.3 DiffFromMeanElev
 
-Calculates difference from mean elevation (equivalent to a high-pass filter)..
+Calculates difference from mean elevation (equivalent to a high-pass filter).
 
 *Parameters*:
 
@@ -2178,10 +4295,10 @@ Calculates difference from mean elevation (equivalent to a high-pass filter)..
 
 ~~~~{.python}
 diff_from_mean_elev(
-    dem,
-    output,
-    filterx=11,
-    filtery=11,
+    dem, 
+    output, 
+    filterx=11, 
+    filtery=11, 
     callback=default_callback)
 ~~~~
 
@@ -2190,7 +4307,7 @@ diff_from_mean_elev(
 ```
 >>./whitebox_tools -r=DiffFromMeanElev -v ^
 --wd="/path/to/data/" --dem=DEM.tif -o=output.tif ^
---filter=25
+--filter=25 
 
 
 ```
@@ -2198,7 +4315,7 @@ diff_from_mean_elev(
 
 #### 8.6.4 DirectionalRelief
 
-Calculates relief for cells in an input DEM for a specified direction..
+Calculates relief for cells in an input DEM for a specified direction.
 
 *Parameters*:
 
@@ -2214,10 +4331,10 @@ Calculates relief for cells in an input DEM for a specified direction..
 
 ~~~~{.python}
 directional_relief(
-    dem,
-    output,
-    azimuth=0.0,
-    max_dist=None,
+    dem, 
+    output, 
+    azimuth=0.0, 
+    max_dist=None, 
     callback=default_callback)
 ~~~~
 
@@ -2226,7 +4343,7 @@ directional_relief(
 ```
 >>./whitebox_tools -r=DirectionalRelief -v ^
 --wd="/path/to/data/" -i='input.tif' -o=output.tif ^
---azimuth=315.0
+--azimuth=315.0 
 
 
 ```
@@ -2234,7 +4351,36 @@ directional_relief(
 
 #### 8.6.5 DownslopeIndex
 
-Calculates the Hjerdt et al. (2004) downslope index..
+This tool can be used to calculate the downslope index described by Hjerdt et al. (2004).
+The downslope index is a measure of the slope gradient between a grid cell and some
+downslope location (along the flowpath passing through the upslope grid cell) that
+represents a specified vertical drop (i.e. a potential head drop). The index has been
+shown to be useful for hydrological, geomorphological, and biogeochemical applications.
+
+The user must specify the name of a digital elevaton model (DEM) raster. This DEM
+should be have been pre-processed to remove artifact topographic depressions and flat
+areas. The user must also specify the head potential drop (d), and the output type. The
+output type can be either '`tangent`', '`degrees`', '`radians`', or '`distance`'. If
+'`distance`' is selected as the output type, the output grid actually represents the
+downslope flowpath length required to drop d meters from each grid cell. Linear
+interpolation is used when the specified drop value is encountered between two adjacent
+grid cells along a flowpath traverse.
+
+Notice that this algorithm is affected by edge contamination. That is, for some grid cells,
+the edge of the grid will be encountered along a flowpath traverse before the specified
+vertical drop occurs. In these cases, the value of the downslope index is approximated by
+replacing d with the actual elevation drop observed along the flowpath. To avoid this problem,
+the entire watershed containing an area of interest should be contained in the DEM.
+
+Grid cells containing NoData values in any of the input images are assigned the NoData
+value in the output raster. The output raster is of the float data type and continuous
+data scale.
+
+*Reference*:
+
+Hjerdt, K.N., McDonnell, J.J., Seibert, J. Rodhe, A. (2004) *A new topographic index to
+quantify downslope controls on local drainage*, **Water Resources Research**, 40, W05602,
+doi:10.1029/2004WR003130.
 
 *Parameters*:
 
@@ -2243,18 +4389,18 @@ Calculates the Hjerdt et al. (2004) downslope index..
 -i, -\-dem           Input raster DEM file
 -o, -\-output        Output raster file
 -\-drop              Vertical drop value (default is 2.0)
--\-out_type          Output type, options include 'tangent', 'degrees', 'radians', 'distance'
-                     (default is 'tangent')
+-\-out_type          Output type, options include 'tangent', 'degrees', 'radians', 'distance' 
+                     (default is 'tangent') 
 
 
 *Python function*:
 
 ~~~~{.python}
 downslope_index(
-    dem,
-    output,
-    drop=2.0,
-    out_type="tangent",
+    dem, 
+    output, 
+    drop=2.0, 
+    out_type="tangent", 
     callback=default_callback)
 ~~~~
 
@@ -2262,15 +4408,71 @@ downslope_index(
 
 ```
 >>./whitebox_tools -r=DownslopeIndex -v --wd="/path/to/data/" ^
---dem=pointer.tif -o=dsi.tif --drop=5.0 --out_type=distance
+--dem=pointer.tif -o=dsi.tif --drop=5.0 --out_type=distance 
 
 
 ```
 
 
-#### 8.6.6 ElevAbovePit
+#### 8.6.6 DrainagePreservingSmoothing
 
-Calculate the elevation of each grid cell above the nearest downstream pit cell or grid edge cell..
+This tool implements a modified form of the algorithm described by
+Sun, Rosin, Martin, and Langbein (2007) '*Fast and effective feature-preserving
+mesh denoising*'. This implimentation varies the threshold angle between
+neighbouring grid cell normal vectors, used during the smoothing operation. The
+threshold is varied as a function of how low-lying a site is. This varying
+smoothing level better preserves small drainage features, such as ditches,
+rills, gullies, etc., which would otherwise be smoothed over.
+
+*See Also*:
+
+`FeaturePreservingDenoise`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-dem           Input raster DEM file
+-o, -\-output        Output raster file
+-\-filter            Size of the filter kernel
+-\-norm_diff         Maximum difference in normal vectors, in degrees
+-\-num_iter          Number of iterations
+-\-reduction         Maximum Amount to reduce the threshold angle by (0 = full smoothing; 100 = no 
+                     smoothing) 
+-\-dfm               Difference from median threshold (in z-units), determines when a location is 
+                     low-lying 
+-\-zfactor           Optional multiplier for when the vertical and horizontal units are not the same
+
+
+*Python function*:
+
+~~~~{.python}
+drainage_preserving_smoothing(
+    dem, 
+    output, 
+    filter=11, 
+    norm_diff=8.0, 
+    num_iter=5, 
+    reduction=80.0, 
+    dfm=0.15, 
+    zfactor=1.0, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=DrainagePreservingSmoothing -v ^
+--wd="/path/to/data/" --dem=DEM.tif -o=output.tif --filter=15 ^
+--norm_diff=20.0 --num_iter=4 --reduction=90.0 --dfm=0.15 
+
+
+```
+
+
+#### 8.6.7 ElevAbovePit
+
+Calculate the elevation of each grid cell above the nearest downstream pit cell or grid edge cell.
 
 *Parameters*:
 
@@ -2284,8 +4486,8 @@ Calculate the elevation of each grid cell above the nearest downstream pit cell 
 
 ~~~~{.python}
 elev_above_pit(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -2293,15 +4495,15 @@ elev_above_pit(
 
 ```
 >>./whitebox_tools -r=ElevAbovePit -v --wd="/path/to/data/" ^
---dem=DEM.tif -o=output.tif
+--dem=DEM.tif -o=output.tif 
 
 
 ```
 
 
-#### 8.6.7 ElevPercentile
+#### 8.6.8 ElevPercentile
 
-Calculates the elevation percentile raster from a DEM..
+Calculates the elevation percentile raster from a DEM.
 
 *Parameters*:
 
@@ -2318,11 +4520,11 @@ Calculates the elevation percentile raster from a DEM..
 
 ~~~~{.python}
 elev_percentile(
-    dem,
-    output,
-    filterx=11,
-    filtery=11,
-    sig_digits=2,
+    dem, 
+    output, 
+    filterx=11, 
+    filtery=11, 
+    sig_digits=2, 
     callback=default_callback)
 ~~~~
 
@@ -2330,15 +4532,15 @@ elev_percentile(
 
 ```
 >>./whitebox_tools -r=ElevPercentile -v --wd="/path/to/data/" ^
---dem=DEM.tif -o=output.tif --filter=25
+--dem=DEM.tif -o=output.tif --filter=25 
 
 
 ```
 
 
-#### 8.6.8 ElevRelativeToMinMax
+#### 8.6.9 ElevRelativeToMinMax
 
-Calculates the elevation of a location relative to the minimum and maximum elevations in a DEM..
+Calculates the elevation of a location relative to the minimum and maximum elevations in a DEM.
 
 *Parameters*:
 
@@ -2352,8 +4554,8 @@ Calculates the elevation of a location relative to the minimum and maximum eleva
 
 ~~~~{.python}
 elev_relative_to_min_max(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -2361,15 +4563,15 @@ elev_relative_to_min_max(
 
 ```
 >>./whitebox_tools -r=ElevRelativeToMinMax -v ^
---wd="/path/to/data/" --dem=DEM.tif -o=output.tif
+--wd="/path/to/data/" --dem=DEM.tif -o=output.tif 
 
 
 ```
 
 
-#### 8.6.9 ElevRelativeToWatershedMinMax
+#### 8.6.10 ElevRelativeToWatershedMinMax
 
-Calculates the elevation of a location relative to the minimum and maximum elevations in a watershed..
+Calculates the elevation of a location relative to the minimum and maximum elevations in a watershed.
 
 *Parameters*:
 
@@ -2384,9 +4586,9 @@ Calculates the elevation of a location relative to the minimum and maximum eleva
 
 ~~~~{.python}
 elev_relative_to_watershed_min_max(
-    dem,
-    watersheds,
-    output,
+    dem, 
+    watersheds, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -2395,15 +4597,17 @@ elev_relative_to_watershed_min_max(
 ```
 >>./whitebox_tools -r=ElevRelativeToWatershedMinMax -v ^
 --wd="/path/to/data/" --dem=DEM.tif --watersheds=watershed.tif ^
--o=output.tif
+-o=output.tif 
 
 
 ```
 
 
-#### 8.6.10 FeaturePreservingDenoise
+#### 8.6.11 FeaturePreservingDenoise
 
-Reduces short-scale variation in an input DEM using a modified Sun et al. (2007) algorithm..
+This tool implements a modified form of the algorithm described by
+Sun, Rosin, Martin, and Langbein (2007) Fast and effective feature-preserving
+mesh denoising.
 
 *Parameters*:
 
@@ -2421,12 +4625,12 @@ Reduces short-scale variation in an input DEM using a modified Sun et al. (2007)
 
 ~~~~{.python}
 feature_preserving_denoise(
-    dem,
-    output,
-    filter=11,
-    norm_diff=15.0,
-    num_iter=5,
-    zfactor=1.0,
+    dem, 
+    output, 
+    filter=11, 
+    norm_diff=8.0, 
+    num_iter=5, 
+    zfactor=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -2434,15 +4638,16 @@ feature_preserving_denoise(
 
 ```
 >>./whitebox_tools -r=FeaturePreservingDenoise -v ^
---wd="/path/to/data/" --dem=DEM.tif -o=output.tif
+--wd="/path/to/data/" --dem=DEM.tif -o=output.tif --filter=15 ^
+--norm_diff=20.0 --num_iter=4 
 
 
 ```
 
 
-#### 8.6.11 FetchAnalysis
+#### 8.6.12 FetchAnalysis
 
-Performs an analysis of fetch or upwind distance to an obstacle..
+Performs an analysis of fetch or upwind distance to an obstacle.
 
 *Parameters*:
 
@@ -2458,10 +4663,10 @@ Performs an analysis of fetch or upwind distance to an obstacle..
 
 ~~~~{.python}
 fetch_analysis(
-    dem,
-    output,
-    azimuth=0.0,
-    hgt_inc=0.05,
+    dem, 
+    output, 
+    azimuth=0.0, 
+    hgt_inc=0.05, 
     callback=default_callback)
 ~~~~
 
@@ -2469,15 +4674,15 @@ fetch_analysis(
 
 ```
 >>./whitebox_tools -r=FetchAnalysis -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif --azimuth=315.0
+-i='input.tif' -o=output.tif --azimuth=315.0 
 
 
 ```
 
 
-#### 8.6.12 FillMissingData
+#### 8.6.13 FillMissingData
 
-Fills nodata holes in a DEM..
+Fills nodata holes in a DEM.
 
 *Parameters*:
 
@@ -2486,15 +4691,17 @@ Fills nodata holes in a DEM..
 -i, -\-input         Input raster file
 -o, -\-output        Output raster file
 -\-filter            Filter size (cells)
+-\-weight            IDW weight value
 
 
 *Python function*:
 
 ~~~~{.python}
 fill_missing_data(
-    i,
-    output,
-    filter=11,
+    i, 
+    output, 
+    filter=11, 
+    weight=2.0, 
     callback=default_callback)
 ~~~~
 
@@ -2502,15 +4709,16 @@ fill_missing_data(
 
 ```
 >>./whitebox_tools -r=FillMissingData -v ^
---wd="/path/to/data/" -i=DEM.tif -o=output.tif --filter=25
+--wd="/path/to/data/" -i=DEM.tif -o=output.tif --filter=25 ^
+--weight=1.0 
 
 
 ```
 
 
-#### 8.6.13 FindRidges
+#### 8.6.14 FindRidges
 
-Identifies potential ridge and peak grid cells..
+Identifies potential ridge and peak grid cells.
 
 *Parameters*:
 
@@ -2518,17 +4726,17 @@ Identifies potential ridge and peak grid cells..
 -------------------  ---------------
 -i, -\-dem           Input raster DEM file
 -o, -\-output        Output raster file
--\-line_thin         Optional flag indicating whether post-processing line-thinning should be
-                     performed
+-\-line_thin         Optional flag indicating whether post-processing line-thinning should be 
+                     performed 
 
 
 *Python function*:
 
 ~~~~{.python}
 find_ridges(
-    dem,
-    output,
-    line_thin=True,
+    dem, 
+    output, 
+    line_thin=True, 
     callback=default_callback)
 ~~~~
 
@@ -2536,15 +4744,15 @@ find_ridges(
 
 ```
 >>./whitebox_tools -r=FindRidges -v --wd="/path/to/data/" ^
---dem=pointer.tif -o=out.tif --line_thin
+--dem=pointer.tif -o=out.tif --line_thin 
 
 
 ```
 
 
-#### 8.6.14 Hillshade
+#### 8.6.15 Hillshade
 
-Calculates a hillshade raster from an input DEM..
+Calculates a hillshade raster from an input DEM.
 
 *Parameters*:
 
@@ -2561,11 +4769,11 @@ Calculates a hillshade raster from an input DEM..
 
 ~~~~{.python}
 hillshade(
-    dem,
-    output,
-    azimuth=315.0,
-    altitude=30.0,
-    zfactor=1.0,
+    dem, 
+    output, 
+    azimuth=315.0, 
+    altitude=30.0, 
+    zfactor=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -2573,15 +4781,15 @@ hillshade(
 
 ```
 >>./whitebox_tools -r=Hillshade -v --wd="/path/to/data/" ^
--i=DEM.tif -o=output.tif --azimuth=315.0 --altitude=30.0
+-i=DEM.tif -o=output.tif --azimuth=315.0 --altitude=30.0 
 
 
 ```
 
 
-#### 8.6.15 HorizonAngle
+#### 8.6.16 HorizonAngle
 
-Calculates horizon angle (maximum upwind slope) for each grid cell in an input DEM..
+Calculates horizon angle (maximum upwind slope) for each grid cell in an input DEM.
 
 *Parameters*:
 
@@ -2597,10 +4805,10 @@ Calculates horizon angle (maximum upwind slope) for each grid cell in an input D
 
 ~~~~{.python}
 horizon_angle(
-    dem,
-    output,
-    azimuth=0.0,
-    max_dist=None,
+    dem, 
+    output, 
+    azimuth=0.0, 
+    max_dist=None, 
     callback=default_callback)
 ~~~~
 
@@ -2608,15 +4816,15 @@ horizon_angle(
 
 ```
 >>./whitebox_tools -r=HorizonAngle -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif --azimuth=315.0
+-i='input.tif' -o=output.tif --azimuth=315.0 
 
 
 ```
 
 
-#### 8.6.16 HypsometricAnalysis
+#### 8.6.17 HypsometricAnalysis
 
-Calculates a hypsometric curve for one or more DEMs..
+Calculates a hypsometric curve for one or more DEMs.
 
 *Parameters*:
 
@@ -2631,9 +4839,9 @@ Calculates a hypsometric curve for one or more DEMs..
 
 ~~~~{.python}
 hypsometric_analysis(
-    inputs,
-    output,
-    watershed=None,
+    inputs, 
+    output, 
+    watershed=None, 
     callback=default_callback)
 ~~~~
 
@@ -2642,15 +4850,15 @@ hypsometric_analysis(
 ```
 >>./whitebox_tools -r=HypsometricAnalysis -v ^
 --wd="/path/to/data/" -i="DEM1.tif;DEM2.tif" ^
---watershed="ws1.tif;ws2.tif" -o=outfile.html
+--watershed="ws1.tif;ws2.tif" -o=outfile.html 
 
 
 ```
 
 
-#### 8.6.17 MaxAnisotropyDev
+#### 8.6.18 MaxAnisotropyDev
 
-Calculates the maximum anisotropy (directionality) in elevation deviation over a range of spatial scales..
+Calculates the maximum anisotropy (directionality) in elevation deviation over a range of spatial scales.
 
 *Parameters*:
 
@@ -2668,12 +4876,12 @@ Calculates the maximum anisotropy (directionality) in elevation deviation over a
 
 ~~~~{.python}
 max_anisotropy_dev(
-    dem,
-    out_mag,
-    out_scale,
-    max_scale,
-    min_scale=3,
-    step=2,
+    dem, 
+    out_mag, 
+    out_scale, 
+    max_scale, 
+    min_scale=3, 
+    step=2, 
     callback=default_callback)
 ~~~~
 
@@ -2683,15 +4891,15 @@ max_anisotropy_dev(
 >>./whitebox_tools -r=MaxAnisotropyDev -v ^
 --wd="/path/to/data/" --dem=DEM.tif --out_mag=DEVmax_mag.tif ^
 --out_scale=DEVmax_scale.tif --min_scale=1 --max_scale=1000 ^
---step=5
+--step=5 
 
 
 ```
 
 
-#### 8.6.18 MaxAnisotropyDevSignature
+#### 8.6.19 MaxAnisotropyDevSignature
 
-Calculates the anisotropy in deviation from mean for points over a range of spatial scales..
+Calculates the anisotropy in deviation from mean for points over a range of spatial scales.
 
 *Parameters*:
 
@@ -2709,12 +4917,12 @@ Calculates the anisotropy in deviation from mean for points over a range of spat
 
 ~~~~{.python}
 max_anisotropy_dev_signature(
-    dem,
-    points,
-    output,
-    max_scale,
-    min_scale=1,
-    step=1,
+    dem, 
+    points, 
+    output, 
+    max_scale, 
+    min_scale=1, 
+    step=1, 
     callback=default_callback)
 ~~~~
 
@@ -2724,15 +4932,15 @@ max_anisotropy_dev_signature(
 >>./whitebox_tools -r=MaxAnisotropyDevSignature -v ^
 --wd="/path/to/data/" --dem=DEM.tif --points=sites.shp ^
 --output=roughness.html --min_scale=1 --max_scale=1000 ^
---step=5
+--step=5 
 
 
 ```
 
 
-#### 8.6.19 MaxBranchLength
+#### 8.6.20 MaxBranchLength
 
-Lindsay and Seibert's (2013) branch length index is used to map drainage divides or ridge lines..
+Lindsay and Seibert's (2013) branch length index is used to map drainage divides or ridge lines.
 
 *Parameters*:
 
@@ -2747,9 +4955,9 @@ Lindsay and Seibert's (2013) branch length index is used to map drainage divides
 
 ~~~~{.python}
 max_branch_length(
-    dem,
-    output,
-    log=False,
+    dem, 
+    output, 
+    log=False, 
     callback=default_callback)
 ~~~~
 
@@ -2757,15 +4965,56 @@ max_branch_length(
 
 ```
 >>./whitebox_tools -r=MaxBranchLength -v ^
---wd="/path/to/data/" --dem=DEM.tif -o=output.tif
+--wd="/path/to/data/" --dem=DEM.tif -o=output.tif 
 
 
 ```
 
 
-#### 8.6.20 MaxDownslopeElevChange
+#### 8.6.21 MaxDifferenceFromMean
 
-Calculates the maximum downslope change in elevation between a grid cell and its eight downslope neighbors..
+Calculates the maximum difference from mean elevation over a range of spatial scales.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-dem           Input raster DEM file
+-\-out_mag           Output raster DIFFmax magnitude file
+-\-out_scale         Output raster DIFFmax scale file
+-\-min_scale         Minimum search neighbourhood radius in grid cells
+-\-max_scale         Maximum search neighbourhood radius in grid cells
+-\-step              Step size as any positive non-zero integer
+
+
+*Python function*:
+
+~~~~{.python}
+max_difference_from_mean(
+    dem, 
+    out_mag, 
+    out_scale, 
+    min_scale, 
+    max_scale, 
+    step=1, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=MaxDifferenceFromMean -v ^
+--wd="/path/to/data/" --dem=DEM.tif --out_mag=DEVmax_mag.tif ^
+--out_scale=DEVmax_scale.tif --min_scale=1 --max_scale=1000 ^
+--step=5 
+
+
+```
+
+
+#### 8.6.22 MaxDownslopeElevChange
+
+Calculates the maximum downslope change in elevation between a grid cell and its eight downslope neighbors.
 
 *Parameters*:
 
@@ -2779,8 +5028,8 @@ Calculates the maximum downslope change in elevation between a grid cell and its
 
 ~~~~{.python}
 max_downslope_elev_change(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -2788,15 +5037,15 @@ max_downslope_elev_change(
 
 ```
 >>./whitebox_tools -r=MaxDownslopeElevChange -v ^
---wd="/path/to/data/" --dem=DEM.tif -o=out.tif
+--wd="/path/to/data/" --dem=DEM.tif -o=out.tif 
 
 
 ```
 
 
-#### 8.6.21 MaxElevDevSignature
+#### 8.6.23 MaxElevDevSignature
 
-Calculates the maximum elevation deviation over a range of spatial scales and for a set of points..
+Calculates the maximum elevation deviation over a range of spatial scales and for a set of points.
 
 *Parameters*:
 
@@ -2814,12 +5063,12 @@ Calculates the maximum elevation deviation over a range of spatial scales and fo
 
 ~~~~{.python}
 max_elev_dev_signature(
-    dem,
-    points,
-    output,
-    min_scale,
-    max_scale,
-    step=10,
+    dem, 
+    points, 
+    output, 
+    min_scale, 
+    max_scale, 
+    step=10, 
     callback=default_callback)
 ~~~~
 
@@ -2829,15 +5078,15 @@ max_elev_dev_signature(
 >>./whitebox_tools -r=MaxElevDevSignature -v ^
 --wd="/path/to/data/" --dem=DEM.tif --points=sites.tif ^
 --output=topo_position.html --min_scale=1 --max_scale=1000 ^
---step=5
+--step=5 
 
 
 ```
 
 
-#### 8.6.22 MaxElevationDeviation
+#### 8.6.24 MaxElevationDeviation
 
-Calculates the maximum elevation deviation over a range of spatial scales..
+Calculates the maximum elevation deviation over a range of spatial scales.
 
 *Parameters*:
 
@@ -2855,12 +5104,12 @@ Calculates the maximum elevation deviation over a range of spatial scales..
 
 ~~~~{.python}
 max_elevation_deviation(
-    dem,
-    out_mag,
-    out_scale,
-    min_scale,
-    max_scale,
-    step=10,
+    dem, 
+    out_mag, 
+    out_scale, 
+    min_scale, 
+    max_scale, 
+    step=1, 
     callback=default_callback)
 ~~~~
 
@@ -2870,15 +5119,15 @@ max_elevation_deviation(
 >>./whitebox_tools -r=MaxElevationDeviation -v ^
 --wd="/path/to/data/" --dem=DEM.tif --out_mag=DEVmax_mag.tif ^
 --out_scale=DEVmax_scale.tif --min_scale=1 --max_scale=1000 ^
---step=5
+--step=5 
 
 
 ```
 
 
-#### 8.6.23 MinDownslopeElevChange
+#### 8.6.25 MinDownslopeElevChange
 
-Calculates the minimum downslope change in elevation between a grid cell and its eight downslope neighbors..
+Calculates the minimum downslope change in elevation between a grid cell and its eight downslope neighbors.
 
 *Parameters*:
 
@@ -2892,8 +5141,8 @@ Calculates the minimum downslope change in elevation between a grid cell and its
 
 ~~~~{.python}
 min_downslope_elev_change(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -2901,15 +5150,15 @@ min_downslope_elev_change(
 
 ```
 >>./whitebox_tools -r=MinDownslopeElevChange -v ^
---wd="/path/to/data/" --dem=DEM.tif -o=out.tif
+--wd="/path/to/data/" --dem=DEM.tif -o=out.tif 
 
 
 ```
 
 
-#### 8.6.24 MultiscaleRoughness
+#### 8.6.26 MultiscaleRoughness
 
-Calculates surface roughness over a range of spatial scales..
+Calculates surface roughness over a range of spatial scales.
 
 *Parameters*:
 
@@ -2927,12 +5176,12 @@ Calculates surface roughness over a range of spatial scales..
 
 ~~~~{.python}
 multiscale_roughness(
-    dem,
-    out_mag,
-    out_scale,
-    max_scale,
-    min_scale=1,
-    step=1,
+    dem, 
+    out_mag, 
+    out_scale, 
+    max_scale, 
+    min_scale=1, 
+    step=1, 
     callback=default_callback)
 ~~~~
 
@@ -2942,15 +5191,15 @@ multiscale_roughness(
 >>./whitebox_tools -r=MultiscaleRoughness -v ^
 --wd="/path/to/data/" --dem=DEM.tif --out_mag=roughness_mag.tif ^
 --out_scale=roughness_scale.tif --min_scale=1 --max_scale=1000 ^
---step=5
+--step=5 
 
 
 ```
 
 
-#### 8.6.25 MultiscaleRoughnessSignature
+#### 8.6.27 MultiscaleRoughnessSignature
 
-Calculates the surface roughness for points over a range of spatial scales..
+Calculates the surface roughness for points over a range of spatial scales.
 
 *Parameters*:
 
@@ -2968,12 +5217,12 @@ Calculates the surface roughness for points over a range of spatial scales..
 
 ~~~~{.python}
 multiscale_roughness_signature(
-    dem,
-    points,
-    output,
-    max_scale,
-    min_scale=1,
-    step=1,
+    dem, 
+    points, 
+    output, 
+    max_scale, 
+    min_scale=1, 
+    step=1, 
     callback=default_callback)
 ~~~~
 
@@ -2983,15 +5232,15 @@ multiscale_roughness_signature(
 >>./whitebox_tools -r=MultiscaleRoughnessSignature -v ^
 --wd="/path/to/data/" --dem=DEM.tif --points=sites.shp ^
 --output=roughness.html --min_scale=1 --max_scale=1000 ^
---step=5
+--step=5 
 
 
 ```
 
 
-#### 8.6.26 MultiscaleTopographicPositionImage
+#### 8.6.28 MultiscaleTopographicPositionImage
 
-Creates a multiscale topographic position image from three DEVmax rasters of differing spatial scale ranges..
+Creates a multiscale topographic position image from three DEVmax rasters of differing spatial scale ranges.
 
 *Parameters*:
 
@@ -3008,11 +5257,11 @@ Creates a multiscale topographic position image from three DEVmax rasters of dif
 
 ~~~~{.python}
 multiscale_topographic_position_image(
-    local,
-    meso,
-    broad,
-    output,
-    lightness=1.2,
+    local, 
+    meso, 
+    broad, 
+    output, 
+    lightness=1.2, 
     callback=default_callback)
 ~~~~
 
@@ -3021,15 +5270,15 @@ multiscale_topographic_position_image(
 ```
 >>./whitebox_tools -r=MultiscaleTopographicPositionImage -v ^
 --wd="/path/to/data/" --local=DEV_local.tif --meso=DEV_meso.tif ^
---broad=DEV_broad.tif -o=output.tif --lightness=1.5
+--broad=DEV_broad.tif -o=output.tif --lightness=1.5 
 
 
 ```
 
 
-#### 8.6.27 NumDownslopeNeighbours
+#### 8.6.29 NumDownslopeNeighbours
 
-Calculates the number of downslope neighbours to each grid cell in a DEM..
+Calculates the number of downslope neighbours to each grid cell in a DEM.
 
 *Parameters*:
 
@@ -3043,8 +5292,8 @@ Calculates the number of downslope neighbours to each grid cell in a DEM..
 
 ~~~~{.python}
 num_downslope_neighbours(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -3052,15 +5301,15 @@ num_downslope_neighbours(
 
 ```
 >>./whitebox_tools -r=NumDownslopeNeighbours -v ^
---wd="/path/to/data/" -i=DEM.tif -o=output.tif
+--wd="/path/to/data/" -i=DEM.tif -o=output.tif 
 
 
 ```
 
 
-#### 8.6.28 NumUpslopeNeighbours
+#### 8.6.30 NumUpslopeNeighbours
 
-Calculates the number of upslope neighbours to each grid cell in a DEM..
+Calculates the number of upslope neighbours to each grid cell in a DEM.
 
 *Parameters*:
 
@@ -3074,8 +5323,8 @@ Calculates the number of upslope neighbours to each grid cell in a DEM..
 
 ~~~~{.python}
 num_upslope_neighbours(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -3083,15 +5332,15 @@ num_upslope_neighbours(
 
 ```
 >>./whitebox_tools -r=NumUpslopeNeighbours -v ^
---wd="/path/to/data/" -i=DEM.tif -o=output.tif
+--wd="/path/to/data/" -i=DEM.tif -o=output.tif 
 
 
 ```
 
 
-#### 8.6.29 PennockLandformClass
+#### 8.6.31 PennockLandformClass
 
-Classifies hillslope zones based on slope, profile curvature, and plan curvature..
+Classifies hillslope zones based on slope, profile curvature, and plan curvature.
 
 *Parameters*:
 
@@ -3109,12 +5358,12 @@ Classifies hillslope zones based on slope, profile curvature, and plan curvature
 
 ~~~~{.python}
 pennock_landform_class(
-    dem,
-    output,
-    slope=3.0,
-    prof=0.1,
-    plan=0.0,
-    zfactor=1.0,
+    dem, 
+    output, 
+    slope=3.0, 
+    prof=0.1, 
+    plan=0.0, 
+    zfactor=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -3123,15 +5372,15 @@ pennock_landform_class(
 ```
 >>./whitebox_tools -r=PennockLandformClass -v ^
 --wd="/path/to/data/" --dem=DEM.tif -o=output.tif --slope=3.0 ^
---prof=0.1 --plan=0.0
+--prof=0.1 --plan=0.0 
 
 
 ```
 
 
-#### 8.6.30 PercentElevRange
+#### 8.6.32 PercentElevRange
 
-Calculates percent of elevation range from a DEM..
+Calculates percent of elevation range from a DEM.
 
 *Parameters*:
 
@@ -3147,10 +5396,10 @@ Calculates percent of elevation range from a DEM..
 
 ~~~~{.python}
 percent_elev_range(
-    dem,
-    output,
-    filterx=3,
-    filtery=3,
+    dem, 
+    output, 
+    filterx=3, 
+    filtery=3, 
     callback=default_callback)
 ~~~~
 
@@ -3158,15 +5407,15 @@ percent_elev_range(
 
 ```
 >>./whitebox_tools -r=PercentElevRange -v ^
---wd="/path/to/data/" -i=DEM.tif -o=output.tif --filter=25
+--wd="/path/to/data/" -i=DEM.tif -o=output.tif --filter=25 
 
 
 ```
 
 
-#### 8.6.31 PlanCurvature
+#### 8.6.33 PlanCurvature
 
-Calculates a plan (contour) curvature raster from an input DEM..
+Calculates a plan (contour) curvature raster from an input DEM.
 
 *Parameters*:
 
@@ -3181,9 +5430,9 @@ Calculates a plan (contour) curvature raster from an input DEM..
 
 ~~~~{.python}
 plan_curvature(
-    dem,
-    output,
-    zfactor=1.0,
+    dem, 
+    output, 
+    zfactor=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -3191,15 +5440,15 @@ plan_curvature(
 
 ```
 >>./whitebox_tools -r=PlanCurvature -v --wd="/path/to/data/" ^
---dem=DEM.tif -o=output.tif
+--dem=DEM.tif -o=output.tif 
 
 
 ```
 
 
-#### 8.6.32 Profile
+#### 8.6.34 Profile
 
-Plots profiles from digital surface models..
+Plots profiles from digital surface models.
 
 *Parameters*:
 
@@ -3214,9 +5463,9 @@ Plots profiles from digital surface models..
 
 ~~~~{.python}
 profile(
-    lines,
-    surface,
-    output,
+    lines, 
+    surface, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -3224,15 +5473,15 @@ profile(
 
 ```
 >>./whitebox_tools -r=Profile -v --wd="/path/to/data/" ^
---lines=profile.shp --surface=dem.tif -o=profile.html
+--lines=profile.shp --surface=dem.tif -o=profile.html 
 
 
 ```
 
 
-#### 8.6.33 ProfileCurvature
+#### 8.6.35 ProfileCurvature
 
-Calculates a profile curvature raster from an input DEM..
+Calculates a profile curvature raster from an input DEM.
 
 *Parameters*:
 
@@ -3247,9 +5496,9 @@ Calculates a profile curvature raster from an input DEM..
 
 ~~~~{.python}
 profile_curvature(
-    dem,
-    output,
-    zfactor=1.0,
+    dem, 
+    output, 
+    zfactor=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -3257,15 +5506,15 @@ profile_curvature(
 
 ```
 >>./whitebox_tools -r=ProfileCurvature -v ^
---wd="/path/to/data/" --dem=DEM.tif -o=output.tif
+--wd="/path/to/data/" --dem=DEM.tif -o=output.tif 
 
 
 ```
 
 
-#### 8.6.34 RelativeAspect
+#### 8.6.36 RelativeAspect
 
-Calculates relative aspect (relative to a user-specified direction) from an input DEM..
+Calculates relative aspect (relative to a user-specified direction) from an input DEM.
 
 *Parameters*:
 
@@ -3281,10 +5530,10 @@ Calculates relative aspect (relative to a user-specified direction) from an inpu
 
 ~~~~{.python}
 relative_aspect(
-    dem,
-    output,
-    azimuth=0.0,
-    zfactor=1.0,
+    dem, 
+    output, 
+    azimuth=0.0, 
+    zfactor=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -3292,15 +5541,15 @@ relative_aspect(
 
 ```
 >>./whitebox_tools -r=RelativeAspect -v --wd="/path/to/data/" ^
---dem=DEM.tif -o=output.tif --azimuth=180.0
+--dem=DEM.tif -o=output.tif --azimuth=180.0 
 
 
 ```
 
 
-#### 8.6.35 RelativeStreamPowerIndex
+#### 8.6.37 RelativeStreamPowerIndex
 
-Calculates the relative stream power index..
+Calculates the relative stream power index.
 
 *Parameters*:
 
@@ -3316,10 +5565,10 @@ Calculates the relative stream power index..
 
 ~~~~{.python}
 relative_stream_power_index(
-    sca,
-    slope,
-    output,
-    exponent=1.0,
+    sca, 
+    slope, 
+    output, 
+    exponent=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -3328,15 +5577,15 @@ relative_stream_power_index(
 ```
 >>./whitebox_tools -r=RelativeStreamPowerIndex -v ^
 --wd="/path/to/data/" --sca='flow_accum.tif' ^
---slope='slope.tif' -o=output.tif --exponent=1.1
+--slope='slope.tif' -o=output.tif --exponent=1.1 
 
 
 ```
 
 
-#### 8.6.36 RelativeTopographicPosition
+#### 8.6.38 RelativeTopographicPosition
 
-Calculates the relative topographic position index from a DEM..
+Calculates the relative topographic position index from a DEM.
 
 *Parameters*:
 
@@ -3352,10 +5601,10 @@ Calculates the relative topographic position index from a DEM..
 
 ~~~~{.python}
 relative_topographic_position(
-    dem,
-    output,
-    filterx=11,
-    filtery=11,
+    dem, 
+    output, 
+    filterx=11, 
+    filtery=11, 
     callback=default_callback)
 ~~~~
 
@@ -3364,15 +5613,15 @@ relative_topographic_position(
 ```
 >>./whitebox_tools -r=RelativeTopographicPosition -v ^
 --wd="/path/to/data/" --dem=DEM.tif -o=output.tif ^
---filter=25
+--filter=25 
 
 
 ```
 
 
-#### 8.6.37 RemoveOffTerrainObjects
+#### 8.6.39 RemoveOffTerrainObjects
 
-Removes off-terrain objects from a raster digital elevation model (DEM)..
+Removes off-terrain objects from a raster digital elevation model (DEM).
 
 *Parameters*:
 
@@ -3388,10 +5637,10 @@ Removes off-terrain objects from a raster digital elevation model (DEM)..
 
 ~~~~{.python}
 remove_off_terrain_objects(
-    dem,
-    output,
-    filter=11,
-    slope=15.0,
+    dem, 
+    output, 
+    filter=11, 
+    slope=15.0, 
     callback=default_callback)
 ~~~~
 
@@ -3400,15 +5649,15 @@ remove_off_terrain_objects(
 ```
 >>./whitebox_tools -r=RemoveOffTerrainObjects -v ^
 --wd="/path/to/data/" --dem=DEM.tif -o=bare_earth_DEM.tif ^
---filter=25 --slope=10.0
+--filter=25 --slope=10.0 
 
 
 ```
 
 
-#### 8.6.38 RuggednessIndex
+#### 8.6.40 RuggednessIndex
 
-Calculates the Riley et al.'s (1999) terrain ruggedness index from an input DEM..
+Calculates the Riley et al.'s (1999) terrain ruggedness index from an input DEM.
 
 *Parameters*:
 
@@ -3423,9 +5672,9 @@ Calculates the Riley et al.'s (1999) terrain ruggedness index from an input DEM.
 
 ~~~~{.python}
 ruggedness_index(
-    dem,
-    output,
-    zfactor=1.0,
+    dem, 
+    output, 
+    zfactor=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -3433,15 +5682,15 @@ ruggedness_index(
 
 ```
 >>./whitebox_tools -r=RuggednessIndex -v ^
---wd="/path/to/data/" --dem=DEM.tif -o=output.tif
+--wd="/path/to/data/" --dem=DEM.tif -o=output.tif 
 
 
 ```
 
 
-#### 8.6.39 SedimentTransportIndex
+#### 8.6.41 SedimentTransportIndex
 
-Calculates the sediment transport index..
+Calculates the sediment transport index.
 
 *Parameters*:
 
@@ -3458,11 +5707,11 @@ Calculates the sediment transport index..
 
 ~~~~{.python}
 sediment_transport_index(
-    sca,
-    slope,
-    output,
-    sca_exponent=0.4,
-    slope_exponent=1.3,
+    sca, 
+    slope, 
+    output, 
+    sca_exponent=0.4, 
+    slope_exponent=1.3, 
     callback=default_callback)
 ~~~~
 
@@ -3472,15 +5721,15 @@ sediment_transport_index(
 >>./whitebox_tools -r=SedimentTransportIndex -v ^
 --wd="/path/to/data/" --sca='flow_accum.tif' ^
 --slope='slope.tif' -o=output.tif --sca_exponent=0.5 ^
---slope_exponent=1.0
+--slope_exponent=1.0 
 
 
 ```
 
 
-#### 8.6.40 Slope
+#### 8.6.42 Slope
 
-Calculates a slope raster from an input DEM..
+Calculates a slope raster from an input DEM.
 
 *Parameters*:
 
@@ -3495,9 +5744,9 @@ Calculates a slope raster from an input DEM..
 
 ~~~~{.python}
 slope(
-    dem,
-    output,
-    zfactor=1.0,
+    dem, 
+    output, 
+    zfactor=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -3505,15 +5754,15 @@ slope(
 
 ```
 >>./whitebox_tools -r=Slope -v --wd="/path/to/data/" ^
---dem=DEM.tif -o=output.tif
+--dem=DEM.tif -o=output.tif 
 
 
 ```
 
 
-#### 8.6.41 SlopeVsElevationPlot
+#### 8.6.43 SlopeVsElevationPlot
 
-Creates a slope vs. elevation plot for one or more DEMs..
+Creates a slope vs. elevation plot for one or more DEMs.
 
 *Parameters*:
 
@@ -3528,9 +5777,9 @@ Creates a slope vs. elevation plot for one or more DEMs..
 
 ~~~~{.python}
 slope_vs_elevation_plot(
-    inputs,
-    output,
-    watershed=None,
+    inputs, 
+    output, 
+    watershed=None, 
     callback=default_callback)
 ~~~~
 
@@ -3539,15 +5788,16 @@ slope_vs_elevation_plot(
 ```
 >>./whitebox_tools -r=SlopeVsElevationPlot -v ^
 --wd="/path/to/data/" -i="DEM1.tif;DEM2.tif" ^
---watershed="ws1.tif;ws2.tif" -o=outfile.html
+--watershed="ws1.tif;ws2.tif" -o=outfile.html 
 
 
 ```
 
 
-#### 8.6.42 StandardDeviationOfSlope
+#### 8.6.44 StandardDeviationOfSlope
 
-Calculates the standard deviation of slope from an input DEM..
+Calculates the standard deviation of slope from an input DEM, a metric of
+roughness described by Grohmann et al., (2011).
 
 *Parameters*:
 
@@ -3564,11 +5814,11 @@ Calculates the standard deviation of slope from an input DEM..
 
 ~~~~{.python}
 standard_deviation_of_slope(
-    i,
-    output,
-    zfactor=1.0,
-    filterx=11,
-    filtery=11,
+    i, 
+    output, 
+    zfactor=1.0, 
+    filterx=11, 
+    filtery=11, 
     callback=default_callback)
 ~~~~
 
@@ -3576,15 +5826,15 @@ standard_deviation_of_slope(
 
 ```
 >>./whitebox_tools -r=StandardDeviationOfSlope -v ^
---wd="/path/to/data/" --dem=DEM.tif -o=output.tif
+--wd="/path/to/data/" --dem=DEM.tif -o=output.tif 
 
 
 ```
 
 
-#### 8.6.43 TangentialCurvature
+#### 8.6.45 TangentialCurvature
 
-Calculates a tangential curvature raster from an input DEM..
+Calculates a tangential curvature raster from an input DEM.
 
 *Parameters*:
 
@@ -3599,9 +5849,9 @@ Calculates a tangential curvature raster from an input DEM..
 
 ~~~~{.python}
 tangential_curvature(
-    dem,
-    output,
-    zfactor=1.0,
+    dem, 
+    output, 
+    zfactor=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -3609,15 +5859,15 @@ tangential_curvature(
 
 ```
 >>./whitebox_tools -r=TangentialCurvature -v ^
---wd="/path/to/data/" --dem=DEM.tif -o=output.tif
+--wd="/path/to/data/" --dem=DEM.tif -o=output.tif 
 
 
 ```
 
 
-#### 8.6.44 TotalCurvature
+#### 8.6.46 TotalCurvature
 
-Calculates a total curvature raster from an input DEM..
+Calculates a total curvature raster from an input DEM.
 
 *Parameters*:
 
@@ -3632,9 +5882,9 @@ Calculates a total curvature raster from an input DEM..
 
 ~~~~{.python}
 total_curvature(
-    dem,
-    output,
-    zfactor=1.0,
+    dem, 
+    output, 
+    zfactor=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -3642,15 +5892,15 @@ total_curvature(
 
 ```
 >>./whitebox_tools -r=TotalCurvature -v --wd="/path/to/data/" ^
---dem=DEM.tif -o=output.tif
+--dem=DEM.tif -o=output.tif 
 
 
 ```
 
 
-#### 8.6.45 Viewshed
+#### 8.6.47 Viewshed
 
-Identifies the viewshed for a point or set of points..
+Identifies the viewshed for a point or set of points.
 
 *Parameters*:
 
@@ -3666,10 +5916,10 @@ Identifies the viewshed for a point or set of points..
 
 ~~~~{.python}
 viewshed(
-    dem,
-    stations,
-    output,
-    height=2.0,
+    dem, 
+    stations, 
+    output, 
+    height=2.0, 
     callback=default_callback)
 ~~~~
 
@@ -3678,15 +5928,15 @@ viewshed(
 ```
 >>./whitebox_tools -r=Viewshed -v --wd="/path/to/data/" ^
 --dem='dem.tif' --stations='stations.shp' -o=output.tif ^
---height=10.0
+--height=10.0 
 
 
 ```
 
 
-#### 8.6.46 VisibilityIndex
+#### 8.6.48 VisibilityIndex
 
-Estimates the relative visibility of sites in a DEM..
+Estimates the relative visibility of sites in a DEM.
 
 *Parameters*:
 
@@ -3702,10 +5952,10 @@ Estimates the relative visibility of sites in a DEM..
 
 ~~~~{.python}
 visibility_index(
-    dem,
-    output,
-    height=2.0,
-    res_factor=2,
+    dem, 
+    output, 
+    height=2.0, 
+    res_factor=2, 
     callback=default_callback)
 ~~~~
 
@@ -3714,15 +5964,15 @@ visibility_index(
 ```
 >>./whitebox_tools -r=VisibilityIndex -v ^
 --wd="/path/to/data/" --dem=dem.tif -o=output.tif ^
---height=10.0 --res_factor=4
+--height=10.0 --res_factor=4 
 
 
 ```
 
 
-#### 8.6.47 WetnessIndex
+#### 8.6.49 WetnessIndex
 
-Calculates the topographic wetness index, Ln(A / tan(slope))..
+Calculates the topographic wetness index, Ln(A / tan(slope)).
 
 *Parameters*:
 
@@ -3737,9 +5987,9 @@ Calculates the topographic wetness index, Ln(A / tan(slope))..
 
 ~~~~{.python}
 wetness_index(
-    sca,
-    slope,
-    output,
+    sca, 
+    slope, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -3747,7 +5997,7 @@ wetness_index(
 
 ```
 >>./whitebox_tools -r=WetnessIndex -v --wd="/path/to/data/" ^
---sca='flow_accum.tif' --slope='slope.tif' -o=output.tif
+--sca='flow_accum.tif' --slope='slope.tif' -o=output.tif 
 
 
 ```
@@ -3756,7 +6006,7 @@ wetness_index(
 
 #### 8.7.1 AverageFlowpathSlope
 
-Measures the average slope gradient from each grid cell to all upslope divide cells..
+Measures the average slope gradient from each grid cell to all upslope divide cells.
 
 *Parameters*:
 
@@ -3770,8 +6020,8 @@ Measures the average slope gradient from each grid cell to all upslope divide ce
 
 ~~~~{.python}
 average_flowpath_slope(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -3779,7 +6029,7 @@ average_flowpath_slope(
 
 ```
 >>./whitebox_tools -r=AverageFlowpathSlope -v ^
---wd="/path/to/data/" -i=DEM.tif -o=output.tif
+--wd="/path/to/data/" -i=DEM.tif -o=output.tif 
 
 
 ```
@@ -3787,7 +6037,7 @@ average_flowpath_slope(
 
 #### 8.7.2 AverageUpslopeFlowpathLength
 
-Measures the average length of all upslope flowpaths draining each grid cell..
+Measures the average length of all upslope flowpaths draining each grid cell.
 
 *Parameters*:
 
@@ -3801,8 +6051,8 @@ Measures the average length of all upslope flowpaths draining each grid cell..
 
 ~~~~{.python}
 average_upslope_flowpath_length(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -3810,7 +6060,7 @@ average_upslope_flowpath_length(
 
 ```
 >>./whitebox_tools -r=AverageUpslopeFlowpathLength -v ^
---wd="/path/to/data/" -i=DEM.tif -o=output.tif
+--wd="/path/to/data/" -i=DEM.tif -o=output.tif 
 
 
 ```
@@ -3818,7 +6068,7 @@ average_upslope_flowpath_length(
 
 #### 8.7.3 Basins
 
-Identifies drainage basins that drain to the DEM edge..
+Identifies drainage basins that drain to the DEM edge.
 
 *Parameters*:
 
@@ -3833,9 +6083,9 @@ Identifies drainage basins that drain to the DEM edge..
 
 ~~~~{.python}
 basins(
-    d8_pntr,
-    output,
-    esri_pntr=False,
+    d8_pntr, 
+    output, 
+    esri_pntr=False, 
     callback=default_callback)
 ~~~~
 
@@ -3843,7 +6093,7 @@ basins(
 
 ```
 >>./whitebox_tools -r=Basins -v --wd="/path/to/data/" ^
---d8_pntr='d8pntr.tif' -o='output.tif'
+--d8_pntr='d8pntr.tif' -o='output.tif' 
 
 
 ```
@@ -3851,7 +6101,7 @@ basins(
 
 #### 8.7.4 BreachDepressions
 
-Breaches all of the depressions in a DEM using Lindsay's (2016) algorithm. This should be preferred over depression filling in most cases..
+Breaches all of the depressions in a DEM using Lindsay's (2016) algorithm. This should be preferred over depression filling in most cases.
 
 *Parameters*:
 
@@ -3867,10 +6117,10 @@ Breaches all of the depressions in a DEM using Lindsay's (2016) algorithm. This 
 
 ~~~~{.python}
 breach_depressions(
-    dem,
-    output,
-    max_depth=None,
-    max_length=None,
+    dem, 
+    output, 
+    max_depth=None, 
+    max_length=None, 
     callback=default_callback)
 ~~~~
 
@@ -3878,7 +6128,7 @@ breach_depressions(
 
 ```
 >>./whitebox_tools -r=BreachDepressions -v ^
---wd="/path/to/data/" --dem=DEM.tif -o=output.tif
+--wd="/path/to/data/" --dem=DEM.tif -o=output.tif 
 
 
 ```
@@ -3886,7 +6136,7 @@ breach_depressions(
 
 #### 8.7.5 BreachSingleCellPits
 
-Removes single-cell pits from an input DEM by breaching..
+Removes single-cell pits from an input DEM by breaching.
 
 *Parameters*:
 
@@ -3900,8 +6150,8 @@ Removes single-cell pits from an input DEM by breaching..
 
 ~~~~{.python}
 breach_single_cell_pits(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -3909,7 +6159,7 @@ breach_single_cell_pits(
 
 ```
 >>./whitebox_tools -r=BreachSingleCellPits -v ^
---wd="/path/to/data/" --dem=DEM.tif -o=output.tif
+--wd="/path/to/data/" --dem=DEM.tif -o=output.tif 
 
 
 ```
@@ -3917,7 +6167,7 @@ breach_single_cell_pits(
 
 #### 8.7.6 D8FlowAccumulation
 
-Calculates a D8 flow accumulation raster from an input DEM..
+Calculates a D8 flow accumulation raster from an input DEM.
 
 *Parameters*:
 
@@ -3925,8 +6175,8 @@ Calculates a D8 flow accumulation raster from an input DEM..
 -------------------  ---------------
 -i, -\-dem           Input raster DEM file
 -o, -\-output        Output raster file
--\-out_type          Output type; one of 'cells', 'specific contributing area' (default), and
-                     'catchment area'
+-\-out_type          Output type; one of 'cells', 'specific contributing area' (default), and 
+                     'catchment area' 
 -\-log               Optional flag to request the output be log-transformed
 -\-clip              Optional flag to request clipping the display max by 1%
 
@@ -3935,11 +6185,11 @@ Calculates a D8 flow accumulation raster from an input DEM..
 
 ~~~~{.python}
 d8_flow_accumulation(
-    dem,
-    output,
-    out_type="specific contributing area",
-    log=False,
-    clip=False,
+    dem, 
+    output, 
+    out_type="specific contributing area", 
+    log=False, 
+    clip=False, 
     callback=default_callback)
 ~~~~
 
@@ -3951,7 +6201,7 @@ d8_flow_accumulation(
 --out_type='cells'
 >>./whitebox_tools -r=D8FlowAccumulation -v ^
 --wd="/path/to/data/" --dem=DEM.tif -o=output.tif ^
---out_type='specific catchment area' --log --clip
+--out_type='specific catchment area' --log --clip 
 
 
 ```
@@ -3959,7 +6209,7 @@ d8_flow_accumulation(
 
 #### 8.7.7 D8MassFlux
 
-Performs a D8 mass flux calculation..
+Performs a D8 mass flux calculation.
 
 *Parameters*:
 
@@ -3976,11 +6226,11 @@ Performs a D8 mass flux calculation..
 
 ~~~~{.python}
 d8_mass_flux(
-    dem,
-    loading,
-    efficiency,
-    absorption,
-    output,
+    dem, 
+    loading, 
+    efficiency, 
+    absorption, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -3989,7 +6239,7 @@ d8_mass_flux(
 ```
 >>./whitebox_tools -r=D8MassFlux -v --wd="/path/to/data/" ^
 --dem=DEM.tif --loading=load.tif --efficiency=eff.tif ^
---absorption=abs.tif -o=output.tif
+--absorption=abs.tif -o=output.tif 
 
 
 ```
@@ -3997,7 +6247,7 @@ d8_mass_flux(
 
 #### 8.7.8 D8Pointer
 
-Calculates a D8 flow pointer raster from an input DEM..
+Calculates a D8 flow pointer raster from an input DEM.
 
 *Parameters*:
 
@@ -4012,9 +6262,9 @@ Calculates a D8 flow pointer raster from an input DEM..
 
 ~~~~{.python}
 d8_pointer(
-    dem,
-    output,
-    esri_pntr=False,
+    dem, 
+    output, 
+    esri_pntr=False, 
     callback=default_callback)
 ~~~~
 
@@ -4022,7 +6272,7 @@ d8_pointer(
 
 ```
 >>./whitebox_tools -r=D8Pointer -v --wd="/path/to/data/" ^
---dem=DEM.tif -o=output.tif
+--dem=DEM.tif -o=output.tif 
 
 
 ```
@@ -4030,7 +6280,7 @@ d8_pointer(
 
 #### 8.7.9 DInfFlowAccumulation
 
-Calculates a D-infinity flow accumulation raster from an input DEM..
+Calculates a D-infinity flow accumulation raster from an input DEM.
 
 *Parameters*:
 
@@ -4048,12 +6298,12 @@ Calculates a D-infinity flow accumulation raster from an input DEM..
 
 ~~~~{.python}
 d_inf_flow_accumulation(
-    dem,
-    output,
-    out_type="Specific Contributing Area",
-    threshold=None,
-    log=False,
-    clip=False,
+    dem, 
+    output, 
+    out_type="Specific Contributing Area", 
+    threshold=None, 
+    log=False, 
+    clip=False, 
     callback=default_callback)
 ~~~~
 
@@ -4065,7 +6315,7 @@ d_inf_flow_accumulation(
 --out_type=sca
 >>./whitebox_tools -r=DInfFlowAccumulation -v ^
 --wd="/path/to/data/" --dem=DEM.tif -o=output.tif ^
---out_type=sca --threshold=10000 --log --clip
+--out_type=sca --threshold=10000 --log --clip 
 
 
 ```
@@ -4073,7 +6323,7 @@ d_inf_flow_accumulation(
 
 #### 8.7.10 DInfMassFlux
 
-Performs a D-infinity mass flux calculation..
+Performs a D-infinity mass flux calculation.
 
 *Parameters*:
 
@@ -4090,11 +6340,11 @@ Performs a D-infinity mass flux calculation..
 
 ~~~~{.python}
 d_inf_mass_flux(
-    dem,
-    loading,
-    efficiency,
-    absorption,
-    output,
+    dem, 
+    loading, 
+    efficiency, 
+    absorption, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -4103,7 +6353,7 @@ d_inf_mass_flux(
 ```
 >>./whitebox_tools -r=DInfMassFlux -v --wd="/path/to/data/" ^
 --dem=DEM.tif --loading=load.tif --efficiency=eff.tif ^
---absorption=abs.tif -o=output.tif
+--absorption=abs.tif -o=output.tif 
 
 
 ```
@@ -4111,7 +6361,7 @@ d_inf_mass_flux(
 
 #### 8.7.11 DInfPointer
 
-Calculates a D-infinity flow pointer (flow direction) raster from an input DEM..
+Calculates a D-infinity flow pointer (flow direction) raster from an input DEM.
 
 *Parameters*:
 
@@ -4125,8 +6375,8 @@ Calculates a D-infinity flow pointer (flow direction) raster from an input DEM..
 
 ~~~~{.python}
 d_inf_pointer(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -4134,7 +6384,7 @@ d_inf_pointer(
 
 ```
 >>./whitebox_tools -r=DInfPointer -v --wd="/path/to/data/" ^
---dem=DEM.tif
+--dem=DEM.tif 
 
 
 ```
@@ -4142,7 +6392,7 @@ d_inf_pointer(
 
 #### 8.7.12 DepthInSink
 
-Measures the depth of sinks (depressions) in a DEM..
+Measures the depth of sinks (depressions) in a DEM.
 
 *Parameters*:
 
@@ -4157,9 +6407,9 @@ Measures the depth of sinks (depressions) in a DEM..
 
 ~~~~{.python}
 depth_in_sink(
-    dem,
-    output,
-    zero_background=False,
+    dem, 
+    output, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -4167,7 +6417,7 @@ depth_in_sink(
 
 ```
 >>./whitebox_tools -r=DepthInSink -v --wd="/path/to/data/" ^
---dem=DEM.tif -o=output.tif --zero_background
+--dem=DEM.tif -o=output.tif --zero_background 
 
 
 ```
@@ -4175,7 +6425,7 @@ depth_in_sink(
 
 #### 8.7.13 DownslopeDistanceToStream
 
-Measures distance to the nearest downslope stream cell..
+Measures distance to the nearest downslope stream cell.
 
 *Parameters*:
 
@@ -4190,9 +6440,9 @@ Measures distance to the nearest downslope stream cell..
 
 ~~~~{.python}
 downslope_distance_to_stream(
-    dem,
-    streams,
-    output,
+    dem, 
+    streams, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -4201,7 +6451,7 @@ downslope_distance_to_stream(
 ```
 >>./whitebox_tools -r=DownslopeDistanceToStream -v ^
 --wd="/path/to/data/" --dem='dem.tif' --streams='streams.tif' ^
--o='output.tif'
+-o='output.tif' 
 
 
 ```
@@ -4209,7 +6459,7 @@ downslope_distance_to_stream(
 
 #### 8.7.14 DownslopeFlowpathLength
 
-Calculates the downslope flowpath length from each cell to basin outlet..
+Calculates the downslope flowpath length from each cell to basin outlet.
 
 *Parameters*:
 
@@ -4226,11 +6476,11 @@ Calculates the downslope flowpath length from each cell to basin outlet..
 
 ~~~~{.python}
 downslope_flowpath_length(
-    d8_pntr,
-    output,
-    watersheds=None,
-    weights=None,
-    esri_pntr=False,
+    d8_pntr, 
+    output, 
+    watersheds=None, 
+    weights=None, 
+    esri_pntr=False, 
     callback=default_callback)
 ~~~~
 
@@ -4243,7 +6493,7 @@ downslope_flowpath_length(
 >>./whitebox_tools ^
 -r=DownslopeFlowpathLength -v --wd="/path/to/data/" ^
 --d8_pntr=pointer.tif --watersheds=basin.tif ^
---weights=weights.tif -o=flowpath_len.tif --esri_pntr
+--weights=weights.tif -o=flowpath_len.tif --esri_pntr 
 
 
 ```
@@ -4251,7 +6501,7 @@ downslope_flowpath_length(
 
 #### 8.7.15 ElevationAboveStream
 
-Calculates the elevation of cells above the nearest downslope stream cell..
+Calculates the elevation of cells above the nearest downslope stream cell.
 
 *Parameters*:
 
@@ -4266,9 +6516,9 @@ Calculates the elevation of cells above the nearest downslope stream cell..
 
 ~~~~{.python}
 elevation_above_stream(
-    dem,
-    streams,
-    output,
+    dem, 
+    streams, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -4277,7 +6527,7 @@ elevation_above_stream(
 ```
 >>./whitebox_tools -r=ElevationAboveStream -v ^
 --wd="/path/to/data/" --dem='dem.tif' --streams='streams.tif' ^
--o='output.tif'
+-o='output.tif' 
 
 
 ```
@@ -4285,7 +6535,7 @@ elevation_above_stream(
 
 #### 8.7.16 ElevationAboveStreamEuclidean
 
-Calculates the elevation of cells above the nearest (Euclidean distance) stream cell..
+Calculates the elevation of cells above the nearest (Euclidean distance) stream cell.
 
 *Parameters*:
 
@@ -4300,9 +6550,9 @@ Calculates the elevation of cells above the nearest (Euclidean distance) stream 
 
 ~~~~{.python}
 elevation_above_stream_euclidean(
-    dem,
-    streams,
-    output,
+    dem, 
+    streams, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -4311,7 +6561,7 @@ elevation_above_stream_euclidean(
 ```
 >>./whitebox_tools -r=ElevationAboveStreamEuclidean -v ^
 --wd="/path/to/data/" -i=DEM.tif --streams=streams.tif ^
--o=output.tif
+-o=output.tif 
 
 
 ```
@@ -4319,7 +6569,7 @@ elevation_above_stream_euclidean(
 
 #### 8.7.17 Fd8FlowAccumulation
 
-Calculates an FD8 flow accumulation raster from an input DEM..
+Calculates an FD8 flow accumulation raster from an input DEM.
 
 *Parameters*:
 
@@ -4327,8 +6577,8 @@ Calculates an FD8 flow accumulation raster from an input DEM..
 -------------------  ---------------
 -i, -\-dem           Input raster DEM file
 -o, -\-output        Output raster file
--\-out_type          Output type; one of 'cells', 'specific contributing area' (default), and
-                     'catchment area'
+-\-out_type          Output type; one of 'cells', 'specific contributing area' (default), and 
+                     'catchment area' 
 -\-exponent          Optional exponent parameter; default is 1.1
 -\-threshold         Optional convergence threshold parameter, in grid cells; default is inifinity
 -\-log               Optional flag to request the output be log-transformed
@@ -4339,13 +6589,13 @@ Calculates an FD8 flow accumulation raster from an input DEM..
 
 ~~~~{.python}
 fd8_flow_accumulation(
-    dem,
-    output,
-    out_type="specific contributing area",
-    exponent=1.1,
-    threshold=None,
-    log=False,
-    clip=False,
+    dem, 
+    output, 
+    out_type="specific contributing area", 
+    exponent=1.1, 
+    threshold=None, 
+    log=False, 
+    clip=False, 
     callback=default_callback)
 ~~~~
 
@@ -4358,7 +6608,7 @@ fd8_flow_accumulation(
 >>./whitebox_tools -r=FD8FlowAccumulation -v ^
 --wd="/path/to/data/" --dem=DEM.tif -o=output.tif ^
 --out_type='catchment area' --exponent=1.5 --threshold=10000 ^
---log --clip
+--log --clip 
 
 
 ```
@@ -4366,7 +6616,7 @@ fd8_flow_accumulation(
 
 #### 8.7.18 Fd8Pointer
 
-Calculates an FD8 flow pointer raster from an input DEM..
+Calculates an FD8 flow pointer raster from an input DEM.
 
 *Parameters*:
 
@@ -4380,8 +6630,8 @@ Calculates an FD8 flow pointer raster from an input DEM..
 
 ~~~~{.python}
 fd8_pointer(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -4389,7 +6639,7 @@ fd8_pointer(
 
 ```
 >>./whitebox_tools -r=FD8Pointer -v --wd="/path/to/data/" ^
---dem=DEM.tif -o=output.tif
+--dem=DEM.tif -o=output.tif 
 
 
 ```
@@ -4397,7 +6647,7 @@ fd8_pointer(
 
 #### 8.7.19 FillBurn
 
-Burns streams into a DEM using the FillBurn (Saunders, 1999) method..
+Burns streams into a DEM using the FillBurn (Saunders, 1999) method.
 
 *Parameters*:
 
@@ -4412,9 +6662,9 @@ Burns streams into a DEM using the FillBurn (Saunders, 1999) method..
 
 ~~~~{.python}
 fill_burn(
-    dem,
-    streams,
-    output,
+    dem, 
+    streams, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -4422,7 +6672,7 @@ fill_burn(
 
 ```
 >>./whitebox_tools -r=FillBurn -v --wd="/path/to/data/" ^
---dem=DEM.tif --streams=streams.shp -o=dem_burned.tif
+--dem=DEM.tif --streams=streams.shp -o=dem_burned.tif 
 
 
 ```
@@ -4430,7 +6680,7 @@ fill_burn(
 
 #### 8.7.20 FillDepressions
 
-Fills all of the depressions in a DEM. Depression breaching should be preferred in most cases..
+Fills all of the depressions in a DEM. Depression breaching should be preferred in most cases.
 
 *Parameters*:
 
@@ -4445,9 +6695,9 @@ Fills all of the depressions in a DEM. Depression breaching should be preferred 
 
 ~~~~{.python}
 fill_depressions(
-    dem,
-    output,
-    fix_flats=True,
+    dem, 
+    output, 
+    fix_flats=True, 
     callback=default_callback)
 ~~~~
 
@@ -4456,7 +6706,7 @@ fill_depressions(
 ```
 >>./whitebox_tools -r=FillDepressions -v ^
 --wd="/path/to/data/" --dem=DEM.tif -o=output.tif ^
---fix_flats
+--fix_flats 
 
 
 ```
@@ -4464,7 +6714,7 @@ fill_depressions(
 
 #### 8.7.21 FillSingleCellPits
 
-Raises pit cells to the elevation of their lowest neighbour..
+Raises pit cells to the elevation of their lowest neighbour.
 
 *Parameters*:
 
@@ -4478,8 +6728,8 @@ Raises pit cells to the elevation of their lowest neighbour..
 
 ~~~~{.python}
 fill_single_cell_pits(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -4487,7 +6737,7 @@ fill_single_cell_pits(
 
 ```
 >>./whitebox_tools -r=FillSingleCellPits -v ^
---wd="/path/to/data/" --dem=DEM.tif -o=NewRaster.tif
+--wd="/path/to/data/" --dem=DEM.tif -o=NewRaster.tif 
 
 
 ```
@@ -4495,7 +6745,7 @@ fill_single_cell_pits(
 
 #### 8.7.22 FindNoFlowCells
 
-Finds grid cells with no downslope neighbours..
+Finds grid cells with no downslope neighbours.
 
 *Parameters*:
 
@@ -4509,8 +6759,8 @@ Finds grid cells with no downslope neighbours..
 
 ~~~~{.python}
 find_no_flow_cells(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -4518,7 +6768,7 @@ find_no_flow_cells(
 
 ```
 >>./whitebox_tools -r=FindNoFlowCells -v ^
---wd="/path/to/data/" --dem=DEM.tif -o=NewRaster.tif
+--wd="/path/to/data/" --dem=DEM.tif -o=NewRaster.tif 
 
 
 ```
@@ -4526,7 +6776,7 @@ find_no_flow_cells(
 
 #### 8.7.23 FindParallelFlow
 
-Finds areas of parallel flow in D8 flow direction rasters..
+Finds areas of parallel flow in D8 flow direction rasters.
 
 *Parameters*:
 
@@ -4541,9 +6791,9 @@ Finds areas of parallel flow in D8 flow direction rasters..
 
 ~~~~{.python}
 find_parallel_flow(
-    d8_pntr,
-    streams,
-    output,
+    d8_pntr, 
+    streams, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -4555,7 +6805,7 @@ find_parallel_flow(
 -o=out.tif
 >>./whitebox_tools -r=FindParallelFlow -v ^
 --wd="/path/to/data/" --d8_pntr=pointer.tif -o=out.tif ^
---streams='streams.tif'
+--streams='streams.tif' 
 
 
 ```
@@ -4563,7 +6813,7 @@ find_parallel_flow(
 
 #### 8.7.24 FlattenLakes
 
-Flattens lake polygons in a raster DEM..
+Flattens lake polygons in a raster DEM.
 
 *Parameters*:
 
@@ -4578,9 +6828,9 @@ Flattens lake polygons in a raster DEM..
 
 ~~~~{.python}
 flatten_lakes(
-    dem,
-    lakes,
-    output,
+    dem, 
+    lakes, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -4588,7 +6838,7 @@ flatten_lakes(
 
 ```
 >>./whitebox_tools -r=FlattenLakes -v --wd="/path/to/data/" ^
---dem='DEM.tif' --lakes='lakes.shp' -o='output.tif'
+--dem='DEM.tif' --lakes='lakes.shp' -o='output.tif' 
 
 
 ```
@@ -4596,7 +6846,7 @@ flatten_lakes(
 
 #### 8.7.25 FloodOrder
 
-Assigns each DEM grid cell its order in the sequence of inundations that are encountered during a search starting from the edges, moving inward at increasing elevations..
+Assigns each DEM grid cell its order in the sequence of inundations that are encountered during a search starting from the edges, moving inward at increasing elevations.
 
 *Parameters*:
 
@@ -4610,8 +6860,8 @@ Assigns each DEM grid cell its order in the sequence of inundations that are enc
 
 ~~~~{.python}
 flood_order(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -4619,7 +6869,7 @@ flood_order(
 
 ```
 >>./whitebox_tools -r=FloodOrder -v --wd="/path/to/data/" ^
---dem=DEM.tif -o=output.tif
+--dem=DEM.tif -o=output.tif 
 
 
 ```
@@ -4627,7 +6877,7 @@ flood_order(
 
 #### 8.7.26 FlowAccumulationFullWorkflow
 
-Resolves all of the depressions in a DEM, outputting a breached DEM, an aspect-aligned non-divergent flow pointer, and a flow accumulation raster..
+Resolves all of the depressions in a DEM, outputting a breached DEM, an aspect-aligned non-divergent flow pointer, and a flow accumulation raster.
 
 *Parameters*:
 
@@ -4647,14 +6897,14 @@ Resolves all of the depressions in a DEM, outputting a breached DEM, an aspect-a
 
 ~~~~{.python}
 flow_accumulation_full_workflow(
-    dem,
-    out_dem,
-    out_pntr,
-    out_accum,
-    out_type="Specific Contributing Area",
-    log=False,
-    clip=False,
-    esri_pntr=False,
+    dem, 
+    out_dem, 
+    out_pntr, 
+    out_accum, 
+    out_type="Specific Contributing Area", 
+    log=False, 
+    clip=False, 
+    esri_pntr=False, 
     callback=default_callback)
 ~~~~
 
@@ -4664,7 +6914,7 @@ flow_accumulation_full_workflow(
 >>./whitebox_tools -r=FlowAccumulationFullWorkflow -v ^
 --wd="/path/to/data/" --dem='DEM.tif' ^
 --out_dem='DEM_filled.tif' --out_pntr='pointer.tif' ^
---out_accum='accum.tif' --out_type=sca --log --clip
+--out_accum='accum.tif' --out_type=sca --log --clip 
 
 
 ```
@@ -4672,7 +6922,7 @@ flow_accumulation_full_workflow(
 
 #### 8.7.27 FlowLengthDiff
 
-Calculates the local maximum absolute difference in downslope flowpath length, useful in mapping drainage divides and ridges..
+Calculates the local maximum absolute difference in downslope flowpath length, useful in mapping drainage divides and ridges.
 
 *Parameters*:
 
@@ -4687,9 +6937,9 @@ Calculates the local maximum absolute difference in downslope flowpath length, u
 
 ~~~~{.python}
 flow_length_diff(
-    d8_pntr,
-    output,
-    esri_pntr=False,
+    d8_pntr, 
+    output, 
+    esri_pntr=False, 
     callback=default_callback)
 ~~~~
 
@@ -4697,7 +6947,7 @@ flow_length_diff(
 
 ```
 >>./whitebox_tools -r=FlowLengthDiff -v --wd="/path/to/data/" ^
---d8_pntr=pointer.tif -o=output.tif
+--d8_pntr=pointer.tif -o=output.tif 
 
 
 ```
@@ -4705,7 +6955,7 @@ flow_length_diff(
 
 #### 8.7.28 Hillslopes
 
-Identifies the individual hillslopes draining to each link in a stream network..
+Identifies the individual hillslopes draining to each link in a stream network.
 
 *Parameters*:
 
@@ -4721,10 +6971,10 @@ Identifies the individual hillslopes draining to each link in a stream network..
 
 ~~~~{.python}
 hillslopes(
-    d8_pntr,
-    streams,
-    output,
-    esri_pntr=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    esri_pntr=False, 
     callback=default_callback)
 ~~~~
 
@@ -4733,7 +6983,7 @@ hillslopes(
 ```
 >>./whitebox_tools -r=Hillslopes -v --wd="/path/to/data/" ^
 --d8_pntr='d8pntr.tif' --streams='streams.tif' ^
--o='output.tif'
+-o='output.tif' 
 
 
 ```
@@ -4741,7 +6991,7 @@ hillslopes(
 
 #### 8.7.29 ImpoundmentIndex
 
-Calculates the impoundment size resulting from damming a DEM..
+Calculates the impoundment size resulting from damming a DEM.
 
 *Parameters*:
 
@@ -4757,10 +7007,10 @@ Calculates the impoundment size resulting from damming a DEM..
 
 ~~~~{.python}
 impoundment_index(
-    dem,
-    output,
-    damlength,
-    out_type="depth",
+    dem, 
+    output, 
+    damlength, 
+    out_type="depth", 
     callback=default_callback)
 ~~~~
 
@@ -4769,7 +7019,7 @@ impoundment_index(
 ```
 >>./whitebox_tools -r=ImpoundmentIndex -v ^
 --wd="/path/to/data/" --dem=DEM.tif -o=out.tif ^
---out_type=depth --damlength=11
+--out_type=depth --damlength=11 
 
 
 ```
@@ -4777,7 +7027,7 @@ impoundment_index(
 
 #### 8.7.30 Isobasins
 
-Divides a landscape into nearly equal sized drainage basins (i.e. watersheds)..
+Divides a landscape into nearly equal sized drainage basins (i.e. watersheds).
 
 *Parameters*:
 
@@ -4792,9 +7042,9 @@ Divides a landscape into nearly equal sized drainage basins (i.e. watersheds)..
 
 ~~~~{.python}
 isobasins(
-    dem,
-    output,
-    size,
+    dem, 
+    output, 
+    size, 
     callback=default_callback)
 ~~~~
 
@@ -4802,7 +7052,7 @@ isobasins(
 
 ```
 >>./whitebox_tools -r=Isobasins -v --wd="/path/to/data/" ^
---dem=DEM.tif -o=output.tif --size=1000
+--dem=DEM.tif -o=output.tif --size=1000 
 
 
 ```
@@ -4810,7 +7060,7 @@ isobasins(
 
 #### 8.7.31 JensonSnapPourPoints
 
-Moves outlet points used to specify points of interest in a watershedding operation to the nearest stream cell..
+Moves outlet points used to specify points of interest in a watershedding operation to the nearest stream cell.
 
 *Parameters*:
 
@@ -4826,10 +7076,10 @@ Moves outlet points used to specify points of interest in a watershedding operat
 
 ~~~~{.python}
 jenson_snap_pour_points(
-    pour_pts,
-    streams,
-    output,
-    snap_dist,
+    pour_pts, 
+    streams, 
+    output, 
+    snap_dist, 
     callback=default_callback)
 ~~~~
 
@@ -4838,7 +7088,7 @@ jenson_snap_pour_points(
 ```
 >>./whitebox_tools -r=JensonSnapPourPoints -v ^
 --wd="/path/to/data/" --pour_pts='pour_pts.shp' ^
---streams='streams.tif' -o='output.shp' --snap_dist=15.0
+--streams='streams.tif' -o='output.shp' --snap_dist=15.0 
 
 
 ```
@@ -4846,7 +7096,7 @@ jenson_snap_pour_points(
 
 #### 8.7.32 MaxUpslopeFlowpathLength
 
-Measures the maximum length of all upslope flowpaths draining each grid cell..
+Measures the maximum length of all upslope flowpaths draining each grid cell.
 
 *Parameters*:
 
@@ -4860,8 +7110,8 @@ Measures the maximum length of all upslope flowpaths draining each grid cell..
 
 ~~~~{.python}
 max_upslope_flowpath_length(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -4873,7 +7123,7 @@ max_upslope_flowpath_length(
 -o=output.tif
 >>./whitebox_tools -r=MaxUpslopeFlowpathLength -v ^
 --wd="/path/to/data/" --dem=DEM.tif -o=output.tif --log ^
---clip
+--clip 
 
 
 ```
@@ -4881,7 +7131,7 @@ max_upslope_flowpath_length(
 
 #### 8.7.33 NumInflowingNeighbours
 
-Computes the number of inflowing neighbours to each cell in an input DEM based on the D8 algorithm..
+Computes the number of inflowing neighbours to each cell in an input DEM based on the D8 algorithm.
 
 *Parameters*:
 
@@ -4895,8 +7145,8 @@ Computes the number of inflowing neighbours to each cell in an input DEM based o
 
 ~~~~{.python}
 num_inflowing_neighbours(
-    dem,
-    output,
+    dem, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -4904,7 +7154,7 @@ num_inflowing_neighbours(
 
 ```
 >>./whitebox_tools -r=NumInflowingNeighbours -v ^
---wd="/path/to/data/" -i=DEM.tif -o=output.tif
+--wd="/path/to/data/" -i=DEM.tif -o=output.tif 
 
 
 ```
@@ -4912,7 +7162,7 @@ num_inflowing_neighbours(
 
 #### 8.7.34 RaiseWalls
 
-Raises walls in a DEM along a line or around a polygon, e.g. a watershed..
+Raises walls in a DEM along a line or around a polygon, e.g. a watershed.
 
 *Parameters*:
 
@@ -4929,11 +7179,11 @@ Raises walls in a DEM along a line or around a polygon, e.g. a watershed..
 
 ~~~~{.python}
 raise_walls(
-    i,
-    dem,
-    output,
-    breach=None,
-    height=100.0,
+    i, 
+    dem, 
+    output, 
+    breach=None, 
+    height=100.0, 
     callback=default_callback)
 ~~~~
 
@@ -4945,7 +7195,7 @@ raise_walls(
 --height=25.0
 >>./whitebox_tools -r=RaiseWalls -v ^
 --wd="/path/to/data/" -i=watershed.shp --breach=outlet.shp ^
---dem=dem.tif -o=output.tif --height=25.0
+--dem=dem.tif -o=output.tif --height=25.0 
 
 
 ```
@@ -4953,7 +7203,7 @@ raise_walls(
 
 #### 8.7.35 Rho8Pointer
 
-Calculates a stochastic Rho8 flow pointer raster from an input DEM..
+Calculates a stochastic Rho8 flow pointer raster from an input DEM.
 
 *Parameters*:
 
@@ -4968,9 +7218,9 @@ Calculates a stochastic Rho8 flow pointer raster from an input DEM..
 
 ~~~~{.python}
 rho8_pointer(
-    dem,
-    output,
-    esri_pntr=False,
+    dem, 
+    output, 
+    esri_pntr=False, 
     callback=default_callback)
 ~~~~
 
@@ -4978,7 +7228,7 @@ rho8_pointer(
 
 ```
 >>./whitebox_tools -r=Rho8Pointer -v --wd="/path/to/data/" ^
---dem=DEM.tif -o=output.tif
+--dem=DEM.tif -o=output.tif 
 
 
 ```
@@ -4986,7 +7236,7 @@ rho8_pointer(
 
 #### 8.7.36 Sink
 
-Identifies the depressions in a DEM, giving each feature a unique identifier..
+Identifies the depressions in a DEM, giving each feature a unique identifier.
 
 *Parameters*:
 
@@ -5001,9 +7251,9 @@ Identifies the depressions in a DEM, giving each feature a unique identifier..
 
 ~~~~{.python}
 sink(
-    dem,
-    output,
-    zero_background=False,
+    dem, 
+    output, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -5011,7 +7261,7 @@ sink(
 
 ```
 >>./whitebox_tools -r=Sink -v --wd="/path/to/data/" ^
---dem=DEM.tif -o=output.tif --zero_background
+--dem=DEM.tif -o=output.tif --zero_background 
 
 
 ```
@@ -5019,7 +7269,7 @@ sink(
 
 #### 8.7.37 SnapPourPoints
 
-Moves outlet points used to specify points of interest in a watershedding operation to the cell with the highest flow accumulation in its neighbourhood..
+Moves outlet points used to specify points of interest in a watershedding operation to the cell with the highest flow accumulation in its neighbourhood.
 
 *Parameters*:
 
@@ -5035,10 +7285,10 @@ Moves outlet points used to specify points of interest in a watershedding operat
 
 ~~~~{.python}
 snap_pour_points(
-    pour_pts,
-    flow_accum,
-    output,
-    snap_dist,
+    pour_pts, 
+    flow_accum, 
+    output, 
+    snap_dist, 
     callback=default_callback)
 ~~~~
 
@@ -5047,7 +7297,7 @@ snap_pour_points(
 ```
 >>./whitebox_tools -r=SnapPourPoints -v --wd="/path/to/data/" ^
 --pour_pts='pour_pts.shp' --flow_accum='d8accum.tif' ^
--o='output.shp' --snap_dist=15.0
+-o='output.shp' --snap_dist=15.0 
 
 
 ```
@@ -5055,7 +7305,7 @@ snap_pour_points(
 
 #### 8.7.38 StochasticDepressionAnalysis
 
-Preforms a stochastic analysis of depressions within a DEM..
+Preforms a stochastic analysis of depressions within a DEM.
 
 *Parameters*:
 
@@ -5063,8 +7313,8 @@ Preforms a stochastic analysis of depressions within a DEM..
 -------------------  ---------------
 -i, -\-dem           Input raster DEM file
 -o, -\-output        Output file
--\-rmse              The DEM's root-mean-square-error (RMSE), in z units. This determines error
-                     magnitude
+-\-rmse              The DEM's root-mean-square-error (RMSE), in z units. This determines error 
+                     magnitude 
 -\-range             The error field's correlation length, in xy-units
 -\-iterations        The number of iterations
 
@@ -5073,11 +7323,11 @@ Preforms a stochastic analysis of depressions within a DEM..
 
 ~~~~{.python}
 stochastic_depression_analysis(
-    dem,
-    output,
-    rmse,
-    range,
-    iterations=1000,
+    dem, 
+    output, 
+    rmse, 
+    range, 
+    iterations=1000, 
     callback=default_callback)
 ~~~~
 
@@ -5086,7 +7336,7 @@ stochastic_depression_analysis(
 ```
 >>./whitebox_tools -r=StochasticDepressionAnalysis -v ^
 --wd="/path/to/data/" --dem=DEM.tif -o=out.tif --rmse=10.0 ^
---range=850.0 --iterations=2500
+--range=850.0 --iterations=2500 
 
 
 ```
@@ -5094,7 +7344,7 @@ stochastic_depression_analysis(
 
 #### 8.7.39 StrahlerOrderBasins
 
-Identifies Strahler-order basins from an input stream network..
+Identifies Strahler-order basins from an input stream network.
 
 *Parameters*:
 
@@ -5110,10 +7360,10 @@ Identifies Strahler-order basins from an input stream network..
 
 ~~~~{.python}
 strahler_order_basins(
-    d8_pntr,
-    streams,
-    output,
-    esri_pntr=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    esri_pntr=False, 
     callback=default_callback)
 ~~~~
 
@@ -5122,7 +7372,7 @@ strahler_order_basins(
 ```
 >>./whitebox_tools -r=StrahlerOrderBasins -v ^
 --wd="/path/to/data/" --d8_pntr='d8pntr.tif' ^
---streams='streams.tif' -o='output.tif'
+--streams='streams.tif' -o='output.tif' 
 
 
 ```
@@ -5130,7 +7380,7 @@ strahler_order_basins(
 
 #### 8.7.40 Subbasins
 
-Identifies the catchments, or sub-basin, draining to each link in a stream network..
+Identifies the catchments, or sub-basin, draining to each link in a stream network.
 
 *Parameters*:
 
@@ -5146,10 +7396,10 @@ Identifies the catchments, or sub-basin, draining to each link in a stream netwo
 
 ~~~~{.python}
 subbasins(
-    d8_pntr,
-    streams,
-    output,
-    esri_pntr=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    esri_pntr=False, 
     callback=default_callback)
 ~~~~
 
@@ -5158,7 +7408,7 @@ subbasins(
 ```
 >>./whitebox_tools -r=Subbasins -v --wd="/path/to/data/" ^
 --d8_pntr='d8pntr.tif' --streams='streams.tif' ^
--o='output.tif'
+-o='output.tif' 
 
 
 ```
@@ -5166,7 +7416,7 @@ subbasins(
 
 #### 8.7.41 TraceDownslopeFlowpaths
 
-Traces downslope flowpaths from one or more target sites (i.e. seed points)..
+Traces downslope flowpaths from one or more target sites (i.e. seed points).
 
 *Parameters*:
 
@@ -5183,11 +7433,11 @@ Traces downslope flowpaths from one or more target sites (i.e. seed points)..
 
 ~~~~{.python}
 trace_downslope_flowpaths(
-    seed_pts,
-    d8_pntr,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    seed_pts, 
+    d8_pntr, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -5196,7 +7446,7 @@ trace_downslope_flowpaths(
 ```
 >>./whitebox_tools -r=TraceDownslopeFlowpaths -v ^
 --wd="/path/to/data/" --seed_pts=seeds.shp ^
---flow_dir=flow_directions.tif --output=flow_paths.tif
+--flow_dir=flow_directions.tif --output=flow_paths.tif 
 
 
 ```
@@ -5204,7 +7454,7 @@ trace_downslope_flowpaths(
 
 #### 8.7.42 UnnestBasins
 
-Extract whole watersheds for a set of outlet points..
+Extract whole watersheds for a set of outlet points.
 
 *Parameters*:
 
@@ -5220,10 +7470,10 @@ Extract whole watersheds for a set of outlet points..
 
 ~~~~{.python}
 unnest_basins(
-    d8_pntr,
-    pour_pts,
-    output,
-    esri_pntr=False,
+    d8_pntr, 
+    pour_pts, 
+    output, 
+    esri_pntr=False, 
     callback=default_callback)
 ~~~~
 
@@ -5232,7 +7482,7 @@ unnest_basins(
 ```
 >>./whitebox_tools -r=UnnestBasins -v --wd="/path/to/data/" ^
 --d8_pntr='d8pntr.tif' --pour_pts='pour_pts.shp' ^
--o='output.tif'
+-o='output.tif' 
 
 
 ```
@@ -5240,7 +7490,7 @@ unnest_basins(
 
 #### 8.7.43 Watershed
 
-Identifies the watershed, or drainage basin, draining to a set of target cells..
+Identifies the watershed, or drainage basin, draining to a set of target cells.
 
 *Parameters*:
 
@@ -5256,10 +7506,10 @@ Identifies the watershed, or drainage basin, draining to a set of target cells..
 
 ~~~~{.python}
 watershed(
-    d8_pntr,
-    pour_pts,
-    output,
-    esri_pntr=False,
+    d8_pntr, 
+    pour_pts, 
+    output, 
+    esri_pntr=False, 
     callback=default_callback)
 ~~~~
 
@@ -5268,7 +7518,7 @@ watershed(
 ```
 >>./whitebox_tools -r=Watershed -v --wd="/path/to/data/" ^
 --d8_pntr='d8pntr.tif' --pour_pts='pour_pts.shp' ^
--o='output.tif'
+-o='output.tif' 
 
 
 ```
@@ -5277,7 +7527,31 @@ watershed(
 
 #### 8.8.1 ChangeVectorAnalysis
 
-Performs a change vector analysis on a two-date multi-spectral dataset..
+Change Vector Analysis (CVA) is a change detection method that characterizes the
+magnitude and change direction in spectral space between two times. A change vector
+is the difference vector between two vectors in n-dimensional feature space defined
+for two observations of the same geographical location (i.e. corresponding pixels)
+during two dates. The CVA inputs include the set of raster images corresponding to
+the multispectral data for each date. Note that there must be the same number of
+image files (bands) for the two dates and they must be entered in the same order,
+i.e. if three bands, red, green, and blue are entered for date one, these same
+bands must be entered in the same order for date two.
+
+CVA outputs two image files. The first image contains the change vector length,
+i.e. magnitude, for each pixel in the multi-spectral dataset. The second image
+contains information about the direction of the change event in spectral feature
+space, which is related to the type of change event, e.g. deforestation will likely
+have a different change direction than say crop growth. The vector magnitude is a
+continuous numerical variable. The change vector direction is presented in the form
+of a code, referring to the multi-dimensional sector in which the change vector
+occurs. A text output will be produced to provide a key describing sector codes,
+relating the change vector to positive or negative shifts in n-dimensional feature
+space.
+
+It is common to apply a simple thresholding operation on the magnitude data to
+determine 'actual' change (i.e. change above some assumed level of error). The type
+of change (qualitatively) is then defined according to the corresponding sector code.
+Jensen (2005) provides a useful description of this approach to change detection.
 
 *Parameters*:
 
@@ -5293,10 +7567,10 @@ Performs a change vector analysis on a two-date multi-spectral dataset..
 
 ~~~~{.python}
 change_vector_analysis(
-    date1,
-    date2,
-    magnitude,
-    direction,
+    date1, 
+    date2, 
+    magnitude, 
+    direction, 
     callback=default_callback)
 ~~~~
 
@@ -5307,7 +7581,7 @@ change_vector_analysis(
 --wd="/path/to/data/" ^
 --date1='d1_band1.tif;d1_band2.tif;d1_band3.tif' ^
 --date2='d2_band1.tif;d2_band2.tif;d2_band3.tif' ^
---magnitude=mag_out.tif --direction=dir_out.tif
+--magnitude=mag_out.tif --direction=dir_out.tif 
 
 
 ```
@@ -5315,7 +7589,7 @@ change_vector_analysis(
 
 #### 8.8.2 Closing
 
-A closing is a mathematical morphology operating involving an erosion (min filter) of a dilation (max filter) set..
+A closing is a mathematical morphology operating involving an erosion (min filter) of a dilation (max filter) set.
 
 *Parameters*:
 
@@ -5331,10 +7605,10 @@ A closing is a mathematical morphology operating involving an erosion (min filte
 
 ~~~~{.python}
 closing(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
     callback=default_callback)
 ~~~~
 
@@ -5342,7 +7616,7 @@ closing(
 
 ```
 >>./whitebox_tools -r=Closing -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif --filter=25
+-i=image.tif -o=output.tif --filter=25 
 
 
 ```
@@ -5350,7 +7624,7 @@ closing(
 
 #### 8.8.3 CreateColourComposite
 
-Creates a colour-composite image from three bands of multispectral imagery..
+Creates a colour-composite image from three bands of multispectral imagery.
 
 *Parameters*:
 
@@ -5368,12 +7642,12 @@ Creates a colour-composite image from three bands of multispectral imagery..
 
 ~~~~{.python}
 create_colour_composite(
-    red,
-    green,
-    blue,
-    output,
-    opacity=None,
-    enhance=True,
+    red, 
+    green, 
+    blue, 
+    output, 
+    opacity=None, 
+    enhance=True, 
     callback=default_callback)
 ~~~~
 
@@ -5386,7 +7660,7 @@ create_colour_composite(
 >>./whitebox_tools ^
 -r=CreateColourComposite -v --wd="/path/to/data/" ^
 --red=band3.tif --green=band2.tif --blue=band1.tif ^
---opacity=a.tif -o=output.tif
+--opacity=a.tif -o=output.tif 
 
 
 ```
@@ -5394,7 +7668,7 @@ create_colour_composite(
 
 #### 8.8.4 FlipImage
 
-Reflects an image in the vertical or horizontal axis..
+Reflects an image in the vertical or horizontal axis.
 
 *Parameters*:
 
@@ -5402,17 +7676,17 @@ Reflects an image in the vertical or horizontal axis..
 -------------------  ---------------
 -i, -\-input         Input raster file
 -o, -\-output        Output raster file
--\-direction         Direction of reflection; options include 'v' (vertical), 'h' (horizontal), and
-                     'b' (both)
+-\-direction         Direction of reflection; options include 'v' (vertical), 'h' (horizontal), and 
+                     'b' (both) 
 
 
 *Python function*:
 
 ~~~~{.python}
 flip_image(
-    i,
-    output,
-    direction="vertical",
+    i, 
+    output, 
+    direction="vertical", 
     callback=default_callback)
 ~~~~
 
@@ -5420,7 +7694,7 @@ flip_image(
 
 ```
 >>./whitebox_tools -r=FlipImage -v --wd="/path/to/data/" ^
---input=in.tif -o=out.tif --direction=h
+--input=in.tif -o=out.tif --direction=h 
 
 
 ```
@@ -5428,7 +7702,7 @@ flip_image(
 
 #### 8.8.5 IhsToRgb
 
-Converts intensity, hue, and saturation (IHS) images into red, green, and blue (RGB) images..
+Converts intensity, hue, and saturation (IHS) images into red, green, and blue (RGB) images.
 
 *Parameters*:
 
@@ -5447,13 +7721,13 @@ Converts intensity, hue, and saturation (IHS) images into red, green, and blue (
 
 ~~~~{.python}
 ihs_to_rgb(
-    intensity,
-    hue,
-    saturation,
-    red=None,
-    green=None,
-    blue=None,
-    output=None,
+    intensity, 
+    hue, 
+    saturation, 
+    red=None, 
+    green=None, 
+    blue=None, 
+    output=None, 
     callback=default_callback)
 ~~~~
 
@@ -5466,7 +7740,7 @@ ihs_to_rgb(
 --blue=band1.tif
 >>./whitebox_tools -r=IhsToRgb -v ^
 --wd="/path/to/data/" --intensity=intensity.tif --hue=hue.tif ^
---saturation=saturation.tif --composite=image.tif
+--saturation=saturation.tif --composite=image.tif 
 
 
 ```
@@ -5474,7 +7748,7 @@ ihs_to_rgb(
 
 #### 8.8.6 ImageStackProfile
 
-Plots an image stack profile (i.e. signature) for a set of points and multispectral images..
+Plots an image stack profile (i.e. signature) for a set of points and multispectral images.
 
 *Parameters*:
 
@@ -5489,9 +7763,9 @@ Plots an image stack profile (i.e. signature) for a set of points and multispect
 
 ~~~~{.python}
 image_stack_profile(
-    inputs,
-    points,
-    output,
+    inputs, 
+    points, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -5500,7 +7774,7 @@ image_stack_profile(
 ```
 >>./whitebox_tools -r=ImageStackProfile -v ^
 --wd="/path/to/data/" -i='image1.tif;image2.tif;image3.tif' ^
---points=pts.shp -o=output.html
+--points=pts.shp -o=output.html 
 
 
 ```
@@ -5508,7 +7782,7 @@ image_stack_profile(
 
 #### 8.8.7 IntegralImage
 
-Transforms an input image (summed area table) into its integral image equivalent..
+Transforms an input image (summed area table) into its integral image equivalent.
 
 *Parameters*:
 
@@ -5522,8 +7796,8 @@ Transforms an input image (summed area table) into its integral image equivalent
 
 ~~~~{.python}
 integral_image(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -5531,7 +7805,7 @@ integral_image(
 
 ```
 >>./whitebox_tools -r=IntegralImage -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif
+-i=image.tif -o=output.tif 
 
 
 ```
@@ -5539,7 +7813,7 @@ integral_image(
 
 #### 8.8.8 KMeansClustering
 
-Performs a k-means clustering operation on a multi-spectral dataset..
+Performs a k-means clustering operation on a multi-spectral dataset.
 
 *Parameters*:
 
@@ -5559,14 +7833,14 @@ Performs a k-means clustering operation on a multi-spectral dataset..
 
 ~~~~{.python}
 k_means_clustering(
-    inputs,
-    output,
-    classes,
-    out_html=None,
-    max_iterations=10,
-    class_change=2.0,
-    initialize="diagonal",
-    min_class_size=10,
+    inputs, 
+    output, 
+    classes, 
+    out_html=None, 
+    max_iterations=10, 
+    class_change=2.0, 
+    initialize="diagonal", 
+    min_class_size=10, 
     callback=default_callback)
 ~~~~
 
@@ -5577,7 +7851,7 @@ k_means_clustering(
 --wd='/path/to/data/' -i='image1.tif;image2.tif;image3.tif' ^
 -o=output.tif --out_html=report.html --classes=15 ^
 --max_iterations=25 --class_change=1.5 --initialize='random' ^
---min_class_size=500
+--min_class_size=500 
 
 
 ```
@@ -5585,7 +7859,7 @@ k_means_clustering(
 
 #### 8.8.9 LineThinning
 
-Performs line thinning a on Boolean raster image; intended to be used with the RemoveSpurs tool..
+Performs line thinning a on Boolean raster image; intended to be used with the RemoveSpurs tool.
 
 *Parameters*:
 
@@ -5599,8 +7873,8 @@ Performs line thinning a on Boolean raster image; intended to be used with the R
 
 ~~~~{.python}
 line_thinning(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -5608,7 +7882,7 @@ line_thinning(
 
 ```
 >>./whitebox_tools -r=LineThinning -v --wd="/path/to/data/" ^
---input=DEM.tif -o=output.tif
+--input=DEM.tif -o=output.tif 
 
 
 ```
@@ -5616,7 +7890,13 @@ line_thinning(
 
 #### 8.8.10 ModifiedKMeansClustering
 
-Performs a modified k-means clustering operation on a multi-spectral dataset..
+This modified k-means algorithm is similar to that described by Mather (2004).
+The main difference between the traditional k-means and this technique is that the user
+does not need to specify the desired number of classes/clusters prior to running the
+tool. Instead, the algorithm initializes with a very liberal overestimate of the number
+of classes and then merges classes that have cluster centres that are separated by less
+than a user-defined threshold. The main difference between this algorithm and the ISODATA
+technique is that clusters can not be broken apart into two smaller clusters.
 
 *Parameters*:
 
@@ -5635,13 +7915,13 @@ Performs a modified k-means clustering operation on a multi-spectral dataset..
 
 ~~~~{.python}
 modified_k_means_clustering(
-    inputs,
-    output,
-    out_html=None,
-    start_clusters=1000,
-    merger_dist=None,
-    max_iterations=10,
-    class_change=2.0,
+    inputs, 
+    output, 
+    out_html=None, 
+    start_clusters=1000, 
+    merger_dist=None, 
+    max_iterations=10, 
+    class_change=2.0, 
     callback=default_callback)
 ~~~~
 
@@ -5651,7 +7931,7 @@ modified_k_means_clustering(
 >>./whitebox_tools -r=ModifiedKMeansClustering -v ^
 --wd='/path/to/data/' -i='image1.tif;image2.tif;image3.tif' ^
 -o=output.tif --out_html=report.html --start_clusters=100 ^
---merger_dist=30.0 --max_iterations=25 --class_change=1.5
+--merger_dist=30.0 --max_iterations=25 --class_change=1.5 
 
 
 ```
@@ -5659,7 +7939,23 @@ modified_k_means_clustering(
 
 #### 8.8.11 Mosaic
 
-Mosaics two or more images together..
+This tool will create an image mosaic from one or more input image files using
+one of three resampling methods including, nearest neighbour, bilinear interpolation,
+and cubic convolution. The order of the input source image files is important. Grid
+cells in the output image will be assigned the corresponding value determined from the
+first image found in the list to possess an overlapping coordinate.
+
+Resample is very similar in operation to the Mosaic tool. The Resample tool should be
+used when there is an existing image into which you would like to dump information from
+one or more source images. If the source images are more extensive than the destination
+image, i.e. there are areas that extend beyond the destination image boundaries, these
+areas will not be represented in the updated image. Grid cells in the destination image
+that are not overlapping with any of the input source images will not be updated, i.e.
+they will possess the same value as before the resampling operation. The Mosaic tool is
+used when there is no existing destination image. In this case, a new image is created
+that represents the bounding rectangle of each of the two or more input images. Grid
+cells in the output image that do not overlap with any of the input images will be
+assigned the NoData value.
 
 *Parameters*:
 
@@ -5667,17 +7963,17 @@ Mosaics two or more images together..
 -------------------  ---------------
 -i, -\-inputs        Input raster files
 -o, -\-output        Output raster file
--\-method            Resampling method; options include 'nn' (nearest neighbour), 'bilinear', and
-                     'cc' (cubic convolution)
+-\-method            Resampling method; options include 'nn' (nearest neighbour), 'bilinear', and 
+                     'cc' (cubic convolution) 
 
 
 *Python function*:
 
 ~~~~{.python}
 mosaic(
-    inputs,
-    output,
-    method="cc",
+    inputs, 
+    output, 
+    method="cc", 
     callback=default_callback)
 ~~~~
 
@@ -5686,7 +7982,7 @@ mosaic(
 ```
 >>./whitebox_tools -r=Mosaic -v --wd='/path/to/data/' ^
 -i='image1.tif;image2.tif;image3.tif' -o=dest.tif ^
---method='cc
+--method='cc 
 
 
 ```
@@ -5694,7 +7990,7 @@ mosaic(
 
 #### 8.8.12 NormalizedDifferenceVegetationIndex
 
-Calculates the normalized difference vegetation index (NDVI) from near-infrared and red imagery..
+Calculates the normalized difference vegetation index (NDVI) from near-infrared and red imagery.
 
 *Parameters*:
 
@@ -5704,19 +8000,19 @@ Calculates the normalized difference vegetation index (NDVI) from near-infrared 
 -\-red               Input red band image
 -o, -\-output        Output raster file
 -\-clip              Optional amount to clip the distribution tails by, in percent
--\-osavi             Optional flag indicating whether the optimized soil-adjusted veg index (OSAVI)
-                     should be used
+-\-osavi             Optional flag indicating whether the optimized soil-adjusted veg index (OSAVI) 
+                     should be used 
 
 
 *Python function*:
 
 ~~~~{.python}
 normalized_difference_vegetation_index(
-    nir,
-    red,
-    output,
-    clip=0.0,
-    osavi=False,
+    nir, 
+    red, 
+    output, 
+    clip=0.0, 
+    osavi=False, 
     callback=default_callback)
 ~~~~
 
@@ -5729,7 +8025,7 @@ normalized_difference_vegetation_index(
 >>./whitebox_tools ^
 -r=NormalizedDifferenceVegetationIndex -v --wd="/path/to/data/" ^
 --nir=band4.tif --red=band3.tif -o=output.tif --clip=1.0 ^
---osavi
+--osavi 
 
 
 ```
@@ -5737,7 +8033,7 @@ normalized_difference_vegetation_index(
 
 #### 8.8.13 Opening
 
-An opening is a mathematical morphology operating involving a dilation (max filter) of an erosion (min filter) set..
+An opening is a mathematical morphology operating involving a dilation (max filter) of an erosion (min filter) set.
 
 *Parameters*:
 
@@ -5753,10 +8049,10 @@ An opening is a mathematical morphology operating involving a dilation (max filt
 
 ~~~~{.python}
 opening(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
     callback=default_callback)
 ~~~~
 
@@ -5764,7 +8060,7 @@ opening(
 
 ```
 >>./whitebox_tools -r=Opening -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif --filter=25
+-i=image.tif -o=output.tif --filter=25 
 
 
 ```
@@ -5772,7 +8068,7 @@ opening(
 
 #### 8.8.14 RemoveSpurs
 
-Removes the spurs (pruning operation) from a Boolean line image.; intended to be used on the output of the LineThinning tool..
+Removes the spurs (pruning operation) from a Boolean line image.; intended to be used on the output of the LineThinning tool.
 
 *Parameters*:
 
@@ -5787,9 +8083,9 @@ Removes the spurs (pruning operation) from a Boolean line image.; intended to be
 
 ~~~~{.python}
 remove_spurs(
-    i,
-    output,
-    iterations=10,
+    i, 
+    output, 
+    iterations=10, 
     callback=default_callback)
 ~~~~
 
@@ -5797,7 +8093,7 @@ remove_spurs(
 
 ```
 >>./whitebox_tools -r=RemoveSpurs -v --wd="/path/to/data/" ^
---input=DEM.tif -o=output.tif --iterations=10
+--input=DEM.tif -o=output.tif --iterations=10 
 
 
 ```
@@ -5805,7 +8101,17 @@ remove_spurs(
 
 #### 8.8.15 Resample
 
-Resamples one or more input images into a destination image..
+Resample is very similar in operation to the Mosaic tool. The Resample tool should
+be used when there is an existing image into which you would like to dump information
+from one or more source images. If the source images are more extensive than the
+destination image, i.e. there are areas that extend beyond the destination image
+boundaries, these areas will not be represented in the updated image. Grid cells in the
+destination image that are not overlapping with any of the input source images will not
+be updated, i.e. they will possess the same value as before the resampling operation. The
+Mosaic tool is used when there is no existing destination image. In this case, a new
+image is created that represents the bounding rectangle of each of the two or more input
+images. Grid cells in the output image that do not overlap with any of the input images
+will be assigned the NoData value.
 
 *Parameters*:
 
@@ -5813,17 +8119,17 @@ Resamples one or more input images into a destination image..
 -------------------  ---------------
 -i, -\-inputs        Input raster files
 -\-destination       Destination raster file
--\-method            Resampling method; options include 'nn' (nearest neighbour), 'bilinear', and
-                     'cc' (cubic convolution)
+-\-method            Resampling method; options include 'nn' (nearest neighbour), 'bilinear', and 
+                     'cc' (cubic convolution) 
 
 
 *Python function*:
 
 ~~~~{.python}
 resample(
-    inputs,
-    destination,
-    method="cc",
+    inputs, 
+    destination, 
+    method="cc", 
     callback=default_callback)
 ~~~~
 
@@ -5832,7 +8138,7 @@ resample(
 ```
 >>./whitebox_tools -r=Resample -v --wd='/path/to/data/' ^
 -i='image1.tif;image2.tif;image3.tif' --destination=dest.tif ^
---method='cc
+--method='cc 
 
 
 ```
@@ -5840,20 +8146,20 @@ resample(
 
 #### 8.8.16 RgbToIhs
 
-Converts red, green, and blue (RGB) images into intensity, hue, and saturation (IHS) images..
+Converts red, green, and blue (RGB) images into intensity, hue, and saturation (IHS) images.
 
 *Parameters*:
 
 **Flag**             **Description**
 -------------------  ---------------
--\-red               Input red band image file. Optionally specified if colour-composite not
-                     specified
--\-green             Input green band image file. Optionally specified if colour-composite not
-                     specified
--\-blue              Input blue band image file. Optionally specified if colour-composite not
-                     specified
--\-composite         Input colour-composite image file. Only used if individual bands are not
-                     specified
+-\-red               Input red band image file. Optionally specified if colour-composite not 
+                     specified 
+-\-green             Input green band image file. Optionally specified if colour-composite not 
+                     specified 
+-\-blue              Input blue band image file. Optionally specified if colour-composite not 
+                     specified 
+-\-composite         Input colour-composite image file. Only used if individual bands are not 
+                     specified 
 -\-intensity         Output intensity raster file
 -\-hue               Output hue raster file
 -\-saturation        Output saturation raster file
@@ -5863,13 +8169,13 @@ Converts red, green, and blue (RGB) images into intensity, hue, and saturation (
 
 ~~~~{.python}
 rgb_to_ihs(
-    intensity,
-    hue,
-    saturation,
-    red=None,
-    green=None,
-    blue=None,
-    composite=None,
+    intensity, 
+    hue, 
+    saturation, 
+    red=None, 
+    green=None, 
+    blue=None, 
+    composite=None, 
     callback=default_callback)
 ~~~~
 
@@ -5883,7 +8189,7 @@ rgb_to_ihs(
 >>./whitebox_tools -r=RgbToIhs -v ^
 --wd="/path/to/data/" --composite=image.tif ^
 --intensity=intensity.tif --hue=hue.tif ^
---saturation=saturation.tif
+--saturation=saturation.tif 
 
 
 ```
@@ -5891,7 +8197,7 @@ rgb_to_ihs(
 
 #### 8.8.17 SplitColourComposite
 
-This tool splits an RGB colour composite image into seperate multispectral images..
+This tool splits an RGB colour composite image into seperate multispectral images.
 
 *Parameters*:
 
@@ -5905,8 +8211,8 @@ This tool splits an RGB colour composite image into seperate multispectral image
 
 ~~~~{.python}
 split_colour_composite(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -5914,7 +8220,7 @@ split_colour_composite(
 
 ```
 >>./whitebox_tools -r=SplitColourComposite -v ^
---wd="/path/to/data/" -i=input.tif -o=output.tif
+--wd="/path/to/data/" -i=input.tif -o=output.tif 
 
 
 ```
@@ -5922,7 +8228,7 @@ split_colour_composite(
 
 #### 8.8.18 ThickenRasterLine
 
-Thickens single-cell wide lines within a raster image..
+Thickens single-cell wide lines within a raster image.
 
 *Parameters*:
 
@@ -5936,8 +8242,8 @@ Thickens single-cell wide lines within a raster image..
 
 ~~~~{.python}
 thicken_raster_line(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -5945,7 +8251,7 @@ thicken_raster_line(
 
 ```
 >>./whitebox_tools -r=ThickenRasterLine -v ^
---wd="/path/to/data/" --input=DEM.tif -o=output.tif
+--wd="/path/to/data/" --input=DEM.tif -o=output.tif 
 
 
 ```
@@ -5953,7 +8259,7 @@ thicken_raster_line(
 
 #### 8.8.19 TophatTransform
 
-Performs either a white or black top-hat transform on an input image..
+Performs either a white or black top-hat transform on an input image.
 
 *Parameters*:
 
@@ -5970,11 +8276,11 @@ Performs either a white or black top-hat transform on an input image..
 
 ~~~~{.python}
 tophat_transform(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
-    variant="white",
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
+    variant="white", 
     callback=default_callback)
 ~~~~
 
@@ -5982,7 +8288,7 @@ tophat_transform(
 
 ```
 >>./whitebox_tools -r=TophatTransform -v ^
---wd="/path/to/data/" -i=image.tif -o=output.tif --filter=25
+--wd="/path/to/data/" -i=image.tif -o=output.tif --filter=25 
 
 
 ```
@@ -5990,7 +8296,7 @@ tophat_transform(
 
 #### 8.8.20 WriteFunctionMemoryInsertion
 
-Performs a write function memory insertion for single-band multi-date change detection..
+Performs a write function memory insertion for single-band multi-date change detection.
 
 *Parameters*:
 
@@ -6006,10 +8312,10 @@ Performs a write function memory insertion for single-band multi-date change det
 
 ~~~~{.python}
 write_function_memory_insertion(
-    input1,
-    input2,
-    output,
-    input3=None,
+    input1, 
+    input2, 
+    output, 
+    input3=None, 
     callback=default_callback)
 ~~~~
 
@@ -6018,7 +8324,7 @@ write_function_memory_insertion(
 ```
 >>./whitebox_tools -r=WriteFunctionMemoryInsertion -v ^
 --wd="/path/to/data/" -i1=input1.tif -i2=input2.tif ^
--o=output.tif
+-o=output.tif 
 
 
 ```
@@ -6027,7 +8333,7 @@ write_function_memory_insertion(
 
 #### 8.9.1 AdaptiveFilter
 
-Performs an adaptive filter on an image..
+Performs an adaptive filter on an image.
 
 *Parameters*:
 
@@ -6044,11 +8350,11 @@ Performs an adaptive filter on an image..
 
 ~~~~{.python}
 adaptive_filter(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
-    threshold=2.0,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
+    threshold=2.0, 
     callback=default_callback)
 ~~~~
 
@@ -6056,7 +8362,7 @@ adaptive_filter(
 
 ```
 >>./whitebox_tools -r=AdaptiveFilter -v --wd="/path/to/data/" ^
--i=DEM.tif -o=output.tif --filter=25 --threshold = 2.0
+-i=DEM.tif -o=output.tif --filter=25 --threshold = 2.0 
 
 
 ```
@@ -6064,7 +8370,7 @@ adaptive_filter(
 
 #### 8.9.2 BilateralFilter
 
-A bilateral filter is an edge-preserving smoothing filter introduced by Tomasi and Manduchi (1998)..
+A bilateral filter is an edge-preserving smoothing filter introduced by Tomasi and Manduchi (1998).
 
 *Parameters*:
 
@@ -6080,10 +8386,10 @@ A bilateral filter is an edge-preserving smoothing filter introduced by Tomasi a
 
 ~~~~{.python}
 bilateral_filter(
-    i,
-    output,
-    sigma_dist=0.75,
-    sigma_int=1.0,
+    i, 
+    output, 
+    sigma_dist=0.75, 
+    sigma_int=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -6092,7 +8398,7 @@ bilateral_filter(
 ```
 >>./whitebox_tools -r=BilateralFilter -v ^
 --wd="/path/to/data/" -i=image.tif -o=output.tif ^
---sigma_dist=2.5 --sigma_int=4.0
+--sigma_dist=2.5 --sigma_int=4.0 
 
 
 ```
@@ -6100,7 +8406,7 @@ bilateral_filter(
 
 #### 8.9.3 ConservativeSmoothingFilter
 
-Performs a conservative-smoothing filter on an image..
+Performs a conservative-smoothing filter on an image.
 
 *Parameters*:
 
@@ -6116,10 +8422,10 @@ Performs a conservative-smoothing filter on an image..
 
 ~~~~{.python}
 conservative_smoothing_filter(
-    i,
-    output,
-    filterx=3,
-    filtery=3,
+    i, 
+    output, 
+    filterx=3, 
+    filtery=3, 
     callback=default_callback)
 ~~~~
 
@@ -6127,7 +8433,7 @@ conservative_smoothing_filter(
 
 ```
 >>./whitebox_tools -r=ConservativeSmoothingFilter -v ^
---wd="/path/to/data/" -i=image.tif -o=output.tif --filter=25
+--wd="/path/to/data/" -i=image.tif -o=output.tif --filter=25 
 
 
 ```
@@ -6135,7 +8441,7 @@ conservative_smoothing_filter(
 
 #### 8.9.4 CornerDetection
 
-Identifies corner patterns in boolean images using hit-and-miss pattern mattching..
+Identifies corner patterns in boolean images using hit-and-miss pattern mattching.
 
 *Parameters*:
 
@@ -6149,8 +8455,8 @@ Identifies corner patterns in boolean images using hit-and-miss pattern mattchin
 
 ~~~~{.python}
 corner_detection(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -6158,7 +8464,7 @@ corner_detection(
 
 ```
 >>./whitebox_tools -r=CornerDetection -v ^
---wd="/path/to/data/" -i=image.tif -o=output.tif --sigma=2.0
+--wd="/path/to/data/" -i=image.tif -o=output.tif --sigma=2.0 
 
 
 ```
@@ -6166,7 +8472,7 @@ corner_detection(
 
 #### 8.9.5 DiffOfGaussianFilter
 
-Performs a Difference of Gaussian (DoG) filter on an image..
+Performs a Difference of Gaussian (DoG) filter on an image.
 
 *Parameters*:
 
@@ -6182,10 +8488,10 @@ Performs a Difference of Gaussian (DoG) filter on an image..
 
 ~~~~{.python}
 diff_of_gaussian_filter(
-    i,
-    output,
-    sigma1=2.0,
-    sigma2=4.0,
+    i, 
+    output, 
+    sigma1=2.0, 
+    sigma2=4.0, 
     callback=default_callback)
 ~~~~
 
@@ -6194,7 +8500,7 @@ diff_of_gaussian_filter(
 ```
 >>./whitebox_tools -r=DiffOfGaussianFilter -v ^
 --wd="/path/to/data/" -i=image.tif -o=output.tif --sigma1=2.0 ^
---sigma2=4.0
+--sigma2=4.0 
 
 
 ```
@@ -6202,7 +8508,7 @@ diff_of_gaussian_filter(
 
 #### 8.9.6 DiversityFilter
 
-Assigns each cell in the output grid the number of different values in a moving window centred on each grid cell in the input raster..
+Assigns each cell in the output grid the number of different values in a moving window centred on each grid cell in the input raster.
 
 *Parameters*:
 
@@ -6218,10 +8524,10 @@ Assigns each cell in the output grid the number of different values in a moving 
 
 ~~~~{.python}
 diversity_filter(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
     callback=default_callback)
 ~~~~
 
@@ -6229,7 +8535,7 @@ diversity_filter(
 
 ```
 >>./whitebox_tools -r=DiversityFilter -v ^
---wd="/path/to/data/" -i=image.tif -o=output.tif --filter=25
+--wd="/path/to/data/" -i=image.tif -o=output.tif --filter=25 
 
 
 ```
@@ -6237,7 +8543,7 @@ diversity_filter(
 
 #### 8.9.7 EdgePreservingMeanFilter
 
-Performs a simple edge-preserving mean filter on an input image..
+Performs a simple edge-preserving mean filter on an input image.
 
 *Parameters*:
 
@@ -6253,10 +8559,10 @@ Performs a simple edge-preserving mean filter on an input image..
 
 ~~~~{.python}
 edge_preserving_mean_filter(
-    i,
-    output,
-    threshold,
-    filter=11,
+    i, 
+    output, 
+    threshold, 
+    filter=11, 
     callback=default_callback)
 ~~~~
 
@@ -6265,7 +8571,7 @@ edge_preserving_mean_filter(
 ```
 >>./whitebox_tools -r=EdgePreservingMeanFilter -v ^
 --wd="/path/to/data/" --input=image.tif -o=output.tif ^
---filter=5 --threshold=20
+--filter=5 --threshold=20 
 
 
 ```
@@ -6273,7 +8579,7 @@ edge_preserving_mean_filter(
 
 #### 8.9.8 EmbossFilter
 
-Performs an emboss filter on an image, similar to a hillshade operation..
+Performs an emboss filter on an image, similar to a hillshade operation.
 
 *Parameters*:
 
@@ -6281,8 +8587,8 @@ Performs an emboss filter on an image, similar to a hillshade operation..
 -------------------  ---------------
 -i, -\-input         Input raster file
 -o, -\-output        Output raster file
--\-direction         Direction of reflection; options include 'n', 's', 'e', 'w', 'ne', 'se', 'nw',
-                     'sw'
+-\-direction         Direction of reflection; options include 'n', 's', 'e', 'w', 'ne', 'se', 'nw', 
+                     'sw' 
 -\-clip              Optional amount to clip the distribution tails by, in percent
 
 
@@ -6290,10 +8596,10 @@ Performs an emboss filter on an image, similar to a hillshade operation..
 
 ~~~~{.python}
 emboss_filter(
-    i,
-    output,
-    direction="n",
-    clip=0.0,
+    i, 
+    output, 
+    direction="n", 
+    clip=0.0, 
     callback=default_callback)
 ~~~~
 
@@ -6301,7 +8607,7 @@ emboss_filter(
 
 ```
 >>./whitebox_tools -r=EmbossFilter -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif --direction='s' --clip=1.0
+-i=image.tif -o=output.tif --direction='s' --clip=1.0 
 
 
 ```
@@ -6309,7 +8615,17 @@ emboss_filter(
 
 #### 8.9.9 FastAlmostGaussianFilter
 
-Performs a fast approximate Gaussian filter on an image..
+Reference: P. Kovesi 2010 Fast Almost-Gaussian Filtering, Digital Image Computing:
+Techniques and Applications (DICTA), 2010 International Conference on.
+
+The tool is somewhat modiied from Dr. Kovesi's original Matlab code in that it
+works with both greyscale and RGB images (decomposes to HSI and uses the intensity
+data) and it handles the case of rasters that contain NoData values. This adds
+complexity to the original 20 additions and 5 multiplications assertion of the
+original paper.
+
+Also note, for small values of sigma (< 1.8), you should probably just use the
+regular GaussianFilter tool.
 
 *Parameters*:
 
@@ -6324,9 +8640,9 @@ Performs a fast approximate Gaussian filter on an image..
 
 ~~~~{.python}
 fast_almost_gaussian_filter(
-    i,
-    output,
-    sigma=1.8,
+    i, 
+    output, 
+    sigma=1.8, 
     callback=default_callback)
 ~~~~
 
@@ -6334,7 +8650,7 @@ fast_almost_gaussian_filter(
 
 ```
 >>./whitebox_tools -r=FastAlmostGaussianFilter -v ^
---wd="/path/to/data/" -i=image.tif -o=output.tif --sigma=2.0
+--wd="/path/to/data/" -i=image.tif -o=output.tif --sigma=2.0 
 
 
 ```
@@ -6342,7 +8658,7 @@ fast_almost_gaussian_filter(
 
 #### 8.9.10 GaussianFilter
 
-Performs a Gaussian filter on an image..
+Performs a Gaussian filter on an image.
 
 *Parameters*:
 
@@ -6357,9 +8673,9 @@ Performs a Gaussian filter on an image..
 
 ~~~~{.python}
 gaussian_filter(
-    i,
-    output,
-    sigma=0.75,
+    i, 
+    output, 
+    sigma=0.75, 
     callback=default_callback)
 ~~~~
 
@@ -6367,7 +8683,7 @@ gaussian_filter(
 
 ```
 >>./whitebox_tools -r=GaussianFilter -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif --sigma=2.0
+-i=image.tif -o=output.tif --sigma=2.0 
 
 
 ```
@@ -6375,7 +8691,7 @@ gaussian_filter(
 
 #### 8.9.11 HighPassFilter
 
-Performs a high-pass filter on an input image..
+Performs a high-pass filter on an input image.
 
 *Parameters*:
 
@@ -6391,10 +8707,10 @@ Performs a high-pass filter on an input image..
 
 ~~~~{.python}
 high_pass_filter(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
     callback=default_callback)
 ~~~~
 
@@ -6402,15 +8718,52 @@ high_pass_filter(
 
 ```
 >>./whitebox_tools -r=HighPassFilter -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif --filter=25
+-i=image.tif -o=output.tif --filter=25 
 
 
 ```
 
 
-#### 8.9.12 KNearestMeanFilter
+#### 8.9.12 HighPassMedianFilter
 
-A k-nearest mean filter is a type of edge-preserving smoothing filter..
+Performs a high pass filter based on a median filter.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input raster file
+-o, -\-output        Output raster file
+-\-filterx           Size of the filter kernel in the x-direction
+-\-filtery           Size of the filter kernel in the y-direction
+-\-sig_digits        Number of significant digits
+
+
+*Python function*:
+
+~~~~{.python}
+high_pass_median_filter(
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
+    sig_digits=2, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=HighPassMedianFilter -v ^
+--wd="/path/to/data/" -i=input.tif -o=output.tif --filter=25 
+
+
+```
+
+
+#### 8.9.13 KNearestMeanFilter
+
+A k-nearest mean filter is a type of edge-preserving smoothing filter.
 
 *Parameters*:
 
@@ -6427,11 +8780,11 @@ A k-nearest mean filter is a type of edge-preserving smoothing filter..
 
 ~~~~{.python}
 k_nearest_mean_filter(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
-    k=5,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
+    k=5, 
     callback=default_callback)
 ~~~~
 
@@ -6443,15 +8796,15 @@ k_nearest_mean_filter(
 -k=5
 >>./whitebox_tools -r=KNearestMeanFilter -v ^
 --wd="/path/to/data/" -i=image.tif -o=output.tif --filtery=7 ^
---filtery=9 -k=5
+--filtery=9 -k=5 
 
 
 ```
 
 
-#### 8.9.13 LaplacianFilter
+#### 8.9.14 LaplacianFilter
 
-Performs a Laplacian filter on an image..
+Performs a Laplacian filter on an image.
 
 *Parameters*:
 
@@ -6459,8 +8812,8 @@ Performs a Laplacian filter on an image..
 -------------------  ---------------
 -i, -\-input         Input raster file
 -o, -\-output        Output raster file
--\-variant           Optional variant value. Options include 3x3(1), 3x3(2), 3x3(3), 3x3(4), 5x5(1),
-                     and 5x5(2) (default is 3x3(1))
+-\-variant           Optional variant value. Options include 3x3(1), 3x3(2), 3x3(3), 3x3(4), 5x5(1), 
+                     and 5x5(2) (default is 3x3(1)) 
 -\-clip              Optional amount to clip the distribution tails by, in percent
 
 
@@ -6468,10 +8821,10 @@ Performs a Laplacian filter on an image..
 
 ~~~~{.python}
 laplacian_filter(
-    i,
-    output,
-    variant="3x3(1)",
-    clip=0.0,
+    i, 
+    output, 
+    variant="3x3(1)", 
+    clip=0.0, 
     callback=default_callback)
 ~~~~
 
@@ -6480,15 +8833,15 @@ laplacian_filter(
 ```
 >>./whitebox_tools -r=LaplacianFilter -v ^
 --wd="/path/to/data/" -i=image.tif -o=output.tif ^
---variant='3x3(1)' --clip=1.0
+--variant='3x3(1)' --clip=1.0 
 
 
 ```
 
 
-#### 8.9.14 LaplacianOfGaussianFilter
+#### 8.9.15 LaplacianOfGaussianFilter
 
-Performs a Laplacian-of-Gaussian (LoG) filter on an image..
+Performs a Laplacian-of-Gaussian (LoG) filter on an image.
 
 *Parameters*:
 
@@ -6503,9 +8856,9 @@ Performs a Laplacian-of-Gaussian (LoG) filter on an image..
 
 ~~~~{.python}
 laplacian_of_gaussian_filter(
-    i,
-    output,
-    sigma=0.75,
+    i, 
+    output, 
+    sigma=0.75, 
     callback=default_callback)
 ~~~~
 
@@ -6513,15 +8866,15 @@ laplacian_of_gaussian_filter(
 
 ```
 >>./whitebox_tools -r=LaplacianOfGaussianFilter -v ^
---wd="/path/to/data/" -i=image.tif -o=output.tif --sigma=2.0
+--wd="/path/to/data/" -i=image.tif -o=output.tif --sigma=2.0 
 
 
 ```
 
 
-#### 8.9.15 LeeFilter
+#### 8.9.16 LeeFilter
 
-Performs a Lee (Sigma) smoothing filter on an image..
+Performs a Lee (Sigma) smoothing filter on an image.
 
 *Parameters*:
 
@@ -6531,22 +8884,22 @@ Performs a Lee (Sigma) smoothing filter on an image..
 -o, -\-output        Output raster file
 -\-filterx           Size of the filter kernel in the x-direction
 -\-filtery           Size of the filter kernel in the y-direction
--\-sigma             Sigma value should be related to the standarad deviation of the distribution of
-                     image speckle noise
--m                   M-threshold value the minimum allowable number of pixels within the intensity
-                     range
+-\-sigma             Sigma value should be related to the standarad deviation of the distribution of 
+                     image speckle noise 
+-m                   M-threshold value the minimum allowable number of pixels within the intensity 
+                     range 
 
 
 *Python function*:
 
 ~~~~{.python}
 lee_filter(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
-    sigma=10.0,
-    m=5.0,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
+    sigma=10.0, 
+    m=5.0, 
     callback=default_callback)
 ~~~~
 
@@ -6558,15 +8911,15 @@ lee_filter(
 -m=5
 >>./whitebox_tools -r=LeeFilter -v --wd="/path/to/data/" ^
 -i=image.tif -o=output.tif --filtery=7 --filtery=9 ^
---sigma=10.0 -m=5
+--sigma=10.0 -m=5 
 
 
 ```
 
 
-#### 8.9.16 LineDetectionFilter
+#### 8.9.17 LineDetectionFilter
 
-Performs a line-detection filter on an image..
+Performs a line-detection filter on an image.
 
 *Parameters*:
 
@@ -6574,8 +8927,8 @@ Performs a line-detection filter on an image..
 -------------------  ---------------
 -i, -\-input         Input raster file
 -o, -\-output        Output raster file
--\-variant           Optional variant value. Options include 'v' (vertical), 'h' (horizontal), '45',
-                     and '135' (default is 'v')
+-\-variant           Optional variant value. Options include 'v' (vertical), 'h' (horizontal), '45', 
+                     and '135' (default is 'v') 
 -\-absvals           Optional flag indicating whether outputs should be absolute values
 -\-clip              Optional amount to clip the distribution tails by, in percent
 
@@ -6584,11 +8937,11 @@ Performs a line-detection filter on an image..
 
 ~~~~{.python}
 line_detection_filter(
-    i,
-    output,
-    variant="vertical",
-    absvals=False,
-    clip=0.0,
+    i, 
+    output, 
+    variant="vertical", 
+    absvals=False, 
+    clip=0.0, 
     callback=default_callback)
 ~~~~
 
@@ -6597,15 +8950,15 @@ line_detection_filter(
 ```
 >>./whitebox_tools -r=LineDetectionFilter -v ^
 --wd="/path/to/data/" -i=image.tif -o=output.tif --variant=h ^
---clip=1.0
+--clip=1.0 
 
 
 ```
 
 
-#### 8.9.17 MajorityFilter
+#### 8.9.18 MajorityFilter
 
-Assigns each cell in the output grid the most frequently occurring value (mode) in a moving window centred on each grid cell in the input raster..
+Assigns each cell in the output grid the most frequently occurring value (mode) in a moving window centred on each grid cell in the input raster.
 
 *Parameters*:
 
@@ -6621,10 +8974,10 @@ Assigns each cell in the output grid the most frequently occurring value (mode) 
 
 ~~~~{.python}
 majority_filter(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
     callback=default_callback)
 ~~~~
 
@@ -6632,15 +8985,15 @@ majority_filter(
 
 ```
 >>./whitebox_tools -r=MajorityFilter -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif --filter=25
+-i=image.tif -o=output.tif --filter=25 
 
 
 ```
 
 
-#### 8.9.18 MaximumFilter
+#### 8.9.19 MaximumFilter
 
-Assigns each cell in the output grid the maximum value in a moving window centred on each grid cell in the input raster..
+Assigns each cell in the output grid the maximum value in a moving window centred on each grid cell in the input raster.
 
 *Parameters*:
 
@@ -6656,10 +9009,10 @@ Assigns each cell in the output grid the maximum value in a moving window centre
 
 ~~~~{.python}
 maximum_filter(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
     callback=default_callback)
 ~~~~
 
@@ -6667,15 +9020,15 @@ maximum_filter(
 
 ```
 >>./whitebox_tools -r=MaximumFilter -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif --filter=25
+-i=image.tif -o=output.tif --filter=25 
 
 
 ```
 
 
-#### 8.9.19 MeanFilter
+#### 8.9.20 MeanFilter
 
-Performs a mean filter (low-pass filter) on an input image..
+Performs a mean filter (low-pass filter) on an input image.
 
 *Parameters*:
 
@@ -6691,10 +9044,10 @@ Performs a mean filter (low-pass filter) on an input image..
 
 ~~~~{.python}
 mean_filter(
-    i,
-    output,
-    filterx=3,
-    filtery=3,
+    i, 
+    output, 
+    filterx=3, 
+    filtery=3, 
     callback=default_callback)
 ~~~~
 
@@ -6702,15 +9055,15 @@ mean_filter(
 
 ```
 >>./whitebox_tools -r=MeanFilter -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif --filterx=25 --filtery=25
+-i=image.tif -o=output.tif --filterx=25 --filtery=25 
 
 
 ```
 
 
-#### 8.9.20 MedianFilter
+#### 8.9.21 MedianFilter
 
-Performs a median filter on an input image..
+Performs an efficient median filter based on Huang, Yang, and Tang's (1979) method.
 
 *Parameters*:
 
@@ -6727,11 +9080,11 @@ Performs a median filter on an input image..
 
 ~~~~{.python}
 median_filter(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
-    sig_digits=2,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
+    sig_digits=2, 
     callback=default_callback)
 ~~~~
 
@@ -6739,15 +9092,15 @@ median_filter(
 
 ```
 >>./whitebox_tools -r=MedianFilter -v --wd="/path/to/data/" ^
--i=input.tif -o=output.tif --filter=25
+-i=input.tif -o=output.tif --filter=25 
 
 
 ```
 
 
-#### 8.9.21 MinimumFilter
+#### 8.9.22 MinimumFilter
 
-Assigns each cell in the output grid the minimum value in a moving window centred on each grid cell in the input raster..
+Assigns each cell in the output grid the minimum value in a moving window centred on each grid cell in the input raster.
 
 *Parameters*:
 
@@ -6763,10 +9116,10 @@ Assigns each cell in the output grid the minimum value in a moving window centre
 
 ~~~~{.python}
 minimum_filter(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
     callback=default_callback)
 ~~~~
 
@@ -6774,15 +9127,15 @@ minimum_filter(
 
 ```
 >>./whitebox_tools -r=MinimumFilter -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif --filter=25
+-i=image.tif -o=output.tif --filter=25 
 
 
 ```
 
 
-#### 8.9.22 OlympicFilter
+#### 8.9.23 OlympicFilter
 
-Performs an olympic smoothing filter on an image..
+Performs an olympic smoothing filter on an image.
 
 *Parameters*:
 
@@ -6798,10 +9151,10 @@ Performs an olympic smoothing filter on an image..
 
 ~~~~{.python}
 olympic_filter(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
     callback=default_callback)
 ~~~~
 
@@ -6809,15 +9162,15 @@ olympic_filter(
 
 ```
 >>./whitebox_tools -r=OlympicFilter -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif --filter=25
+-i=image.tif -o=output.tif --filter=25 
 
 
 ```
 
 
-#### 8.9.23 PercentileFilter
+#### 8.9.24 PercentileFilter
 
-Performs a percentile filter on an input image..
+Performs a percentile filter on an input image.
 
 *Parameters*:
 
@@ -6834,11 +9187,11 @@ Performs a percentile filter on an input image..
 
 ~~~~{.python}
 percentile_filter(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
-    sig_digits=2,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
+    sig_digits=2, 
     callback=default_callback)
 ~~~~
 
@@ -6846,15 +9199,15 @@ percentile_filter(
 
 ```
 >>./whitebox_tools -r=PercentileFilter -v ^
---wd="/path/to/data/" -i=input.tif -o=output.tif --filter=25
+--wd="/path/to/data/" -i=input.tif -o=output.tif --filter=25 
 
 
 ```
 
 
-#### 8.9.24 PrewittFilter
+#### 8.9.25 PrewittFilter
 
-Performs a Prewitt edge-detection filter on an image..
+Performs a Prewitt edge-detection filter on an image.
 
 *Parameters*:
 
@@ -6869,9 +9222,9 @@ Performs a Prewitt edge-detection filter on an image..
 
 ~~~~{.python}
 prewitt_filter(
-    i,
-    output,
-    clip=0.0,
+    i, 
+    output, 
+    clip=0.0, 
     callback=default_callback)
 ~~~~
 
@@ -6879,15 +9232,15 @@ prewitt_filter(
 
 ```
 >>./whitebox_tools -r=PrewittFilter -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif --clip=1.0
+-i=image.tif -o=output.tif --clip=1.0 
 
 
 ```
 
 
-#### 8.9.25 RangeFilter
+#### 8.9.26 RangeFilter
 
-Assigns each cell in the output grid the range of values in a moving window centred on each grid cell in the input raster..
+Assigns each cell in the output grid the range of values in a moving window centred on each grid cell in the input raster.
 
 *Parameters*:
 
@@ -6903,10 +9256,10 @@ Assigns each cell in the output grid the range of values in a moving window cent
 
 ~~~~{.python}
 range_filter(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
     callback=default_callback)
 ~~~~
 
@@ -6914,15 +9267,15 @@ range_filter(
 
 ```
 >>./whitebox_tools -r=RangeFilter -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif --filter=25
+-i=image.tif -o=output.tif --filter=25 
 
 
 ```
 
 
-#### 8.9.26 RobertsCrossFilter
+#### 8.9.27 RobertsCrossFilter
 
-Performs a Robert's cross edge-detection filter on an image..
+Performs a Robert's cross edge-detection filter on an image.
 
 *Parameters*:
 
@@ -6937,9 +9290,9 @@ Performs a Robert's cross edge-detection filter on an image..
 
 ~~~~{.python}
 roberts_cross_filter(
-    i,
-    output,
-    clip=0.0,
+    i, 
+    output, 
+    clip=0.0, 
     callback=default_callback)
 ~~~~
 
@@ -6947,15 +9300,15 @@ roberts_cross_filter(
 
 ```
 >>./whitebox_tools -r=RobertsCrossFilter -v ^
---wd="/path/to/data/" -i=image.tif -o=output.tif --clip=1.0
+--wd="/path/to/data/" -i=image.tif -o=output.tif --clip=1.0 
 
 
 ```
 
 
-#### 8.9.27 ScharrFilter
+#### 8.9.28 ScharrFilter
 
-Performs a Scharr edge-detection filter on an image..
+Performs a Scharr edge-detection filter on an image.
 
 *Parameters*:
 
@@ -6970,9 +9323,9 @@ Performs a Scharr edge-detection filter on an image..
 
 ~~~~{.python}
 scharr_filter(
-    i,
-    output,
-    clip=0.0,
+    i, 
+    output, 
+    clip=0.0, 
     callback=default_callback)
 ~~~~
 
@@ -6980,15 +9333,15 @@ scharr_filter(
 
 ```
 >>./whitebox_tools -r=ScharrFilter -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif --clip=1.0
+-i=image.tif -o=output.tif --clip=1.0 
 
 
 ```
 
 
-#### 8.9.28 SobelFilter
+#### 8.9.29 SobelFilter
 
-Performs a Sobel edge-detection filter on an image..
+Performs a Sobel edge-detection filter on an image.
 
 *Parameters*:
 
@@ -7004,10 +9357,10 @@ Performs a Sobel edge-detection filter on an image..
 
 ~~~~{.python}
 sobel_filter(
-    i,
-    output,
-    variant="3x3",
-    clip=0.0,
+    i, 
+    output, 
+    variant="3x3", 
+    clip=0.0, 
     callback=default_callback)
 ~~~~
 
@@ -7015,15 +9368,15 @@ sobel_filter(
 
 ```
 >>./whitebox_tools -r=SobelFilter -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif --variant=5x5 --clip=1.0
+-i=image.tif -o=output.tif --variant=5x5 --clip=1.0 
 
 
 ```
 
 
-#### 8.9.29 StandardDeviationFilter
+#### 8.9.30 StandardDeviationFilter
 
-Assigns each cell in the output grid the standard deviation of values in a moving window centred on each grid cell in the input raster..
+Assigns each cell in the output grid the standard deviation of values in a moving window centred on each grid cell in the input raster.
 
 *Parameters*:
 
@@ -7039,10 +9392,10 @@ Assigns each cell in the output grid the standard deviation of values in a movin
 
 ~~~~{.python}
 standard_deviation_filter(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
     callback=default_callback)
 ~~~~
 
@@ -7050,15 +9403,15 @@ standard_deviation_filter(
 
 ```
 >>./whitebox_tools -r=StandardDeviationFilter -v ^
---wd="/path/to/data/" -i=image.tif -o=output.tif --filter=25
+--wd="/path/to/data/" -i=image.tif -o=output.tif --filter=25 
 
 
 ```
 
 
-#### 8.9.30 TotalFilter
+#### 8.9.31 TotalFilter
 
-Performs a total filter on an input image..
+Performs a total filter on an input image.
 
 *Parameters*:
 
@@ -7074,10 +9427,10 @@ Performs a total filter on an input image..
 
 ~~~~{.python}
 total_filter(
-    i,
-    output,
-    filterx=11,
-    filtery=11,
+    i, 
+    output, 
+    filterx=11, 
+    filtery=11, 
     callback=default_callback)
 ~~~~
 
@@ -7085,15 +9438,15 @@ total_filter(
 
 ```
 >>./whitebox_tools -r=TotalFilter -v --wd="/path/to/data/" ^
--i=image.tif -o=output.tif --filter=25
+-i=image.tif -o=output.tif --filter=25 
 
 
 ```
 
 
-#### 8.9.31 UnsharpMasking
+#### 8.9.32 UnsharpMasking
 
-An image sharpening technique that enhances edges..
+An image sharpening technique that enhances edges.
 
 *Parameters*:
 
@@ -7110,11 +9463,11 @@ An image sharpening technique that enhances edges..
 
 ~~~~{.python}
 unsharp_masking(
-    i,
-    output,
-    sigma=0.75,
-    amount=100.0,
-    threshold=0.0,
+    i, 
+    output, 
+    sigma=0.75, 
+    amount=100.0, 
+    threshold=0.0, 
     callback=default_callback)
 ~~~~
 
@@ -7123,15 +9476,28 @@ unsharp_masking(
 ```
 >>./whitebox_tools -r=UnsharpMasking -v --wd="/path/to/data/" ^
 -i=image.tif -o=output.tif --sigma=2.0 --amount=50.0 ^
---threshold=10.0
+--threshold=10.0 
 
 
 ```
 
 
-#### 8.9.32 UserDefinedWeightsFilter
+#### 8.9.33 UserDefinedWeightsFilter
 
-Performs a user-defined weights filter on an image..
+NoData values in the input image are ignored during the convolution operation.
+This can lead to unexpected behavior at the edges of images (since the default behavior
+is to return NoData when addressing cells beyond the grid edge) and where the grid
+contains interior areas of NoData values. Normalization of kernel weights can be useful
+for handling the edge effects associated with interior areas of NoData values. When the
+normalization option is selected, the sum of the cell value-weight product is divided
+by the sum of the weights on a cell-by-cell basis. Therefore, if the kernel at a
+particular grid cell contains neighboring cells of NoData values, normalization
+effectively re-adjusts the weighting to account for the missing data values. Normalization
+also ensures that the output image will possess values within the range of the input
+image and allows the user to specify integer value weights in the kernel. However, note
+that this implies that the sum of weights should equal one. In some cases, alternative
+sums (e.g. zero) are more appropriate, and as such normalization should not be applied
+in these cases.
 
 *Parameters*:
 
@@ -7140,21 +9506,21 @@ Performs a user-defined weights filter on an image..
 -i, -\-input         Input raster file
 -\-weights           Input weights file
 -o, -\-output        Output raster file
--\-center            Kernel center cell; options include 'center', 'upper-left', 'upper-right',
-                     'lower-left', 'lower-right'
--\-normalize         Normalize kernel weights? This can reduce edge effects and lessen the impact of
-                     data gaps (nodata) but is not suited when the kernel weights sum to zero
+-\-center            Kernel center cell; options include 'center', 'upper-left', 'upper-right', 
+                     'lower-left', 'lower-right' 
+-\-normalize         Normalize kernel weights? This can reduce edge effects and lessen the impact of 
+                     data gaps (nodata) but is not suited when the kernel weights sum to zero 
 
 
 *Python function*:
 
 ~~~~{.python}
 user_defined_weights_filter(
-    i,
-    weights,
-    output,
-    center="center",
-    normalize=False,
+    i, 
+    weights, 
+    output, 
+    center="center", 
+    normalize=False, 
     callback=default_callback)
 ~~~~
 
@@ -7163,7 +9529,7 @@ user_defined_weights_filter(
 ```
 >>./whitebox_tools -r=UserDefinedWeightsFilter -v ^
 --wd="/path/to/data/" -i=image.tif --weights=weights.txt ^
--o=output.tif --center=center --normalize
+-o=output.tif --center=center --normalize 
 
 
 ```
@@ -7172,7 +9538,7 @@ user_defined_weights_filter(
 
 #### 8.10.1 BalanceContrastEnhancement
 
-Performs a balance contrast enhancement on a colour-composite image of multispectral data..
+Performs a balance contrast enhancement on a colour-composite image of multispectral data.
 
 *Parameters*:
 
@@ -7187,9 +9553,9 @@ Performs a balance contrast enhancement on a colour-composite image of multispec
 
 ~~~~{.python}
 balance_contrast_enhancement(
-    i,
-    output,
-    band_mean=100.0,
+    i, 
+    output, 
+    band_mean=100.0, 
     callback=default_callback)
 ~~~~
 
@@ -7198,7 +9564,7 @@ balance_contrast_enhancement(
 ```
 >>./whitebox_tools -r=BalanceContrastEnhancement -v ^
 --wd="/path/to/data/" --input=image.tif -o=output.tif ^
---band_mean=120
+--band_mean=120 
 
 
 ```
@@ -7206,7 +9572,23 @@ balance_contrast_enhancement(
 
 #### 8.10.2 CorrectVignetting
 
-Corrects the darkening of images towards corners..
+This tool can be used to reduce vignetting within an image. Vignetting refers to the
+reducuction of image brightness away from the image centre (i.e. the principal point).
+Vignetting is a radiometric distortion resulting from lens characteristics. The
+algorithm calculates the brightness value in the output image (BVout) as:
+
+BVout = BVin / [cos^n(arctan(d / f))]
+
+Where d is the photo-distance from the principal point in millimetres, f is the focal
+length of the camera, in millimeters, and n is a user-specified parameter. Pixel
+distances are converted to photo-distances (in millimetres) using the specified
+image width, i.e. distance between left and right edges (mm). For many cameras, 4.0
+is an appropriate value of the n parameter. A second pass of the image is used to
+rescale the output image so that it possesses the same minimum and maximum values as
+the input image.
+
+If an RGB image is input, the analysis will be performed on the intensity component
+of the HSI transform.
 
 *Parameters*:
 
@@ -7224,12 +9606,12 @@ Corrects the darkening of images towards corners..
 
 ~~~~{.python}
 correct_vignetting(
-    i,
-    pp,
-    output,
-    focal_length=304.8,
-    image_width=228.6,
-    n=4.0,
+    i, 
+    pp, 
+    output, 
+    focal_length=304.8, 
+    image_width=228.6, 
+    n=4.0, 
     callback=default_callback)
 ~~~~
 
@@ -7239,7 +9621,7 @@ correct_vignetting(
 >>./whitebox_tools -r=CorrectVignetting -v ^
 --wd="/path/to/data/" -i=input.tif --pp=princ_pt.shp ^
 -o=output.tif --focal_length=304.8 --image_width=228.6 ^
--n=4.0
+-n=4.0 
 
 
 ```
@@ -7247,7 +9629,7 @@ correct_vignetting(
 
 #### 8.10.3 DirectDecorrelationStretch
 
-Performs a direct decorrelation stretch enhancement on a colour-composite image of multispectral data..
+Performs a direct decorrelation stretch enhancement on a colour-composite image of multispectral data.
 
 *Parameters*:
 
@@ -7255,8 +9637,8 @@ Performs a direct decorrelation stretch enhancement on a colour-composite image 
 -------------------  ---------------
 -i, -\-input         Input colour composite image file
 -o, -\-output        Output raster file
--k                   Achromatic factor (k) ranges between 0 (no effect) and 1 (full saturation
-                     stretch), although typical values range from 0.3 to 0.7
+-k                   Achromatic factor (k) ranges between 0 (no effect) and 1 (full saturation 
+                     stretch), although typical values range from 0.3 to 0.7 
 -\-clip              Optional percent to clip the upper tail by during the stretch
 
 
@@ -7264,10 +9646,10 @@ Performs a direct decorrelation stretch enhancement on a colour-composite image 
 
 ~~~~{.python}
 direct_decorrelation_stretch(
-    i,
-    output,
-    k=0.5,
-    clip=1.0,
+    i, 
+    output, 
+    k=0.5, 
+    clip=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -7275,7 +9657,7 @@ direct_decorrelation_stretch(
 
 ```
 >>./whitebox_tools -r=DirectDecorrelationStretch -v ^
---wd="/path/to/data/" --input=image.tif -o=output.tif -k=0.4
+--wd="/path/to/data/" --input=image.tif -o=output.tif -k=0.4 
 
 
 ```
@@ -7283,7 +9665,7 @@ direct_decorrelation_stretch(
 
 #### 8.10.4 GammaCorrection
 
-Performs a sigmoidal contrast stretch on input images..
+Performs a sigmoidal contrast stretch on input images.
 
 *Parameters*:
 
@@ -7298,9 +9680,9 @@ Performs a sigmoidal contrast stretch on input images..
 
 ~~~~{.python}
 gamma_correction(
-    i,
-    output,
-    gamma=0.5,
+    i, 
+    output, 
+    gamma=0.5, 
     callback=default_callback)
 ~~~~
 
@@ -7308,7 +9690,7 @@ gamma_correction(
 
 ```
 >>./whitebox_tools -r=GammaCorrection -v ^
---wd="/path/to/data/" -i=input.tif -o=output.tif --gamma=0.5
+--wd="/path/to/data/" -i=input.tif -o=output.tif --gamma=0.5 
 
 
 ```
@@ -7316,7 +9698,7 @@ gamma_correction(
 
 #### 8.10.5 GaussianContrastStretch
 
-Performs a Gaussian contrast stretch on input images..
+Performs a Gaussian contrast stretch on input images.
 
 *Parameters*:
 
@@ -7331,9 +9713,9 @@ Performs a Gaussian contrast stretch on input images..
 
 ~~~~{.python}
 gaussian_contrast_stretch(
-    i,
-    output,
-    num_tones=256,
+    i, 
+    output, 
+    num_tones=256, 
     callback=default_callback)
 ~~~~
 
@@ -7342,7 +9724,7 @@ gaussian_contrast_stretch(
 ```
 >>./whitebox_tools -r=GaussianContrastStretch -v ^
 --wd="/path/to/data/" -i=input.tif -o=output.tif ^
---num_tones=1024
+--num_tones=1024 
 
 
 ```
@@ -7350,7 +9732,7 @@ gaussian_contrast_stretch(
 
 #### 8.10.6 HistogramEqualization
 
-Performs a histogram equalization contrast enhancment on an image..
+Performs a histogram equalization contrast enhancment on an image.
 
 *Parameters*:
 
@@ -7365,9 +9747,9 @@ Performs a histogram equalization contrast enhancment on an image..
 
 ~~~~{.python}
 histogram_equalization(
-    i,
-    output,
-    num_tones=256,
+    i, 
+    output, 
+    num_tones=256, 
     callback=default_callback)
 ~~~~
 
@@ -7376,7 +9758,7 @@ histogram_equalization(
 ```
 >>./whitebox_tools -r=HistogramEqualization -v ^
 --wd="/path/to/data/" -i=input.tif -o=output.tif ^
---num_tones=1024
+--num_tones=1024 
 
 
 ```
@@ -7384,7 +9766,7 @@ histogram_equalization(
 
 #### 8.10.7 HistogramMatching
 
-Alters the statistical distribution of a raster image matching it to a specified PDF..
+Alters the statistical distribution of a raster image matching it to a specified PDF.
 
 *Parameters*:
 
@@ -7399,9 +9781,9 @@ Alters the statistical distribution of a raster image matching it to a specified
 
 ~~~~{.python}
 histogram_matching(
-    i,
-    histo_file,
-    output,
+    i, 
+    histo_file, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -7410,7 +9792,7 @@ histogram_matching(
 ```
 >>./whitebox_tools -r=HistogramMatching -v ^
 --wd="/path/to/data/" -i=input1.tif --histo_file=histo.txt ^
--o=output.tif
+-o=output.tif 
 
 
 ```
@@ -7418,7 +9800,7 @@ histogram_matching(
 
 #### 8.10.8 HistogramMatchingTwoImages
 
-This tool alters the cumulative distribution function of a raster image to that of another image..
+This tool alters the cumulative distribution function of a raster image to that of another image.
 
 *Parameters*:
 
@@ -7433,9 +9815,9 @@ This tool alters the cumulative distribution function of a raster image to that 
 
 ~~~~{.python}
 histogram_matching_two_images(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -7444,7 +9826,7 @@ histogram_matching_two_images(
 ```
 >>./whitebox_tools -r=HistogramMatchingTwoImages -v ^
 --wd="/path/to/data/" --i1=input1.tif --i2=input2.tif ^
--o=output.tif
+-o=output.tif 
 
 
 ```
@@ -7452,7 +9834,7 @@ histogram_matching_two_images(
 
 #### 8.10.9 MinMaxContrastStretch
 
-Performs a min-max contrast stretch on an input greytone image..
+Performs a min-max contrast stretch on an input greytone image.
 
 *Parameters*:
 
@@ -7469,11 +9851,11 @@ Performs a min-max contrast stretch on an input greytone image..
 
 ~~~~{.python}
 min_max_contrast_stretch(
-    i,
-    output,
-    min_val,
-    max_val,
-    num_tones=256,
+    i, 
+    output, 
+    min_val, 
+    max_val, 
+    num_tones=256, 
     callback=default_callback)
 ~~~~
 
@@ -7482,7 +9864,7 @@ min_max_contrast_stretch(
 ```
 >>./whitebox_tools -r=MinMaxContrastStretch -v ^
 --wd="/path/to/data/" -i=input.tif -o=output.tif ^
---min_val=45.0 --max_val=200.0 --num_tones=1024
+--min_val=45.0 --max_val=200.0 --num_tones=1024 
 
 
 ```
@@ -7490,20 +9872,20 @@ min_max_contrast_stretch(
 
 #### 8.10.10 PanchromaticSharpening
 
-Increases the spatial resolution of image data by combining multispectral bands with panchromatic data..
+Increases the spatial resolution of image data by combining multispectral bands with panchromatic data.
 
 *Parameters*:
 
 **Flag**             **Description**
 -------------------  ---------------
--\-red               Input red band image file. Optionally specified if colour-composite not
-                     specified
--\-green             Input green band image file. Optionally specified if colour-composite not
-                     specified
--\-blue              Input blue band image file. Optionally specified if colour-composite not
-                     specified
--\-composite         Input colour-composite image file. Only used if individual bands are not
-                     specified
+-\-red               Input red band image file. Optionally specified if colour-composite not 
+                     specified 
+-\-green             Input green band image file. Optionally specified if colour-composite not 
+                     specified 
+-\-blue              Input blue band image file. Optionally specified if colour-composite not 
+                     specified 
+-\-composite         Input colour-composite image file. Only used if individual bands are not 
+                     specified 
 -\-pan               Input panchromatic band file
 -o, -\-output        Output colour composite file
 -\-method            Options include 'brovey' (default) and 'ihs'
@@ -7513,13 +9895,13 @@ Increases the spatial resolution of image data by combining multispectral bands 
 
 ~~~~{.python}
 panchromatic_sharpening(
-    pan,
-    output,
-    red=None,
-    green=None,
-    blue=None,
-    composite=None,
-    method="brovey",
+    pan, 
+    output, 
+    red=None, 
+    green=None, 
+    blue=None, 
+    composite=None, 
+    method="brovey", 
     callback=default_callback)
 ~~~~
 
@@ -7532,7 +9914,7 @@ panchromatic_sharpening(
 --method='brovey'
 >>./whitebox_tools -r=PanchromaticSharpening ^
 -v --wd="/path/to/data/" --composite=image.tif --pan=pan.tif ^
---output=pan_sharp.tif --method='ihs'
+--output=pan_sharp.tif --method='ihs' 
 
 
 ```
@@ -7540,7 +9922,7 @@ panchromatic_sharpening(
 
 #### 8.10.11 PercentageContrastStretch
 
-Performs a percentage linear contrast stretch on input images..
+Performs a percentage linear contrast stretch on input images.
 
 *Parameters*:
 
@@ -7549,8 +9931,8 @@ Performs a percentage linear contrast stretch on input images..
 -i, -\-input         Input raster file
 -o, -\-output        Output raster file
 -\-clip              Optional amount to clip the distribution tails by, in percent
--\-tail              Specified which tails to clip; options include 'upper', 'lower', and 'both'
-                     (default is 'both')
+-\-tail              Specified which tails to clip; options include 'upper', 'lower', and 'both' 
+                     (default is 'both') 
 -\-num_tones         Number of tones in the output image
 
 
@@ -7558,11 +9940,11 @@ Performs a percentage linear contrast stretch on input images..
 
 ~~~~{.python}
 percentage_contrast_stretch(
-    i,
-    output,
-    clip=0.0,
-    tail="both",
-    num_tones=256,
+    i, 
+    output, 
+    clip=0.0, 
+    tail="both", 
+    num_tones=256, 
     callback=default_callback)
 ~~~~
 
@@ -7571,7 +9953,7 @@ percentage_contrast_stretch(
 ```
 >>./whitebox_tools -r=PercentageContrastStretch -v ^
 --wd="/path/to/data/" -i=input.tif -o=output.tif --clip=2.0 ^
---tail='both' --num_tones=1024
+--tail='both' --num_tones=1024 
 
 
 ```
@@ -7579,7 +9961,7 @@ percentage_contrast_stretch(
 
 #### 8.10.12 SigmoidalContrastStretch
 
-Performs a sigmoidal contrast stretch on input images..
+Performs a sigmoidal contrast stretch on input images.
 
 *Parameters*:
 
@@ -7596,11 +9978,11 @@ Performs a sigmoidal contrast stretch on input images..
 
 ~~~~{.python}
 sigmoidal_contrast_stretch(
-    i,
-    output,
-    cutoff=0.0,
-    gain=1.0,
-    num_tones=256,
+    i, 
+    output, 
+    cutoff=0.0, 
+    gain=1.0, 
+    num_tones=256, 
     callback=default_callback)
 ~~~~
 
@@ -7609,7 +9991,7 @@ sigmoidal_contrast_stretch(
 ```
 >>./whitebox_tools -r=SigmoidalContrastStretch -v ^
 --wd="/path/to/data/" -i=input.tif -o=output.tif --cutoff=0.1 ^
---gain=2.0 --num_tones=1024
+--gain=2.0 --num_tones=1024 
 
 
 ```
@@ -7617,7 +9999,7 @@ sigmoidal_contrast_stretch(
 
 #### 8.10.13 StandardDeviationContrastStretch
 
-Performs a standard-deviation contrast stretch on input images..
+Performs a standard-deviation contrast stretch on input images.
 
 *Parameters*:
 
@@ -7633,10 +10015,10 @@ Performs a standard-deviation contrast stretch on input images..
 
 ~~~~{.python}
 standard_deviation_contrast_stretch(
-    i,
-    output,
-    stdev=2.0,
-    num_tones=256,
+    i, 
+    output, 
+    stdev=2.0, 
+    num_tones=256, 
     callback=default_callback)
 ~~~~
 
@@ -7645,88 +10027,16 @@ standard_deviation_contrast_stretch(
 ```
 >>./whitebox_tools -r=StandardDeviationContrastStretch -v ^
 --wd="/path/to/data/" -i=input.tif -o=output.tif --stdev=2.0 ^
---num_tones=1024
+--num_tones=1024 
 
 
 ```
 
 ### 8.11 LiDAR Tools
 
-#### 8.11.1 BlockMaximum
+#### 8.11.1 ClassifyOverlapPoints
 
-Creates a block-maximum raster from an input LAS file. When the input/output parameters are not specified, the tool grids all LAS files contained within the working directory..
-
-*Parameters*:
-
-**Flag**             **Description**
--------------------  ---------------
--i, -\-input         Input LiDAR file
--o, -\-output        Output file
--\-resolution        Output raster's grid resolution
-
-
-*Python function*:
-
-~~~~{.python}
-block_maximum(
-    i=None,
-    output=None,
-    resolution=1.0,
-    callback=default_callback)
-~~~~
-
-*Command-line Interface*:
-
-```
->>./whitebox_tools -r=BlockMaximum -v --wd="/path/to/data/" ^
--i=file.las -o=outfile.tif --resolution=2.0"
-./whitebox_tools ^
--r=BlockMaximum -v --wd="/path/to/data/" -i=file.las ^
--o=outfile.tif --resolution=5.0 --palette=light_quant.plt
-
-
-```
-
-
-#### 8.11.2 BlockMinimum
-
-Creates a block-minimum raster from an input LAS file. When the input/output parameters are not specified, the tool grids all LAS files contained within the working directory..
-
-*Parameters*:
-
-**Flag**             **Description**
--------------------  ---------------
--i, -\-input         Input LiDAR file
--o, -\-output        Output file
--\-resolution        Output raster's grid resolution
-
-
-*Python function*:
-
-~~~~{.python}
-block_minimum(
-    i=None,
-    output=None,
-    resolution=1.0,
-    callback=default_callback)
-~~~~
-
-*Command-line Interface*:
-
-```
->>./whitebox_tools -r=BlockMinimum -v --wd="/path/to/data/" ^
--i=file.las -o=outfile.tif --resolution=2.0"
-./whitebox_tools ^
--r=BlockMinimum -v --wd="/path/to/data/" -i=file.las ^
--o=outfile.tif --resolution=5.0 --palette=light_quant.plt
-
-
-```
-
-
-#### 8.11.3 ClassifyOverlapPoints
-
-Classifies or filters LAS points in regions of overlapping flight lines..
+Classifies or filters LAS points in regions of overlapping flight lines.
 
 *Parameters*:
 
@@ -7735,18 +10045,18 @@ Classifies or filters LAS points in regions of overlapping flight lines..
 -i, -\-input         Input LiDAR file
 -o, -\-output        Output LiDAR file
 -\-resolution        The size of the square area used to evaluate nearby points in the LiDAR data
--\-filter            Filter out points from overlapping flightlines? If false, overlaps will simply
-                     be classified
+-\-filter            Filter out points from overlapping flightlines? If false, overlaps will simply 
+                     be classified 
 
 
 *Python function*:
 
 ~~~~{.python}
 classify_overlap_points(
-    i,
-    output,
-    resolution=2.0,
-    filter=False,
+    i, 
+    output, 
+    resolution=2.0, 
+    filter=False, 
     callback=default_callback)
 ~~~~
 
@@ -7755,15 +10065,15 @@ classify_overlap_points(
 ```
 >>./whitebox_tools -r=ClassifyOverlapPoints -v ^
 --wd="/path/to/data/" -i=file.las -o=outfile.las ^
---resolution=2.0
+--resolution=2.0 
 
 
 ```
 
 
-#### 8.11.4 ClipLidarToPolygon
+#### 8.11.2 ClipLidarToPolygon
 
-Clips a LiDAR point cloud to a vector polygon or polygons..
+Clips a LiDAR point cloud to a vector polygon or polygons.
 
 *Parameters*:
 
@@ -7778,9 +10088,9 @@ Clips a LiDAR point cloud to a vector polygon or polygons..
 
 ~~~~{.python}
 clip_lidar_to_polygon(
-    i,
-    polygons,
-    output,
+    i, 
+    polygons, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -7789,15 +10099,15 @@ clip_lidar_to_polygon(
 ```
 >>./whitebox_tools -r=ClipLidarToPolygon -v ^
 --wd="/path/to/data/" -i='data.las' --polygons='lakes.shp' ^
--o='output.las'
+-o='output.las' 
 
 
 ```
 
 
-#### 8.11.5 ErasePolygonFromLidar
+#### 8.11.3 ErasePolygonFromLidar
 
-Erases (cuts out) a vector polygon or polygons from a LiDAR point cloud..
+Erases (cuts out) a vector polygon or polygons from a LiDAR point cloud.
 
 *Parameters*:
 
@@ -7812,9 +10122,9 @@ Erases (cuts out) a vector polygon or polygons from a LiDAR point cloud..
 
 ~~~~{.python}
 erase_polygon_from_lidar(
-    i,
-    polygons,
-    output,
+    i, 
+    polygons, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -7823,15 +10133,15 @@ erase_polygon_from_lidar(
 ```
 >>./whitebox_tools -r=ErasePolygonFromLidar -v ^
 --wd="/path/to/data/" -i='data.las' --polygons='lakes.shp' ^
--o='output.las'
+-o='output.las' 
 
 
 ```
 
 
-#### 8.11.6 FilterLidarScanAngles
+#### 8.11.4 FilterLidarScanAngles
 
-Removes points in a LAS file with scan angles greater than a threshold..
+Removes points in a LAS file with scan angles greater than a threshold.
 
 *Parameters*:
 
@@ -7846,9 +10156,9 @@ Removes points in a LAS file with scan angles greater than a threshold..
 
 ~~~~{.python}
 filter_lidar_scan_angles(
-    i,
-    output,
-    threshold,
+    i, 
+    output, 
+    threshold, 
     callback=default_callback)
 ~~~~
 
@@ -7857,15 +10167,15 @@ filter_lidar_scan_angles(
 ```
 >>./whitebox_tools -r=FilterLidarScanAngles -v ^
 --wd="/path/to/data/" -i="input.las" -o="output.las" ^
---threshold=10.0
+--threshold=10.0 
 
 
 ```
 
 
-#### 8.11.7 FindFlightlineEdgePoints
+#### 8.11.5 FindFlightlineEdgePoints
 
-Identifies points along a flightline's edge in a LAS file..
+Identifies points along a flightline's edge in a LAS file.
 
 *Parameters*:
 
@@ -7879,8 +10189,8 @@ Identifies points along a flightline's edge in a LAS file..
 
 ~~~~{.python}
 find_flightline_edge_points(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -7888,15 +10198,15 @@ find_flightline_edge_points(
 
 ```
 >>./whitebox_tools -r=FindFlightlineEdgePoints -v ^
---wd="/path/to/data/" -i="input.las" -o="output.las"
+--wd="/path/to/data/" -i="input.las" -o="output.las" 
 
 
 ```
 
 
-#### 8.11.8 FlightlineOverlap
+#### 8.11.6 FlightlineOverlap
 
-Reads a LiDAR (LAS) point file and outputs a raster containing the number of overlapping flight lines in each grid cell..
+Reads a LiDAR (LAS) point file and outputs a raster containing the number of overlapping flight lines in each grid cell.
 
 *Parameters*:
 
@@ -7911,9 +10221,9 @@ Reads a LiDAR (LAS) point file and outputs a raster containing the number of ove
 
 ~~~~{.python}
 flightline_overlap(
-    i=None,
-    output=None,
-    resolution=1.0,
+    i=None, 
+    output=None, 
+    resolution=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -7925,15 +10235,15 @@ flightline_overlap(
 --resolution=2.0"
 ./whitebox_tools -r=FlightlineOverlap -v ^
 --wd="/path/to/data/" -i=file.las -o=outfile.tif ^
---resolution=5.0 --palette=light_quant.plt
+--resolution=5.0 --palette=light_quant.plt 
 
 
 ```
 
 
-#### 8.11.9 LasToAscii
+#### 8.11.7 LasToAscii
 
-Converts one or more LAS files into ASCII text files..
+Converts one or more LAS files into ASCII text files.
 
 *Parameters*:
 
@@ -7946,7 +10256,7 @@ Converts one or more LAS files into ASCII text files..
 
 ~~~~{.python}
 las_to_ascii(
-    inputs,
+    inputs, 
     callback=default_callback)
 ~~~~
 
@@ -7954,15 +10264,247 @@ las_to_ascii(
 
 ```
 >>./whitebox_tools -r=LasToAscii -v --wd="/path/to/data/" ^
--i="file1.las, file2.las, file3.las" -o=outfile.las"
+-i="file1.las, file2.las, file3.las" -o=outfile.las" 
 
 
 ```
 
 
-#### 8.11.10 LidarColourize
+#### 8.11.8 LasToMultipointShapefile
 
-Adds the red-green-blue colour fields of a LiDAR (LAS) file based on an input image..
+Converts one or more LAS files into MultipointZ vector Shapefiles. When the input parameter is
+not specified, the tool grids all LAS files contained within the working directory.
+
+This tool can be used in place of the `LasToShapefile` tool when the number of points are
+relatively high and when the desire is to represent the x,y,z position of points only. The z
+values of LAS points will be stored in the z-array of the output Shapefile. Notice that because
+the output file stores each point in a single multi-point record, this Shapefile representation,
+while unable to represent individual point classes, return numbers, etc, is an efficient means
+of converting LAS point positional information.
+
+*See Also*:
+
+`LasToShapefile`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input LiDAR file
+
+
+*Python function*:
+
+~~~~{.python}
+las_to_multipoint_shapefile(
+    i=None, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=LasToMultipointShapefile -v ^
+--wd="/path/to/data/" -i=input.las 
+
+
+```
+
+
+#### 8.11.9 LasToShapefile
+
+This tool converts one or more LAS files into a POINT vector. When the input parameter is
+not specified, the tool grids all LAS files contained within the working directory.
+The attribute table of the output Shapefile will contain fields for the z-value,
+intensity, point class, return number, and number of return.
+
+This tool can be used in place of the `LasToMultipointShapefile` tool when the
+number of points are relatively low and when the desire is to represent more than
+simply the x,y,z position of points. Notice however that because each point in
+the input LAS file will be represented as a separate record in the output
+Shapefile, the output file will be many time larger than the equivalent output of
+the `LasToMultipointShapefile` tool. There is also a practical limit on the
+total number of records that can be held in a single Shapefile and large LAS
+files approach this limit. In these cases, the `LasToMultipointShapefile` tool
+should be preferred instead.
+
+*See Also*:
+
+`LasToMultipointShapefile`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input LiDAR file
+
+
+*Python function*:
+
+~~~~{.python}
+las_to_shapefile(
+    i=None, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=LasToShapefile -v --wd="/path/to/data/" ^
+-i=input.las 
+
+
+```
+
+
+#### 8.11.10 LidarBlockMaximum
+
+Creates a block-maximum raster from an input LAS file. When the input/output parameters are not specified, the tool grids all LAS files contained within the working directory.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input LiDAR file
+-o, -\-output        Output file
+-\-resolution        Output raster's grid resolution
+
+
+*Python function*:
+
+~~~~{.python}
+lidar_block_maximum(
+    i=None, 
+    output=None, 
+    resolution=1.0, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=LidarBlockMaximum -v ^
+--wd="/path/to/data/" -i=file.las -o=outfile.tif ^
+--resolution=2.0"
+./whitebox_tools -r=LidarBlockMaximum -v ^
+--wd="/path/to/data/" -i=file.las -o=outfile.tif ^
+--resolution=5.0 --palette=light_quant.plt 
+
+
+```
+
+
+#### 8.11.11 LidarBlockMinimum
+
+Creates a block-minimum raster from an input LAS file. When the input/output parameters are not specified, the tool grids all LAS files contained within the working directory.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input LiDAR file
+-o, -\-output        Output file
+-\-resolution        Output raster's grid resolution
+
+
+*Python function*:
+
+~~~~{.python}
+lidar_block_minimum(
+    i=None, 
+    output=None, 
+    resolution=1.0, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=LidarBlockMinimum -v ^
+--wd="/path/to/data/" -i=file.las -o=outfile.tif ^
+--resolution=2.0"
+./whitebox_tools -r=LidarBlockMinimum -v ^
+--wd="/path/to/data/" -i=file.las -o=outfile.tif ^
+--resolution=5.0 --palette=light_quant.plt 
+
+
+```
+
+
+#### 8.11.12 LidarClassifySubset
+
+This tool classifies points within a user-specified LiDAR point cloud (`--base`) that correpond
+with points in a subset cloud (`--subset`). The subset point cloud may have been derived by filtering
+the original point cloud. The user must specify the names of the two input LAS files (i.e.
+the full and subset clouds) and the class value (`--subset_class`) to assign the matching points. This class
+value will be assigned to points in the base cloud, overwriting their input class values in the
+output LAS file (`--output`). Class values
+should be numerical (integer valued) and shoud follow the LAS specifications below:
+
+| Classification Value  | Meaning                              |
+| :-------------------- | :------------------------------------|
+| 0                     | Created never classified
+| 1                     | Unclassified3
+| 2                     | Ground
+| 3                     | Low Vegetation
+| 4                     | Medium Vegetation
+| 5                     | High Vegetation
+| 6                     | Building
+| 7                     | Low Point (noise)
+| 8                     | Reserved
+| 9                     | Water
+| 10                    | Rail
+| 11                    | Road Surface
+| 12                    | Reserved
+| 13                    |	Wire – Guard (Shield)
+| 14                    | Wire – Conductor (Phase)
+| 15                    | Transmission Tower
+| 16                    | Wire-structure Connector (e.g. Insulator)
+| 17                    | Bridge Deck
+| 18                    | High Noise
+
+The user may optionally specify a class value to be assigned to non-subset (i.e. non-matching)
+points (`--nonsubset_class`) in the base file. If this parameter is not specified, output
+non-sutset points will have the same class value as the base file.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-\-base              Input base LiDAR file
+-\-subset            Input subset LiDAR file
+-o, -\-output        Output LiDAR file
+-\-subset_class      Subset point class value (must be 0-18; see LAS specifications)
+-\-nonsubset_class   Non-subset point class value (must be 0-18; see LAS specifications)
+
+
+*Python function*:
+
+~~~~{.python}
+lidar_classify_subset(
+    base, 
+    subset, 
+    output, 
+    subset_class, 
+    nonsubset_class=None, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=LidarClassifySubset -v ^
+--wd="/path/to/data/" --base="full_cloud.las" ^
+--subset="filtered_cloud.las" -o="output.las" ^
+--subset_class=2 
+
+
+```
+
+
+#### 8.11.13 LidarColourize
+
+Adds the red-green-blue colour fields of a LiDAR (LAS) file based on an input image.
 
 *Parameters*:
 
@@ -7977,9 +10519,9 @@ Adds the red-green-blue colour fields of a LiDAR (LAS) file based on an input im
 
 ~~~~{.python}
 lidar_colourize(
-    in_lidar,
-    in_image,
-    output,
+    in_lidar, 
+    in_image, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -7988,15 +10530,56 @@ lidar_colourize(
 ```
 >>./whitebox_tools -r=LidarColourize -v --wd="/path/to/data/" ^
 --in_lidar="input.las" --in_image="image.tif" ^
--o="output.las"
+-o="output.las" 
 
 
 ```
 
 
-#### 8.11.11 LidarElevationSlice
+#### 8.11.14 LidarConstructVectorTin
 
-Outputs all of the points within a LiDAR (LAS) point file that lie between a specified elevation range..
+Creates a vector triangular irregular network (TIN) fitted to LiDAR points.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input LiDAR file (including extension)
+-o, -\-output        Output raster file (including extension)
+-\-returns           Point return types to include; options are 'all' (default), 'last', 'first'
+-\-exclude_cls       Optional exclude classes from interpolation; Valid class values range from 0 to 
+                     18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18' 
+-\-minz              Optional minimum elevation for inclusion in interpolation
+-\-maxz              Optional maximum elevation for inclusion in interpolation
+
+
+*Python function*:
+
+~~~~{.python}
+lidar_construct_vector_tin(
+    i=None, 
+    output=None, 
+    returns="all", 
+    exclude_cls=None, 
+    minz=None, 
+    maxz=None, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=LidarConstructVectorTIN -v ^
+--wd="/path/to/data/" -i=file.las -o=outfile.tif ^
+--returns=last --exclude_cls='3,4,5,6,7,18' 
+
+
+```
+
+
+#### 8.11.15 LidarElevationSlice
+
+Outputs all of the points within a LiDAR (LAS) point file that lie between a specified elevation range.
 
 *Parameters*:
 
@@ -8006,25 +10589,25 @@ Outputs all of the points within a LiDAR (LAS) point file that lie between a spe
 -o, -\-output        Output LiDAR file
 -\-minz              Minimum elevation value (optional)
 -\-maxz              Maximum elevation value (optional)
--\-class             Optional boolean flag indicating whether points outside the range should be
-                     retained in output but reclassified
--\-inclassval        Optional parameter specifying the class value assigned to points within the
-                     slice
--\-outclassval       Optional parameter specifying the class value assigned to points within the
-                     slice
+-\-class             Optional boolean flag indicating whether points outside the range should be 
+                     retained in output but reclassified 
+-\-inclassval        Optional parameter specifying the class value assigned to points within the 
+                     slice 
+-\-outclassval       Optional parameter specifying the class value assigned to points within the 
+                     slice 
 
 
 *Python function*:
 
 ~~~~{.python}
 lidar_elevation_slice(
-    i,
-    output,
-    minz=None,
-    maxz=None,
-    cls=False,
-    inclassval=2,
-    outclassval=1,
+    i, 
+    output, 
+    minz=None, 
+    maxz=None, 
+    cls=False, 
+    inclassval=2, 
+    outclassval=1, 
     callback=default_callback)
 ~~~~
 
@@ -8040,15 +10623,15 @@ lidar_elevation_slice(
 --class
 >>./whitebox_tools -r=LidarElevationSlice -v ^
 -i="/path/to/data/input.las" -o="/path/to/data/output.las" ^
---minz=100.0 --maxz=250.0 --inclassval=1 --outclassval=0
+--minz=100.0 --maxz=250.0 --inclassval=1 --outclassval=0 
 
 
 ```
 
 
-#### 8.11.12 LidarGroundPointFilter
+#### 8.11.16 LidarGroundPointFilter
 
-Identifies ground points within LiDAR dataset using a slope-based method..
+Identifies ground points within LiDAR dataset using a slope-based method.
 
 *Parameters*:
 
@@ -8057,19 +10640,27 @@ Identifies ground points within LiDAR dataset using a slope-based method..
 -i, -\-input         Input LiDAR file
 -o, -\-output        Output LiDAR file
 -\-radius            Search Radius
+-\-min_neighbours    The minimum number of neighbouring points within search areas. If fewer points 
+                     than this threshold are idenfied during the fixed-radius search, a subsequent 
+                     kNN search is performed to identify the k number of neighbours 
 -\-slope_threshold   Maximum inter-point slope to be considered an off-terrain point
 -\-height_threshold  Inter-point height difference to be considered an off-terrain point
+-\-classify          Classify points as ground (2) or off-ground (1)
+-\-slope_norm        Perform initial ground slope normalization?
 
 
 *Python function*:
 
 ~~~~{.python}
 lidar_ground_point_filter(
-    i,
-    output,
-    radius=2.0,
-    slope_threshold=45.0,
-    height_threshold=1.0,
+    i, 
+    output, 
+    radius=2.0, 
+    min_neighbours=0, 
+    slope_threshold=45.0, 
+    height_threshold=1.0, 
+    classify=True, 
+    slope_norm=True, 
     callback=default_callback)
 ~~~~
 
@@ -8078,15 +10669,75 @@ lidar_ground_point_filter(
 ```
 >>./whitebox_tools -r=LidarGroundPointFilter -v ^
 --wd="/path/to/data/" -i="input.las" -o="output.las" ^
---radius=10.0
+--radius=10.0 --min_neighbours=10 --slope_threshold=30.0 ^
+--height_threshold=0.5 --classify --slope_norm 
 
 
 ```
 
 
-#### 8.11.13 LidarHillshade
+#### 8.11.17 LidarHexBinning
 
-Calculates a hillshade value for points within a LAS file and stores these data in the RGB field..
+The practice of binning point data to form a type of 2D histogram, density plot,
+or what is sometimes called a heatmap, is quite useful as an alternative for the
+cartographic display of of very dense points sets. This is particularly the case
+when the points experience significant overlap at the displayed scale. The
+`LidarPointDensity` tool can be used to perform binning based on a regular grid
+(raster output). This tool, by comparison, bases the binning on a hexagonal grid.
+
+The tool is similar to the `CreateHexagonalVectorGrid` tool, however instead will
+create an output hexagonal grid in which each hexagonal cell possesses a `COUNT`
+attribute which specifies the number of points from an input points file (LAS file)
+that are contained within the hexagonal cell. The tool will also calculate the
+minimum and maximum elevations and intensity values and outputs these data to the
+attribute table.
+
+In addition to the names of the input points file and the output Shapefile, the user
+must also specify the desired hexagon width (w), which is the distance between opposing
+sides of each hexagon. The size (s) each side of the hexagon can then be calculated as,
+s = w / [2 x cos(PI / 6)]. The area of each hexagon (A) is, A = 3s(w / 2). The user must
+also specify the orientation of the grid with options of horizontal (pointy side up) and
+vertical (flat side up).
+
+*See Also*:
+
+`VectorHexBinning`, `LidarPointDensity`, `CreateHexagonalVectorGrid`
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input base file
+-o, -\-output        Output vector polygon file
+-\-width             The grid cell width
+-\-orientation       Grid Orientation, 'horizontal' or 'vertical'
+
+
+*Python function*:
+
+~~~~{.python}
+lidar_hex_binning(
+    i, 
+    output, 
+    width, 
+    orientation="horizontal", 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=LidarHexBinning -v ^
+--wd="/path/to/data/" -i=file.las -o=outfile.shp --width=10.0 ^
+--orientation=vertical 
+
+
+```
+
+
+#### 8.11.18 LidarHillshade
+
+Calculates a hillshade value for points within a LAS file and stores these data in the RGB field.
 
 *Parameters*:
 
@@ -8103,11 +10754,11 @@ Calculates a hillshade value for points within a LAS file and stores these data 
 
 ~~~~{.python}
 lidar_hillshade(
-    i,
-    output,
-    azimuth=315.0,
-    altitude=30.0,
-    radius=1.0,
+    i, 
+    output, 
+    azimuth=315.0, 
+    altitude=30.0, 
+    radius=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -8118,15 +10769,15 @@ lidar_hillshade(
 -i="input.las" -o="output.las" --radius=10.0
 >>./whitebox_tools ^
 -r=LidarHillshade -v --wd="/path/to/data/" -i="input.las" ^
--o="output.las" --azimuth=180.0 --altitude=20.0 --radius=1.0
+-o="output.las" --azimuth=180.0 --altitude=20.0 --radius=1.0 
 
 
 ```
 
 
-#### 8.11.14 LidarHistogram
+#### 8.11.19 LidarHistogram
 
-Creates a histogram from LiDAR data..
+Creates a histogram from LiDAR data.
 
 *Parameters*:
 
@@ -8142,10 +10793,10 @@ Creates a histogram from LiDAR data..
 
 ~~~~{.python}
 lidar_histogram(
-    i,
-    output,
-    parameter="elevation",
-    clip=1.0,
+    i, 
+    output, 
+    parameter="elevation", 
+    clip=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -8154,15 +10805,15 @@ lidar_histogram(
 ```
 >>./whitebox_tools -r=LidarHistogram -v --wd="/path/to/data/" ^
 -i="file1.tif, file2.tif, file3.tif" -o=outfile.htm ^
---contiguity=Bishopsl
+--contiguity=Bishopsl 
 
 
 ```
 
 
-#### 8.11.15 LidarIdwInterpolation
+#### 8.11.20 LidarIdwInterpolation
 
-Interpolates LAS files using an inverse-distance weighted (IDW) scheme. When the input/output parameters are not specified, the tool interpolates all LAS files contained within the working directory..
+Interpolates LAS files using an inverse-distance weighted (IDW) scheme. When the input/output parameters are not specified, the tool interpolates all LAS files contained within the working directory.
 
 *Parameters*:
 
@@ -8170,14 +10821,14 @@ Interpolates LAS files using an inverse-distance weighted (IDW) scheme. When the
 -------------------  ---------------
 -i, -\-input         Input LiDAR file (including extension)
 -o, -\-output        Output raster file (including extension)
--\-parameter         Interpolation parameter; options are 'elevation' (default), 'intensity',
-                     'class', 'scan angle', 'user data'
+-\-parameter         Interpolation parameter; options are 'elevation' (default), 'intensity', 
+                     'class', 'scan angle', 'user data' 
 -\-returns           Point return types to include; options are 'all' (default), 'last', 'first'
 -\-resolution        Output raster's grid resolution
 -\-weight            IDW weight value
 -\-radius            Search Radius
--\-exclude_cls       Optional exclude classes from interpolation; Valid class values range from 0 to
-                     18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'
+-\-exclude_cls       Optional exclude classes from interpolation; Valid class values range from 0 to 
+                     18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18' 
 -\-minz              Optional minimum elevation for inclusion in interpolation
 -\-maxz              Optional maximum elevation for inclusion in interpolation
 
@@ -8186,16 +10837,16 @@ Interpolates LAS files using an inverse-distance weighted (IDW) scheme. When the
 
 ~~~~{.python}
 lidar_idw_interpolation(
-    i=None,
-    output=None,
-    parameter="elevation",
-    returns="all",
-    resolution=1.0,
-    weight=1.0,
-    radius=2.5,
-    exclude_cls=None,
-    minz=None,
-    maxz=None,
+    i=None, 
+    output=None, 
+    parameter="elevation", 
+    returns="all", 
+    resolution=1.0, 
+    weight=1.0, 
+    radius=2.5, 
+    exclude_cls=None, 
+    minz=None, 
+    maxz=None, 
     callback=default_callback)
 ~~~~
 
@@ -8208,15 +10859,17 @@ lidar_idw_interpolation(
 ./whitebox_tools ^
 -r=LidarIdwInterpolation --wd="/path/to/data/" -i=file.las ^
 -o=outfile.tif --resolution=5.0 --weight=2.0 --radius=2.0 ^
---exclude_cls='3,4,5,6,7,18' --palette=light_quant.plt
+--exclude_cls='3,4,5,6,7,18' --palette=light_quant.plt 
 
 
 ```
 
 
-#### 8.11.16 LidarInfo
+#### 8.11.21 LidarInfo
 
-Prints information about a LiDAR (LAS) dataset, including header, point return frequency, and classification data and information about the variable length records (VLRs) and geokeys..
+This tool can be used to print basic information about the data contained within a LAS file, used to store LiDAR
+data. The reported information will include including data on the header, point return frequency, and classification
+data and information about the variable length records (VLRs) and geokeys.
 
 *Parameters*:
 
@@ -8232,10 +10885,10 @@ Prints information about a LiDAR (LAS) dataset, including header, point return f
 
 ~~~~{.python}
 lidar_info(
-    i,
-    output=None,
-    vlr=False,
-    geokeys=False,
+    i, 
+    output=None, 
+    vlr=False, 
+    geokeys=False, 
     callback=default_callback)
 ~~~~
 
@@ -8245,15 +10898,15 @@ lidar_info(
 >>./whitebox_tools -r=LidarInfo -v --wd="/path/to/data/" ^
 -i=file.las --vlr --geokeys"
 ./whitebox_tools -r=LidarInfo ^
---wd="/path/to/data/" -i=file.las
+--wd="/path/to/data/" -i=file.las 
 
 
 ```
 
 
-#### 8.11.17 LidarJoin
+#### 8.11.22 LidarJoin
 
-Joins multiple LiDAR (LAS) files into a single LAS file..
+Joins multiple LiDAR (LAS) files into a single LAS file.
 
 *Parameters*:
 
@@ -8267,8 +10920,8 @@ Joins multiple LiDAR (LAS) files into a single LAS file..
 
 ~~~~{.python}
 lidar_join(
-    inputs,
-    output,
+    inputs, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -8276,15 +10929,15 @@ lidar_join(
 
 ```
 >>./whitebox_tools -r=LidarJoin -v --wd="/path/to/data/" ^
--i="file1.las, file2.las, file3.las" -o=outfile.las"
+-i="file1.las, file2.las, file3.las" -o=outfile.las" 
 
 
 ```
 
 
-#### 8.11.18 LidarKappaIndex
+#### 8.11.23 LidarKappaIndex
 
-Performs a kappa index of agreement (KIA) analysis on the classifications of two LAS files..
+Performs a kappa index of agreement (KIA) analysis on the classifications of two LAS files.
 
 *Parameters*:
 
@@ -8299,9 +10952,9 @@ Performs a kappa index of agreement (KIA) analysis on the classifications of two
 
 ~~~~{.python}
 lidar_kappa_index(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -8310,15 +10963,15 @@ lidar_kappa_index(
 ```
 >>./whitebox_tools -r=LidarKappaIndex -v ^
 --wd="/path/to/data/" --i1=class.tif --i2=reference.tif ^
--o=kia.html
+-o=kia.html 
 
 
 ```
 
 
-#### 8.11.19 LidarNearestNeighbourGridding
+#### 8.11.24 LidarNearestNeighbourGridding
 
-Grids LAS files using nearest-neighbour scheme. When the input/output parameters are not specified, the tool grids all LAS files contained within the working directory..
+Grids LAS files using nearest-neighbour scheme. When the input/output parameters are not specified, the tool grids all LAS files contained within the working directory.
 
 *Parameters*:
 
@@ -8326,13 +10979,13 @@ Grids LAS files using nearest-neighbour scheme. When the input/output parameters
 -------------------  ---------------
 -i, -\-input         Input LiDAR file (including extension)
 -o, -\-output        Output raster file (including extension)
--\-parameter         Interpolation parameter; options are 'elevation' (default), 'intensity',
-                     'class', 'scan angle', 'user data'
+-\-parameter         Interpolation parameter; options are 'elevation' (default), 'intensity', 
+                     'class', 'scan angle', 'user data' 
 -\-returns           Point return types to include; options are 'all' (default), 'last', 'first'
 -\-resolution        Output raster's grid resolution
 -\-radius            Search Radius
--\-exclude_cls       Optional exclude classes from interpolation; Valid class values range from 0 to
-                     18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'
+-\-exclude_cls       Optional exclude classes from interpolation; Valid class values range from 0 to 
+                     18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18' 
 -\-minz              Optional minimum elevation for inclusion in interpolation
 -\-maxz              Optional maximum elevation for inclusion in interpolation
 
@@ -8341,15 +10994,15 @@ Grids LAS files using nearest-neighbour scheme. When the input/output parameters
 
 ~~~~{.python}
 lidar_nearest_neighbour_gridding(
-    i=None,
-    output=None,
-    parameter="elevation",
-    returns="all",
-    resolution=1.0,
-    radius=2.5,
-    exclude_cls=None,
-    minz=None,
-    maxz=None,
+    i=None, 
+    output=None, 
+    parameter="elevation", 
+    returns="all", 
+    resolution=1.0, 
+    radius=2.5, 
+    exclude_cls=None, 
+    minz=None, 
+    maxz=None, 
     callback=default_callback)
 ~~~~
 
@@ -8358,19 +11011,19 @@ lidar_nearest_neighbour_gridding(
 ```
 >>./whitebox_tools -r=LidarNearestNeighbourGridding -v ^
 --wd="/path/to/data/" -i=file.las -o=outfile.tif ^
---resolution=2.0 --radius=5.0"
+--returns=last --resolution=2.0 --radius=5.0"
 ./whitebox_tools ^
 -r=LidarNearestNeighbourGridding --wd="/path/to/data/" ^
 -i=file.las -o=outfile.tif --resolution=5.0 --radius=2.0 ^
---exclude_cls='3,4,5,6,7,18' --palette=light_quant.plt
+--exclude_cls='3,4,5,6,7,18' 
 
 
 ```
 
 
-#### 8.11.20 LidarPointDensity
+#### 8.11.25 LidarPointDensity
 
-Calculates the spatial pattern of point density for a LiDAR data set. When the input/output parameters are not specified, the tool grids all LAS files contained within the working directory..
+Calculates the spatial pattern of point density for a LiDAR data set. When the input/output parameters are not specified, the tool grids all LAS files contained within the working directory.
 
 *Parameters*:
 
@@ -8381,8 +11034,8 @@ Calculates the spatial pattern of point density for a LiDAR data set. When the i
 -\-returns           Point return types to include; options are 'all' (default), 'last', 'first'
 -\-resolution        Output raster's grid resolution
 -\-radius            Search Radius
--\-exclude_cls       Optional exclude classes from interpolation; Valid class values range from 0 to
-                     18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18'
+-\-exclude_cls       Optional exclude classes from interpolation; Valid class values range from 0 to 
+                     18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18' 
 -\-minz              Optional minimum elevation for inclusion in interpolation
 -\-maxz              Optional maximum elevation for inclusion in interpolation
 
@@ -8391,14 +11044,14 @@ Calculates the spatial pattern of point density for a LiDAR data set. When the i
 
 ~~~~{.python}
 lidar_point_density(
-    i=None,
-    output=None,
-    returns="all",
-    resolution=1.0,
-    radius=2.5,
-    exclude_cls=None,
-    minz=None,
-    maxz=None,
+    i=None, 
+    output=None, 
+    returns="all", 
+    resolution=1.0, 
+    radius=2.5, 
+    exclude_cls=None, 
+    minz=None, 
+    maxz=None, 
     callback=default_callback)
 ~~~~
 
@@ -8411,15 +11064,15 @@ lidar_point_density(
 ./whitebox_tools ^
 -r=LidarPointDensity -v --wd="/path/to/data/" -i=file.las ^
 -o=outfile.tif --resolution=5.0 --radius=2.0 ^
---exclude_cls='3,4,5,6,7,18' --palette=light_quant.plt
+--exclude_cls='3,4,5,6,7,18' --palette=light_quant.plt 
 
 
 ```
 
 
-#### 8.11.21 LidarPointStats
+#### 8.11.26 LidarPointStats
 
-Creates several rasters summarizing the distribution of LAS point data. When the input/output parameters are not specified, the tool works on all LAS files contained within the working directory..
+Creates several rasters summarizing the distribution of LAS point data. When the input/output parameters are not specified, the tool works on all LAS files contained within the working directory.
 
 *Parameters*:
 
@@ -8438,13 +11091,13 @@ Creates several rasters summarizing the distribution of LAS point data. When the
 
 ~~~~{.python}
 lidar_point_stats(
-    i=None,
-    resolution=1.0,
-    num_points=True,
-    num_pulses=False,
-    z_range=False,
-    intensity_range=False,
-    predom_class=False,
+    i=None, 
+    resolution=1.0, 
+    num_points=True, 
+    num_pulses=False, 
+    z_range=False, 
+    intensity_range=False, 
+    predom_class=False, 
     callback=default_callback)
 ~~~~
 
@@ -8453,15 +11106,15 @@ lidar_point_stats(
 ```
 >>./whitebox_tools -r=LidarPointStats -v ^
 --wd="/path/to/data/" -i=file.las --resolution=1.0 ^
---num_points
+--num_points 
 
 
 ```
 
 
-#### 8.11.22 LidarRemoveDuplicates
+#### 8.11.27 LidarRemoveDuplicates
 
-Removes duplicate points from a LiDAR data set..
+Removes duplicate points from a LiDAR data set.
 
 *Parameters*:
 
@@ -8476,9 +11129,9 @@ Removes duplicate points from a LiDAR data set..
 
 ~~~~{.python}
 lidar_remove_duplicates(
-    i,
-    output,
-    include_z=False,
+    i, 
+    output, 
+    include_z=False, 
     callback=default_callback)
 ~~~~
 
@@ -8486,15 +11139,15 @@ lidar_remove_duplicates(
 
 ```
 >>./whitebox_tools -r=LidarRemoveDuplicates -v ^
---wd="/path/to/data/" -i="input.las" -o="output.las"
+--wd="/path/to/data/" -i="input.las" -o="output.las" 
 
 
 ```
 
 
-#### 8.11.23 LidarRemoveOutliers
+#### 8.11.28 LidarRemoveOutliers
 
-Removes outliers (high and low points) in a LiDAR point cloud..
+Removes outliers (high and low points) in a LiDAR point cloud.
 
 *Parameters*:
 
@@ -8510,10 +11163,10 @@ Removes outliers (high and low points) in a LiDAR point cloud..
 
 ~~~~{.python}
 lidar_remove_outliers(
-    i,
-    output,
-    radius=2.0,
-    elev_diff=50.0,
+    i, 
+    output, 
+    radius=2.0, 
+    elev_diff=50.0, 
     callback=default_callback)
 ~~~~
 
@@ -8522,15 +11175,15 @@ lidar_remove_outliers(
 ```
 >>./whitebox_tools -r=LidarRemoveOutliers -v ^
 --wd="/path/to/data/" -i="input.las" -o="output.las" ^
---radius=10.0 --elev_diff=25.0
+--radius=10.0 --elev_diff=25.0 
 
 
 ```
 
 
-#### 8.11.24 LidarSegmentation
+#### 8.11.29 LidarSegmentation
 
-Segments a LiDAR point cloud based on normal vectors..
+Segments a LiDAR point cloud based on normal vectors.
 
 *Parameters*:
 
@@ -8540,19 +11193,19 @@ Segments a LiDAR point cloud based on normal vectors..
 -o, -\-output        Output file
 -\-dist, -\-radius   Search Radius
 -\-norm_diff         Maximum difference in normal vectors, in degrees
--\-maxzdiff          Maximum difference in elevation (z units) between neighbouring points of the
-                     same segment
+-\-maxzdiff          Maximum difference in elevation (z units) between neighbouring points of the 
+                     same segment 
 
 
 *Python function*:
 
 ~~~~{.python}
 lidar_segmentation(
-    i,
-    output,
-    radius=5.0,
-    norm_diff=10.0,
-    maxzdiff=1.0,
+    i, 
+    output, 
+    radius=5.0, 
+    norm_diff=10.0, 
+    maxzdiff=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -8561,15 +11214,15 @@ lidar_segmentation(
 ```
 >>./whitebox_tools -r=LidarSegmentation -v ^
 --wd="/path/to/data/" -i="input.las" -o="output.las" ^
---radius=10.0 --norm_diff=2.5 --maxzdiff=0.75
+--radius=10.0 --norm_diff=2.5 --maxzdiff=0.75 
 
 
 ```
 
 
-#### 8.11.25 LidarSegmentationBasedFilter
+#### 8.11.30 LidarSegmentationBasedFilter
 
-Identifies ground points within LiDAR point clouds using a segmentation based approach..
+Identifies ground points within LiDAR point clouds using a segmentation based approach.
 
 *Parameters*:
 
@@ -8579,8 +11232,8 @@ Identifies ground points within LiDAR point clouds using a segmentation based ap
 -o, -\-output        Output file
 -\-dist, -\-radius   Search Radius
 -\-norm_diff         Maximum difference in normal vectors, in degrees
--\-maxzdiff          Maximum difference in elevation (z units) between neighbouring points of the
-                     same segment
+-\-maxzdiff          Maximum difference in elevation (z units) between neighbouring points of the 
+                     same segment 
 -\-classify          Classify points as ground (2) or off-ground (1)
 
 
@@ -8588,12 +11241,12 @@ Identifies ground points within LiDAR point clouds using a segmentation based ap
 
 ~~~~{.python}
 lidar_segmentation_based_filter(
-    i,
-    output,
-    radius=5.0,
-    norm_diff=2.0,
-    maxzdiff=1.0,
-    classify=False,
+    i, 
+    output, 
+    radius=5.0, 
+    norm_diff=2.0, 
+    maxzdiff=1.0, 
+    classify=False, 
     callback=default_callback)
 ~~~~
 
@@ -8602,15 +11255,15 @@ lidar_segmentation_based_filter(
 ```
 >>./whitebox_tools -r=LidarSegmentationBasedFilter -v ^
 --wd="/path/to/data/" -i="input.las" -o="output.las" ^
---radius=10.0 --norm_diff=2.5 --maxzdiff=0.75 --classify
+--radius=10.0 --norm_diff=2.5 --maxzdiff=0.75 --classify 
 
 
 ```
 
 
-#### 8.11.26 LidarThin
+#### 8.11.31 LidarThin
 
-Thins a LiDAR point cloud, reducing point density..
+Thins a LiDAR point cloud, reducing point density.
 
 *Parameters*:
 
@@ -8619,8 +11272,8 @@ Thins a LiDAR point cloud, reducing point density..
 -i, -\-input         Input LiDAR file
 -o, -\-output        Output LiDAR file
 -\-resolution        The size of the square area used to evaluate nearby points in the LiDAR data
--\-method            Point selection method; options are 'first', 'last', 'lowest' (default),
-                     'highest', 'nearest'
+-\-method            Point selection method; options are 'first', 'last', 'lowest' (default), 
+                     'highest', 'nearest' 
 -\-save_filtered     Save filtered points to seperate file?
 
 
@@ -8628,11 +11281,11 @@ Thins a LiDAR point cloud, reducing point density..
 
 ~~~~{.python}
 lidar_thin(
-    i,
-    output,
-    resolution=2.0,
-    method="lowest",
-    save_filtered=False,
+    i, 
+    output, 
+    resolution=2.0, 
+    method="lowest", 
+    save_filtered=False, 
     callback=default_callback)
 ~~~~
 
@@ -8641,15 +11294,15 @@ lidar_thin(
 ```
 >>./whitebox_tools -r=LidarThin -v --wd="/path/to/data/" ^
 -i=file.las -o=outfile.las --resolution=2.0, --method=first ^
---save_filtered
+--save_filtered 
 
 
 ```
 
 
-#### 8.11.27 LidarThinHighDensity
+#### 8.11.32 LidarThinHighDensity
 
-Thins points from high density areas within a LiDAR point cloud..
+Thins points from high density areas within a LiDAR point cloud.
 
 *Parameters*:
 
@@ -8658,7 +11311,7 @@ Thins points from high density areas within a LiDAR point cloud..
 -i, -\-input         Input LiDAR file
 -o, -\-output        Output LiDAR file
 -\-resolution        Output raster's grid resolution
--\-density           Max. point density (points / m)
+-\-density           Max. point density (points / m^3)
 -\-save_filtered     Save filtered points to seperate file?
 
 
@@ -8666,11 +11319,11 @@ Thins points from high density areas within a LiDAR point cloud..
 
 ~~~~{.python}
 lidar_thin_high_density(
-    i,
-    output,
-    density,
-    resolution=1.0,
-    save_filtered=False,
+    i, 
+    output, 
+    density, 
+    resolution=1.0, 
+    save_filtered=False, 
     callback=default_callback)
 ~~~~
 
@@ -8679,15 +11332,15 @@ lidar_thin_high_density(
 ```
 >>./whitebox_tools -r=LidarThinHighDensity -v ^
 --wd="/path/to/data/" -i="input.las" -o="output.las" ^
---resolution=1.0 --density=100.0 --save_filtered
+--resolution=1.0 --density=100.0 --save_filtered 
 
 
 ```
 
 
-#### 8.11.28 LidarTile
+#### 8.11.33 LidarTile
 
-Tiles a LiDAR LAS file into multiple LAS files..
+Tiles a LiDAR LAS file into multiple LAS files.
 
 *Parameters*:
 
@@ -8705,12 +11358,12 @@ Tiles a LiDAR LAS file into multiple LAS files..
 
 ~~~~{.python}
 lidar_tile(
-    i,
-    width_x=1000.0,
-    width_y=1000.0,
-    origin_x=0.0,
-    origin_y=0.0,
-    min_points=0,
+    i, 
+    width_x=1000.0, 
+    width_y=1000.0, 
+    origin_x=0.0, 
+    origin_y=0.0, 
+    min_points=2, 
     callback=default_callback)
 ~~~~
 
@@ -8718,15 +11371,93 @@ lidar_tile(
 
 ```
 >>./whitebox_tools -r=LidarTile -v -i=/path/to/data/input.las ^
---width_x=1000.0 --width_y=2500.0 -=min_points=100
+--width_x=1000.0 --width_y=2500.0 -=min_points=100 
 
 
 ```
 
 
-#### 8.11.29 LidarTophatTransform
+#### 8.11.34 LidarTileFootprint
 
-Performs a white top-hat transform on a Lidar dataset; as an estimate of height above ground, this is useful for modelling the vegetation canopy..
+Creates a vector polygon of the convex hull of a LiDAR point cloud. When the input/output parameters
+are not specified, the tool works with all LAS files contained within the working directory.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input LiDAR file
+-o, -\-output        Output vector polygon file
+
+
+*Python function*:
+
+~~~~{.python}
+lidar_tile_footprint(
+    output, 
+    i=None, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=LidarTileFootprint -v ^
+--wd="/path/to/data/" -i=file.las -o=outfile.shp 
+
+
+```
+
+
+#### 8.11.35 LidarTinGridding
+
+Creates a raster grid based on a Delaunay triangular irregular network (TIN) fitted to LiDAR points.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input LiDAR file (including extension)
+-o, -\-output        Output raster file (including extension)
+-\-parameter         Interpolation parameter; options are 'elevation' (default), 'intensity', 
+                     'class', 'scan angle', 'user data' 
+-\-returns           Point return types to include; options are 'all' (default), 'last', 'first'
+-\-resolution        Output raster's grid resolution
+-\-exclude_cls       Optional exclude classes from interpolation; Valid class values range from 0 to 
+                     18, based on LAS specifications. Example, --exclude_cls='3,4,5,6,7,18' 
+-\-minz              Optional minimum elevation for inclusion in interpolation
+-\-maxz              Optional maximum elevation for inclusion in interpolation
+
+
+*Python function*:
+
+~~~~{.python}
+lidar_tin_gridding(
+    i=None, 
+    output=None, 
+    parameter="elevation", 
+    returns="all", 
+    resolution=1.0, 
+    exclude_cls=None, 
+    minz=None, 
+    maxz=None, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=LidarTINGridding -v ^
+--wd="/path/to/data/" -i=file.las -o=outfile.tif ^
+--returns=last --resolution=2.0 --exclude_cls='3,4,5,6,7,18' 
+
+
+```
+
+
+#### 8.11.36 LidarTophatTransform
+
+Performs a white top-hat transform on a Lidar dataset; as an estimate of height above ground, this is useful for modelling the vegetation canopy.
 
 *Parameters*:
 
@@ -8741,9 +11472,9 @@ Performs a white top-hat transform on a Lidar dataset; as an estimate of height 
 
 ~~~~{.python}
 lidar_tophat_transform(
-    i,
-    output,
-    radius=1.0,
+    i, 
+    output, 
+    radius=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -8752,15 +11483,15 @@ lidar_tophat_transform(
 ```
 >>./whitebox_tools -r=LidarTophatTransform -v ^
 --wd="/path/to/data/" -i="input.las" -o="output.las" ^
---radius=10.0
+--radius=10.0 
 
 
 ```
 
 
-#### 8.11.30 NormalVectors
+#### 8.11.37 NormalVectors
 
-Calculates normal vectors for points within a LAS file and stores these data (XYZ vector components) in the RGB field..
+Calculates normal vectors for points within a LAS file and stores these data (XYZ vector components) in the RGB field.
 
 *Parameters*:
 
@@ -8775,9 +11506,9 @@ Calculates normal vectors for points within a LAS file and stores these data (XY
 
 ~~~~{.python}
 normal_vectors(
-    i,
-    output,
-    radius=1.0,
+    i, 
+    output, 
+    radius=1.0, 
     callback=default_callback)
 ~~~~
 
@@ -8785,15 +11516,15 @@ normal_vectors(
 
 ```
 >>./whitebox_tools -r=NormalVectors -v --wd="/path/to/data/" ^
--i="input.las" -o="output.las" --radius=10.0
+-i="input.las" -o="output.las" --radius=10.0 
 
 
 ```
 
 
-#### 8.11.31 SelectTilesByPolygon
+#### 8.11.38 SelectTilesByPolygon
 
-Copies LiDAR tiles overlapping with a polygon into an output directory..
+Copies LiDAR tiles overlapping with a polygon into an output directory.
 
 *Parameters*:
 
@@ -8808,9 +11539,9 @@ Copies LiDAR tiles overlapping with a polygon into an output directory..
 
 ~~~~{.python}
 select_tiles_by_polygon(
-    indir,
-    outdir,
-    polygons,
+    indir, 
+    outdir, 
+    polygons, 
     callback=default_callback)
 ~~~~
 
@@ -8819,7 +11550,7 @@ select_tiles_by_polygon(
 ```
 >>./whitebox_tools -r=SelectTilesByPolygon -v ^
 --indir='/path/to/lidar/' --outdir='/output/path/' ^
---polygons='watershed.shp'
+--polygons='watershed.shp' 
 
 
 ```
@@ -8828,7 +11559,7 @@ select_tiles_by_polygon(
 
 #### 8.12.1 AbsoluteValue
 
-Calculates the absolute value of every cell in a raster..
+Calculates the absolute value of every cell in a raster.
 
 *Parameters*:
 
@@ -8842,8 +11573,8 @@ Calculates the absolute value of every cell in a raster..
 
 ~~~~{.python}
 absolute_value(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -8851,7 +11582,7 @@ absolute_value(
 
 ```
 >>./whitebox_tools -r=AbsoluteValue -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -8859,7 +11590,7 @@ absolute_value(
 
 #### 8.12.2 Add
 
-Performs an addition operation on two rasters or a raster and a constant value..
+Performs an addition operation on two rasters or a raster and a constant value.
 
 *Parameters*:
 
@@ -8874,9 +11605,9 @@ Performs an addition operation on two rasters or a raster and a constant value..
 
 ~~~~{.python}
 add(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -8884,7 +11615,7 @@ add(
 
 ```
 >>./whitebox_tools -r=Add -v --wd="/path/to/data/" ^
---input1='in1.tif' --input2='in2.tif' -o=output.tif
+--input1='in1.tif' --input2='in2.tif' -o=output.tif 
 
 
 ```
@@ -8892,7 +11623,7 @@ add(
 
 #### 8.12.3 And
 
-Performs a logical AND operator on two Boolean raster images..
+Performs a logical AND operator on two Boolean raster images.
 
 *Parameters*:
 
@@ -8907,9 +11638,9 @@ Performs a logical AND operator on two Boolean raster images..
 
 ~~~~{.python}
 And(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -8917,7 +11648,7 @@ And(
 
 ```
 >>./whitebox_tools -r=And -v --wd="/path/to/data/" ^
---input1='in1.tif' --input2='in2.tif' -o=output.tif
+--input1='in1.tif' --input2='in2.tif' -o=output.tif 
 
 
 ```
@@ -8925,7 +11656,7 @@ And(
 
 #### 8.12.4 Anova
 
-Performs an analysis of variance (ANOVA) test on a raster dataset..
+Performs an analysis of variance (ANOVA) test on a raster dataset.
 
 *Parameters*:
 
@@ -8940,9 +11671,9 @@ Performs an analysis of variance (ANOVA) test on a raster dataset..
 
 ~~~~{.python}
 anova(
-    i,
-    features,
-    output,
+    i, 
+    features, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -8950,7 +11681,7 @@ anova(
 
 ```
 >>./whitebox_tools -r=Anova -v --wd="/path/to/data/" ^
--i=data.tif --features=classes.tif -o=anova.html
+-i=data.tif --features=classes.tif -o=anova.html 
 
 
 ```
@@ -8958,7 +11689,7 @@ anova(
 
 #### 8.12.5 ArcCos
 
-Returns the inverse cosine (arccos) of each values in a raster..
+Returns the inverse cosine (arccos) of each values in a raster.
 
 *Parameters*:
 
@@ -8972,8 +11703,8 @@ Returns the inverse cosine (arccos) of each values in a raster..
 
 ~~~~{.python}
 arc_cos(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -8981,7 +11712,7 @@ arc_cos(
 
 ```
 >>./whitebox_tools -r=ArcCos -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -8989,7 +11720,7 @@ arc_cos(
 
 #### 8.12.6 ArcSin
 
-Returns the inverse sine (arcsin) of each values in a raster..
+Returns the inverse sine (arcsin) of each values in a raster.
 
 *Parameters*:
 
@@ -9003,8 +11734,8 @@ Returns the inverse sine (arcsin) of each values in a raster..
 
 ~~~~{.python}
 arc_sin(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9012,7 +11743,7 @@ arc_sin(
 
 ```
 >>./whitebox_tools -r=ArcSin -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -9020,7 +11751,7 @@ arc_sin(
 
 #### 8.12.7 ArcTan
 
-Returns the inverse tangent (arctan) of each values in a raster..
+Returns the inverse tangent (arctan) of each values in a raster.
 
 *Parameters*:
 
@@ -9034,8 +11765,8 @@ Returns the inverse tangent (arctan) of each values in a raster..
 
 ~~~~{.python}
 arc_tan(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9043,7 +11774,7 @@ arc_tan(
 
 ```
 >>./whitebox_tools -r=ArcTan -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -9051,7 +11782,7 @@ arc_tan(
 
 #### 8.12.8 Atan2
 
-Returns the 2-argument inverse tangent (atan2)..
+Returns the 2-argument inverse tangent (atan2).
 
 *Parameters*:
 
@@ -9066,9 +11797,9 @@ Returns the 2-argument inverse tangent (atan2)..
 
 ~~~~{.python}
 atan2(
-    input_y,
-    input_x,
-    output,
+    input_y, 
+    input_x, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9076,7 +11807,7 @@ atan2(
 
 ```
 >>./whitebox_tools -r=Atan2 -v --wd="/path/to/data/" ^
---input_y='in1.tif' --input_x='in2.tif' -o=output.tif
+--input_y='in1.tif' --input_x='in2.tif' -o=output.tif 
 
 
 ```
@@ -9084,7 +11815,7 @@ atan2(
 
 #### 8.12.9 AttributeCorrelation
 
-Performs a correlation analysis on attribute fields from a vector database..
+Performs a correlation analysis on attribute fields from a vector database.
 
 *Parameters*:
 
@@ -9098,8 +11829,8 @@ Performs a correlation analysis on attribute fields from a vector database..
 
 ~~~~{.python}
 attribute_correlation(
-    i,
-    output=None,
+    i, 
+    output=None, 
     callback=default_callback)
 ~~~~
 
@@ -9107,7 +11838,7 @@ attribute_correlation(
 
 ```
 >>./whitebox_tools -r=AttributeCorrelation -v ^
---wd="/path/to/data/" -i=file.shp -o=outfile.html
+--wd="/path/to/data/" -i=file.shp -o=outfile.html 
 
 
 ```
@@ -9115,7 +11846,7 @@ attribute_correlation(
 
 #### 8.12.10 AttributeHistogram
 
-Creates a histogram for the field values of a vector's attribute table..
+Creates a histogram for the field values of a vector's attribute table.
 
 *Parameters*:
 
@@ -9130,9 +11861,9 @@ Creates a histogram for the field values of a vector's attribute table..
 
 ~~~~{.python}
 attribute_histogram(
-    i,
-    field,
-    output,
+    i, 
+    field, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9141,7 +11872,7 @@ attribute_histogram(
 ```
 >>./whitebox_tools -r=AttributeHistogram -v ^
 --wd="/path/to/data/" -i=lakes.shp --field=HEIGHT ^
--o=outfile.html
+-o=outfile.html 
 
 
 ```
@@ -9149,7 +11880,7 @@ attribute_histogram(
 
 #### 8.12.11 AttributeScattergram
 
-Creates a scattergram for two field values of a vector's attribute table..
+Creates a scattergram for two field values of a vector's attribute table.
 
 *Parameters*:
 
@@ -9166,11 +11897,11 @@ Creates a scattergram for two field values of a vector's attribute table..
 
 ~~~~{.python}
 attribute_scattergram(
-    i,
-    fieldx,
-    fieldy,
-    output,
-    trendline=False,
+    i, 
+    fieldx, 
+    fieldy, 
+    output, 
+    trendline=False, 
     callback=default_callback)
 ~~~~
 
@@ -9179,7 +11910,7 @@ attribute_scattergram(
 ```
 >>./whitebox_tools -r=AttributeScattergram -v ^
 --wd="/path/to/data/" -i=lakes.shp --fieldx=HEIGHT ^
---fieldy=area -o=outfile.html --trendline
+--fieldy=area -o=outfile.html --trendline 
 
 
 ```
@@ -9187,7 +11918,7 @@ attribute_scattergram(
 
 #### 8.12.12 Ceil
 
-Returns the smallest (closest to negative infinity) value that is greater than or equal to the values in a raster..
+Returns the smallest (closest to negative infinity) value that is greater than or equal to the values in a raster.
 
 *Parameters*:
 
@@ -9201,8 +11932,8 @@ Returns the smallest (closest to negative infinity) value that is greater than o
 
 ~~~~{.python}
 ceil(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9210,7 +11941,7 @@ ceil(
 
 ```
 >>./whitebox_tools -r=Ceil -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -9218,7 +11949,7 @@ ceil(
 
 #### 8.12.13 Cos
 
-Returns the cosine (cos) of each values in a raster..
+Returns the cosine (cos) of each values in a raster.
 
 *Parameters*:
 
@@ -9232,8 +11963,8 @@ Returns the cosine (cos) of each values in a raster..
 
 ~~~~{.python}
 cos(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9241,7 +11972,7 @@ cos(
 
 ```
 >>./whitebox_tools -r=Cos -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -9249,7 +11980,7 @@ cos(
 
 #### 8.12.14 Cosh
 
-Returns the hyperbolic cosine (cosh) of each values in a raster..
+Returns the hyperbolic cosine (cosh) of each values in a raster.
 
 *Parameters*:
 
@@ -9263,8 +11994,8 @@ Returns the hyperbolic cosine (cosh) of each values in a raster..
 
 ~~~~{.python}
 cosh(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9272,7 +12003,7 @@ cosh(
 
 ```
 >>./whitebox_tools -r=Cosh -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -9280,23 +12011,23 @@ cosh(
 
 #### 8.12.15 CrispnessIndex
 
-Calculates the Crispness Index, which is used to quantify how crisp (or conversely how fuzzy) a probability image is..
+Calculates the Crispness Index, which is used to quantify how crisp (or conversely how fuzzy) a probability image is.
 
 *Parameters*:
 
 **Flag**             **Description**
 -------------------  ---------------
 -i, -\-input         Input raster file
--o, -\-output        Optional output html file (default name will be based on input file if
-                     unspecified)
+-o, -\-output        Optional output html file (default name will be based on input file if 
+                     unspecified) 
 
 
 *Python function*:
 
 ~~~~{.python}
 crispness_index(
-    i,
-    output=None,
+    i, 
+    output=None, 
     callback=default_callback)
 ~~~~
 
@@ -9306,7 +12037,7 @@ crispness_index(
 >>./whitebox_tools -r=CrispnessIndex -v --wd="/path/to/data/" ^
 -i=input.tif
 >>./whitebox_tools -r=CrispnessIndex -v ^
---wd="/path/to/data/" -o=crispness.html
+--wd="/path/to/data/" -o=crispness.html 
 
 
 ```
@@ -9314,7 +12045,7 @@ crispness_index(
 
 #### 8.12.16 CrossTabulation
 
-Performs a cross-tabulation on two categorical images..
+Performs a cross-tabulation on two categorical images.
 
 *Parameters*:
 
@@ -9329,9 +12060,9 @@ Performs a cross-tabulation on two categorical images..
 
 ~~~~{.python}
 cross_tabulation(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9340,7 +12071,7 @@ cross_tabulation(
 ```
 >>./whitebox_tools -r=CrossTabulation -v ^
 --wd="/path/to/data/" --i1="file1.tif" --i2="file2.tif" ^
--o=outfile.html
+-o=outfile.html 
 
 
 ```
@@ -9348,7 +12079,7 @@ cross_tabulation(
 
 #### 8.12.17 CumulativeDistribution
 
-Converts a raster image to its cumulative distribution function..
+Converts a raster image to its cumulative distribution function.
 
 *Parameters*:
 
@@ -9362,8 +12093,8 @@ Converts a raster image to its cumulative distribution function..
 
 ~~~~{.python}
 cumulative_distribution(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9371,7 +12102,7 @@ cumulative_distribution(
 
 ```
 >>./whitebox_tools -r=CumulativeDistribution -v ^
---wd="/path/to/data/" -i=DEM.tif -o=output.tif
+--wd="/path/to/data/" -i=DEM.tif -o=output.tif 
 
 
 ```
@@ -9379,7 +12110,7 @@ cumulative_distribution(
 
 #### 8.12.18 Decrement
 
-Decreases the values of each grid cell in an input raster by 1.0 (see also InPlaceSubtract)..
+Decreases the values of each grid cell in an input raster by 1.0 (see also InPlaceSubtract).
 
 *Parameters*:
 
@@ -9393,8 +12124,8 @@ Decreases the values of each grid cell in an input raster by 1.0 (see also InPla
 
 ~~~~{.python}
 decrement(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9402,7 +12133,7 @@ decrement(
 
 ```
 >>./whitebox_tools -r=Decrement -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -9410,7 +12141,7 @@ decrement(
 
 #### 8.12.19 Divide
 
-Performs a division operation on two rasters or a raster and a constant value..
+Performs a division operation on two rasters or a raster and a constant value.
 
 *Parameters*:
 
@@ -9425,9 +12156,9 @@ Performs a division operation on two rasters or a raster and a constant value..
 
 ~~~~{.python}
 divide(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9435,7 +12166,7 @@ divide(
 
 ```
 >>./whitebox_tools -r=Divide -v --wd="/path/to/data/" ^
---input1='in1.tif' --input2='in2.tif' -o=output.tif
+--input1='in1.tif' --input2='in2.tif' -o=output.tif 
 
 
 ```
@@ -9443,7 +12174,7 @@ divide(
 
 #### 8.12.20 EqualTo
 
-Performs a equal-to comparison operation on two rasters or a raster and a constant value..
+Performs a equal-to comparison operation on two rasters or a raster and a constant value.
 
 *Parameters*:
 
@@ -9458,9 +12189,9 @@ Performs a equal-to comparison operation on two rasters or a raster and a consta
 
 ~~~~{.python}
 equal_to(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9468,7 +12199,7 @@ equal_to(
 
 ```
 >>./whitebox_tools -r=EqualTo -v --wd="/path/to/data/" ^
---input1='in1.tif' --input2='in2.tif' -o=output.tif
+--input1='in1.tif' --input2='in2.tif' -o=output.tif 
 
 
 ```
@@ -9476,7 +12207,7 @@ equal_to(
 
 #### 8.12.21 Exp
 
-Returns the exponential (base e) of values in a raster..
+Returns the exponential (base e) of values in a raster.
 
 *Parameters*:
 
@@ -9490,8 +12221,8 @@ Returns the exponential (base e) of values in a raster..
 
 ~~~~{.python}
 exp(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9499,7 +12230,7 @@ exp(
 
 ```
 >>./whitebox_tools -r=Exp -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -9507,7 +12238,7 @@ exp(
 
 #### 8.12.22 Exp2
 
-Returns the exponential (base 2) of values in a raster..
+Returns the exponential (base 2) of values in a raster.
 
 *Parameters*:
 
@@ -9521,8 +12252,8 @@ Returns the exponential (base 2) of values in a raster..
 
 ~~~~{.python}
 exp2(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9530,7 +12261,7 @@ exp2(
 
 ```
 >>./whitebox_tools -r=Exp2 -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -9538,7 +12269,7 @@ exp2(
 
 #### 8.12.23 ExtractRasterStatistics
 
-Extracts descriptive statistics for a group of patches in a raster..
+Extracts descriptive statistics for a group of patches in a raster.
 
 *Parameters*:
 
@@ -9555,11 +12286,11 @@ Extracts descriptive statistics for a group of patches in a raster..
 
 ~~~~{.python}
 extract_raster_statistics(
-    i,
-    features,
-    output=None,
-    stat="average",
-    out_table=None,
+    i, 
+    features, 
+    output=None, 
+    stat="average", 
+    out_table=None, 
     callback=default_callback)
 ~~~~
 
@@ -9572,7 +12303,7 @@ extract_raster_statistics(
 >>./whitebox_tools ^
 -r=ExtractRasterStatistics -v --wd="/path/to/data/" ^
 -i='input.tif' --features='groups.tif' ^
---out_table='output.html'
+--out_table='output.html' 
 
 
 ```
@@ -9580,7 +12311,7 @@ extract_raster_statistics(
 
 #### 8.12.24 Floor
 
-Returns the largest (closest to positive infinity) value that is less than or equal to the values in a raster..
+Returns the largest (closest to positive infinity) value that is less than or equal to the values in a raster.
 
 *Parameters*:
 
@@ -9594,8 +12325,8 @@ Returns the largest (closest to positive infinity) value that is less than or eq
 
 ~~~~{.python}
 floor(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9603,7 +12334,7 @@ floor(
 
 ```
 >>./whitebox_tools -r=Floor -v --wd="/path/to/data/" ^
--i='input.tif' -o='output.tif'
+-i='input.tif' -o='output.tif' 
 
 
 ```
@@ -9611,7 +12342,7 @@ floor(
 
 #### 8.12.25 GreaterThan
 
-Performs a greater-than comparison operation on two rasters or a raster and a constant value..
+Performs a greater-than comparison operation on two rasters or a raster and a constant value.
 
 *Parameters*:
 
@@ -9627,10 +12358,10 @@ Performs a greater-than comparison operation on two rasters or a raster and a co
 
 ~~~~{.python}
 greater_than(
-    input1,
-    input2,
-    output,
-    incl_equals=False,
+    input1, 
+    input2, 
+    output, 
+    incl_equals=False, 
     callback=default_callback)
 ~~~~
 
@@ -9639,7 +12370,7 @@ greater_than(
 ```
 >>./whitebox_tools -r=GreaterThan -v --wd="/path/to/data/" ^
 --input1='in1.tif' --input2='in2.tif' -o=output.tif ^
---incl_equals
+--incl_equals 
 
 
 ```
@@ -9647,7 +12378,7 @@ greater_than(
 
 #### 8.12.26 ImageAutocorrelation
 
-Performs Moran's I analysis on two or more input images..
+Performs Moran's I analysis on two or more input images.
 
 *Parameters*:
 
@@ -9662,9 +12393,9 @@ Performs Moran's I analysis on two or more input images..
 
 ~~~~{.python}
 image_autocorrelation(
-    inputs,
-    output,
-    contiguity="Rook",
+    inputs, 
+    output, 
+    contiguity="Rook", 
     callback=default_callback)
 ~~~~
 
@@ -9673,7 +12404,7 @@ image_autocorrelation(
 ```
 >>./whitebox_tools -r=ImageAutocorrelation -v ^
 --wd="/path/to/data/" -i="file1.tif, file2.tif, file3.tif" ^
--o=outfile.html --contiguity=Bishops
+-o=outfile.html --contiguity=Bishops 
 
 
 ```
@@ -9681,7 +12412,7 @@ image_autocorrelation(
 
 #### 8.12.27 ImageCorrelation
 
-Performs image correlation on two or more input images..
+Performs image correlation on two or more input images.
 
 *Parameters*:
 
@@ -9695,8 +12426,8 @@ Performs image correlation on two or more input images..
 
 ~~~~{.python}
 image_correlation(
-    inputs,
-    output=None,
+    inputs, 
+    output=None, 
     callback=default_callback)
 ~~~~
 
@@ -9705,7 +12436,7 @@ image_correlation(
 ```
 >>./whitebox_tools -r=ImageCorrelation -v ^
 --wd="/path/to/data/" -i="file1.tif, file2.tif, file3.tif" ^
--o=outfile.html
+-o=outfile.html 
 
 
 ```
@@ -9713,7 +12444,7 @@ image_correlation(
 
 #### 8.12.28 ImageRegression
 
-Performs image regression analysis on two input images..
+Performs image regression analysis on two input images.
 
 *Parameters*:
 
@@ -9730,11 +12461,11 @@ Performs image regression analysis on two input images..
 
 ~~~~{.python}
 image_regression(
-    input1,
-    input2,
-    output,
-    out_residuals=None,
-    standardize=False,
+    input1, 
+    input2, 
+    output, 
+    out_residuals=None, 
+    standardize=False, 
     callback=default_callback)
 ~~~~
 
@@ -9744,7 +12475,7 @@ image_regression(
 >>./whitebox_tools -r=ImageRegression -v ^
 --wd="/path/to/data/" --i1='file1.tif' --i2='file2.tif' ^
 -o='outfile.html' --out_residuals='residuals.tif' ^
---standardize
+--standardize 
 
 
 ```
@@ -9752,7 +12483,7 @@ image_regression(
 
 #### 8.12.29 InPlaceAdd
 
-Performs an in-place addition operation (input1 += input2)..
+Performs an in-place addition operation (input1 += input2).
 
 *Parameters*:
 
@@ -9766,8 +12497,8 @@ Performs an in-place addition operation (input1 += input2)..
 
 ~~~~{.python}
 in_place_add(
-    input1,
-    input2,
+    input1, 
+    input2, 
     callback=default_callback)
 ~~~~
 
@@ -9778,7 +12509,7 @@ in_place_add(
 --input1='in1.tif' --input2='in2.tif'"
 >>./whitebox_tools ^
 -r=InPlaceAdd -v --wd="/path/to/data/" --input1='in1.tif' ^
---input2=10.5'
+--input2=10.5' 
 
 
 ```
@@ -9786,7 +12517,7 @@ in_place_add(
 
 #### 8.12.30 InPlaceDivide
 
-Performs an in-place division operation (input1 /= input2)..
+Performs an in-place division operation (input1 /= input2).
 
 *Parameters*:
 
@@ -9800,8 +12531,8 @@ Performs an in-place division operation (input1 /= input2)..
 
 ~~~~{.python}
 in_place_divide(
-    input1,
-    input2,
+    input1, 
+    input2, 
     callback=default_callback)
 ~~~~
 
@@ -9812,7 +12543,7 @@ in_place_divide(
 --input1='in1.tif' --input2='in2.tif'"
 >>./whitebox_tools ^
 -r=InPlaceDivide -v --wd="/path/to/data/" --input1='in1.tif' ^
---input2=10.5'
+--input2=10.5' 
 
 
 ```
@@ -9820,7 +12551,7 @@ in_place_divide(
 
 #### 8.12.31 InPlaceMultiply
 
-Performs an in-place multiplication operation (input1 *= input2)..
+Performs an in-place multiplication operation (input1 *= input2).
 
 *Parameters*:
 
@@ -9834,8 +12565,8 @@ Performs an in-place multiplication operation (input1 *= input2)..
 
 ~~~~{.python}
 in_place_multiply(
-    input1,
-    input2,
+    input1, 
+    input2, 
     callback=default_callback)
 ~~~~
 
@@ -9846,7 +12577,7 @@ in_place_multiply(
 --wd="/path/to/data/" --input1='in1.tif' ^
 --input2='in2.tif'"
 >>./whitebox_tools -r=InPlaceMultiply -v ^
---wd="/path/to/data/" --input1='in1.tif' --input2=10.5'
+--wd="/path/to/data/" --input1='in1.tif' --input2=10.5' 
 
 
 ```
@@ -9854,7 +12585,7 @@ in_place_multiply(
 
 #### 8.12.32 InPlaceSubtract
 
-Performs an in-place subtraction operation (input1 -= input2)..
+Performs an in-place subtraction operation (input1 -= input2).
 
 *Parameters*:
 
@@ -9868,8 +12599,8 @@ Performs an in-place subtraction operation (input1 -= input2)..
 
 ~~~~{.python}
 in_place_subtract(
-    input1,
-    input2,
+    input1, 
+    input2, 
     callback=default_callback)
 ~~~~
 
@@ -9880,7 +12611,7 @@ in_place_subtract(
 --wd="/path/to/data/" --input1='in1.tif' ^
 --input2='in2.tif'"
 >>./whitebox_tools -r=InPlaceSubtract -v ^
---wd="/path/to/data/" --input1='in1.tif' --input2=10.5'
+--wd="/path/to/data/" --input1='in1.tif' --input2=10.5' 
 
 
 ```
@@ -9888,7 +12619,7 @@ in_place_subtract(
 
 #### 8.12.33 Increment
 
-Increases the values of each grid cell in an input raster by 1.0. (see also InPlaceAdd).
+Increases the values of each grid cell in an input raster by 1.0. (see also InPlaceAdd)
 
 *Parameters*:
 
@@ -9902,8 +12633,8 @@ Increases the values of each grid cell in an input raster by 1.0. (see also InPl
 
 ~~~~{.python}
 increment(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9911,7 +12642,7 @@ increment(
 
 ```
 >>./whitebox_tools -r=Increment -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -9919,7 +12650,7 @@ increment(
 
 #### 8.12.34 IntegerDivision
 
-Performs an integer division operation on two rasters or a raster and a constant value..
+Performs an integer division operation on two rasters or a raster and a constant value.
 
 *Parameters*:
 
@@ -9934,9 +12665,9 @@ Performs an integer division operation on two rasters or a raster and a constant
 
 ~~~~{.python}
 integer_division(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9945,7 +12676,7 @@ integer_division(
 ```
 >>./whitebox_tools -r=IntegerDivision -v ^
 --wd="/path/to/data/" --input1='in1.tif' --input2='in2.tif' ^
--o=output.tif
+-o=output.tif 
 
 
 ```
@@ -9953,7 +12684,7 @@ integer_division(
 
 #### 8.12.35 IsNoData
 
-Identifies NoData valued pixels in an image..
+Identifies NoData valued pixels in an image.
 
 *Parameters*:
 
@@ -9967,8 +12698,8 @@ Identifies NoData valued pixels in an image..
 
 ~~~~{.python}
 is_no_data(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -9976,51 +12707,15 @@ is_no_data(
 
 ```
 >>./whitebox_tools -r=IsNoData -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
 
 
-#### 8.12.36 KsTestForNormality
+#### 8.12.36 KappaIndex
 
-Evaluates whether the values in a raster are normally distributed..
-
-*Parameters*:
-
-**Flag**             **Description**
--------------------  ---------------
--i, -\-input         Input raster file
--o, -\-output        Output HTML file
--\-num_samples       Number of samples. Leave blank to use whole image
-
-
-*Python function*:
-
-~~~~{.python}
-ks_test_for_normality(
-    i,
-    output,
-    num_samples=None,
-    callback=default_callback)
-~~~~
-
-*Command-line Interface*:
-
-```
->>./whitebox_tools -r=KSTestForNormality -v ^
---wd="/path/to/data/" -i=input.tif -o=output.html ^
---num_samples=1000
->>./whitebox_tools -r=KSTestForNormality -v ^
---wd="/path/to/data/" -i=input.tif -o=output.html
-
-
-```
-
-
-#### 8.12.37 KappaIndex
-
-Performs a kappa index of agreement (KIA) analysis on two categorical raster files..
+Performs a kappa index of agreement (KIA) analysis on two categorical raster files.
 
 *Parameters*:
 
@@ -10035,9 +12730,9 @@ Performs a kappa index of agreement (KIA) analysis on two categorical raster fil
 
 ~~~~{.python}
 kappa_index(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10045,7 +12740,43 @@ kappa_index(
 
 ```
 >>./whitebox_tools -r=KappaIndex -v --wd="/path/to/data/" ^
---i1=class.tif --i2=reference.tif -o=kia.html
+--i1=class.tif --i2=reference.tif -o=kia.html 
+
+
+```
+
+
+#### 8.12.37 KsTestForNormality
+
+Evaluates whether the values in a raster are normally distributed.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-i, -\-input         Input raster file
+-o, -\-output        Output HTML file
+-\-num_samples       Number of samples. Leave blank to use whole image
+
+
+*Python function*:
+
+~~~~{.python}
+ks_test_for_normality(
+    i, 
+    output, 
+    num_samples=None, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=KSTestForNormality -v ^
+--wd="/path/to/data/" -i=input.tif -o=output.html ^
+--num_samples=1000
+>>./whitebox_tools -r=KSTestForNormality -v ^
+--wd="/path/to/data/" -i=input.tif -o=output.html 
 
 
 ```
@@ -10053,7 +12784,7 @@ kappa_index(
 
 #### 8.12.38 LessThan
 
-Performs a less-than comparison operation on two rasters or a raster and a constant value..
+Performs a less-than comparison operation on two rasters or a raster and a constant value.
 
 *Parameters*:
 
@@ -10069,10 +12800,10 @@ Performs a less-than comparison operation on two rasters or a raster and a const
 
 ~~~~{.python}
 less_than(
-    input1,
-    input2,
-    output,
-    incl_equals=False,
+    input1, 
+    input2, 
+    output, 
+    incl_equals=False, 
     callback=default_callback)
 ~~~~
 
@@ -10081,7 +12812,7 @@ less_than(
 ```
 >>./whitebox_tools -r=LessThan -v --wd="/path/to/data/" ^
 --input1='in1.tif' --input2='in2.tif' -o=output.tif ^
---incl_equals
+--incl_equals 
 
 
 ```
@@ -10089,7 +12820,7 @@ less_than(
 
 #### 8.12.39 ListUniqueValues
 
-Lists the unique values contained in a field witin a vector's attribute table..
+Lists the unique values contained in a field witin a vector's attribute table.
 
 *Parameters*:
 
@@ -10104,9 +12835,9 @@ Lists the unique values contained in a field witin a vector's attribute table..
 
 ~~~~{.python}
 list_unique_values(
-    i,
-    field,
-    output,
+    i, 
+    field, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10115,7 +12846,7 @@ list_unique_values(
 ```
 >>./whitebox_tools -r=ListUniqueValues -v ^
 --wd="/path/to/data/" -i=lakes.shp --field=HEIGHT ^
--o=outfile.html
+-o=outfile.html 
 
 
 ```
@@ -10123,7 +12854,7 @@ list_unique_values(
 
 #### 8.12.40 Ln
 
-Returns the natural logarithm of values in a raster..
+Returns the natural logarithm of values in a raster.
 
 *Parameters*:
 
@@ -10137,8 +12868,8 @@ Returns the natural logarithm of values in a raster..
 
 ~~~~{.python}
 ln(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10146,7 +12877,7 @@ ln(
 
 ```
 >>./whitebox_tools -r=Ln -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -10154,7 +12885,7 @@ ln(
 
 #### 8.12.41 Log10
 
-Returns the base-10 logarithm of values in a raster..
+Returns the base-10 logarithm of values in a raster.
 
 *Parameters*:
 
@@ -10168,8 +12899,8 @@ Returns the base-10 logarithm of values in a raster..
 
 ~~~~{.python}
 log10(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10177,7 +12908,7 @@ log10(
 
 ```
 >>./whitebox_tools -r=Log10 -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -10185,7 +12916,7 @@ log10(
 
 #### 8.12.42 Log2
 
-Returns the base-2 logarithm of values in a raster..
+Returns the base-2 logarithm of values in a raster.
 
 *Parameters*:
 
@@ -10199,8 +12930,8 @@ Returns the base-2 logarithm of values in a raster..
 
 ~~~~{.python}
 log2(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10208,7 +12939,7 @@ log2(
 
 ```
 >>./whitebox_tools -r=Log2 -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -10216,7 +12947,7 @@ log2(
 
 #### 8.12.43 Max
 
-Performs a MAX operation on two rasters or a raster and a constant value..
+Performs a MAX operation on two rasters or a raster and a constant value.
 
 *Parameters*:
 
@@ -10231,9 +12962,9 @@ Performs a MAX operation on two rasters or a raster and a constant value..
 
 ~~~~{.python}
 max(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10241,7 +12972,7 @@ max(
 
 ```
 >>./whitebox_tools -r=Max -v --wd="/path/to/data/" ^
---input1='in1.tif' --input2='in2.tif' -o=output.tif
+--input1='in1.tif' --input2='in2.tif' -o=output.tif 
 
 
 ```
@@ -10249,7 +12980,7 @@ max(
 
 #### 8.12.44 Min
 
-Performs a MIN operation on two rasters or a raster and a constant value..
+Performs a MIN operation on two rasters or a raster and a constant value.
 
 *Parameters*:
 
@@ -10264,9 +12995,9 @@ Performs a MIN operation on two rasters or a raster and a constant value..
 
 ~~~~{.python}
 min(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10274,7 +13005,7 @@ min(
 
 ```
 >>./whitebox_tools -r=Min -v --wd="/path/to/data/" ^
---input1='in1.tif' --input2='in2.tif' -o=output.tif
+--input1='in1.tif' --input2='in2.tif' -o=output.tif 
 
 
 ```
@@ -10282,7 +13013,7 @@ min(
 
 #### 8.12.45 Modulo
 
-Performs a modulo operation on two rasters or a raster and a constant value..
+Performs a modulo operation on two rasters or a raster and a constant value.
 
 *Parameters*:
 
@@ -10297,9 +13028,9 @@ Performs a modulo operation on two rasters or a raster and a constant value..
 
 ~~~~{.python}
 modulo(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10307,7 +13038,7 @@ modulo(
 
 ```
 >>./whitebox_tools -r=Modulo -v --wd="/path/to/data/" ^
---input1='in1.tif' --input2='in2.tif' -o=output.tif
+--input1='in1.tif' --input2='in2.tif' -o=output.tif 
 
 
 ```
@@ -10315,7 +13046,7 @@ modulo(
 
 #### 8.12.46 Multiply
 
-Performs a multiplication operation on two rasters or a raster and a constant value..
+Performs a multiplication operation on two rasters or a raster and a constant value.
 
 *Parameters*:
 
@@ -10330,9 +13061,9 @@ Performs a multiplication operation on two rasters or a raster and a constant va
 
 ~~~~{.python}
 multiply(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10340,7 +13071,7 @@ multiply(
 
 ```
 >>./whitebox_tools -r=Multiply -v --wd="/path/to/data/" ^
---input1='in1.tif' --input2='in2.tif' -o=output.tif
+--input1='in1.tif' --input2='in2.tif' -o=output.tif 
 
 
 ```
@@ -10348,7 +13079,7 @@ multiply(
 
 #### 8.12.47 Negate
 
-Changes the sign of values in a raster or the 0-1 values of a Boolean raster..
+Changes the sign of values in a raster or the 0-1 values of a Boolean raster.
 
 *Parameters*:
 
@@ -10362,8 +13093,8 @@ Changes the sign of values in a raster or the 0-1 values of a Boolean raster..
 
 ~~~~{.python}
 negate(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10371,7 +13102,7 @@ negate(
 
 ```
 >>./whitebox_tools -r=Negate -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -10379,7 +13110,7 @@ negate(
 
 #### 8.12.48 Not
 
-Performs a logical NOT operator on two Boolean raster images..
+Performs a logical NOT operator on two Boolean raster images.
 
 *Parameters*:
 
@@ -10394,9 +13125,9 @@ Performs a logical NOT operator on two Boolean raster images..
 
 ~~~~{.python}
 Not(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10404,7 +13135,7 @@ Not(
 
 ```
 >>./whitebox_tools -r=Not -v --wd="/path/to/data/" ^
---input1='in1.tif' --input2='in2.tif' -o=output.tif
+--input1='in1.tif' --input2='in2.tif' -o=output.tif 
 
 
 ```
@@ -10412,7 +13143,7 @@ Not(
 
 #### 8.12.49 NotEqualTo
 
-Performs a not-equal-to comparison operation on two rasters or a raster and a constant value..
+Performs a not-equal-to comparison operation on two rasters or a raster and a constant value.
 
 *Parameters*:
 
@@ -10427,9 +13158,9 @@ Performs a not-equal-to comparison operation on two rasters or a raster and a co
 
 ~~~~{.python}
 not_equal_to(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10437,7 +13168,7 @@ not_equal_to(
 
 ```
 >>./whitebox_tools -r=NotEqualTo -v --wd="/path/to/data/" ^
---input1='in1.tif' --input2='in2.tif' -o=output.tif
+--input1='in1.tif' --input2='in2.tif' -o=output.tif 
 
 
 ```
@@ -10445,7 +13176,7 @@ not_equal_to(
 
 #### 8.12.50 Or
 
-Performs a logical OR operator on two Boolean raster images..
+Performs a logical OR operator on two Boolean raster images.
 
 *Parameters*:
 
@@ -10460,9 +13191,9 @@ Performs a logical OR operator on two Boolean raster images..
 
 ~~~~{.python}
 Or(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10470,7 +13201,7 @@ Or(
 
 ```
 >>./whitebox_tools -r=Or -v --wd="/path/to/data/" ^
---input1='in1.tif' --input2='in2.tif' -o=output.tif
+--input1='in1.tif' --input2='in2.tif' -o=output.tif 
 
 
 ```
@@ -10478,7 +13209,7 @@ Or(
 
 #### 8.12.51 Power
 
-Raises the values in grid cells of one rasters, or a constant value, by values in another raster or constant value..
+Raises the values in grid cells of one rasters, or a constant value, by values in another raster or constant value.
 
 *Parameters*:
 
@@ -10493,9 +13224,9 @@ Raises the values in grid cells of one rasters, or a constant value, by values i
 
 ~~~~{.python}
 power(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10503,7 +13234,7 @@ power(
 
 ```
 >>./whitebox_tools -r=Power -v --wd="/path/to/data/" ^
---input1='in1.tif' --input2='in2.tif' -o=output.tif
+--input1='in1.tif' --input2='in2.tif' -o=output.tif 
 
 
 ```
@@ -10511,7 +13242,7 @@ power(
 
 #### 8.12.52 PrincipalComponentAnalysis
 
-Performs a principal component analysis (PCA) on a multi-spectral dataset..
+Performs a principal component analysis (PCA) on a multi-spectral dataset.
 
 *Parameters*:
 
@@ -10527,10 +13258,10 @@ Performs a principal component analysis (PCA) on a multi-spectral dataset..
 
 ~~~~{.python}
 principal_component_analysis(
-    inputs,
-    out_html,
-    num_comp=None,
-    standardized=False,
+    inputs, 
+    out_html, 
+    num_comp=None, 
+    standardized=False, 
     callback=default_callback)
 ~~~~
 
@@ -10539,7 +13270,7 @@ principal_component_analysis(
 ```
 >>./whitebox_tools -r=PrincipalComponentAnalysis -v ^
 --wd='/path/to/data/' -i='image1.tif;image2.tif;image3.tif' ^
---out_html=report.html --num_comp=3 --standardized
+--out_html=report.html --num_comp=3 --standardized 
 
 
 ```
@@ -10547,7 +13278,7 @@ principal_component_analysis(
 
 #### 8.12.53 Quantiles
 
-Transforms raster values into quantiles..
+Transforms raster values into quantiles.
 
 *Parameters*:
 
@@ -10562,9 +13293,9 @@ Transforms raster values into quantiles..
 
 ~~~~{.python}
 quantiles(
-    i,
-    output,
-    num_quantiles=4,
+    i, 
+    output, 
+    num_quantiles=4, 
     callback=default_callback)
 ~~~~
 
@@ -10572,7 +13303,7 @@ quantiles(
 
 ```
 >>./whitebox_tools -r=Quantiles -v --wd="/path/to/data/" ^
--i=DEM.tif -o=output.tif --num_quantiles=5
+-i=DEM.tif -o=output.tif --num_quantiles=5 
 
 
 ```
@@ -10580,7 +13311,7 @@ quantiles(
 
 #### 8.12.54 RandomField
 
-Creates an image containing random values..
+Creates an image containing random values.
 
 *Parameters*:
 
@@ -10594,8 +13325,8 @@ Creates an image containing random values..
 
 ~~~~{.python}
 random_field(
-    base,
-    output,
+    base, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10603,7 +13334,7 @@ random_field(
 
 ```
 >>./whitebox_tools -r=RandomField -v --wd="/path/to/data/" ^
---base=in.tif -o=out.tif
+--base=in.tif -o=out.tif 
 
 
 ```
@@ -10611,7 +13342,14 @@ random_field(
 
 #### 8.12.55 RandomSample
 
-Creates an image containing randomly located sample grid cells with unique IDs..
+This tool can be used to create a random sample of grid cells. The user specifies
+the base raster file, which is used to determine the grid dimensions and georeference
+information for the output raster, and the number of sample random samples (n). The
+output grid will contain n non-zero grid cells, randomly distributed throughout the
+raster grid, and a background value of zero. This tool is useful when performing
+statistical analyses on raster images when you wish to obtain a random sample of data.
+
+Only valid, non-nodata, cells in the base raster will be sampled.
 
 *Parameters*:
 
@@ -10626,9 +13364,9 @@ Creates an image containing randomly located sample grid cells with unique IDs..
 
 ~~~~{.python}
 random_sample(
-    base,
-    output,
-    num_samples=1000,
+    base, 
+    output, 
+    num_samples=1000, 
     callback=default_callback)
 ~~~~
 
@@ -10636,7 +13374,7 @@ random_sample(
 
 ```
 >>./whitebox_tools -r=RandomSample -v --wd="/path/to/data/" ^
---base=in.tif -o=out.tif --num_samples=1000
+--base=in.tif -o=out.tif --num_samples=1000 
 
 
 ```
@@ -10644,7 +13382,7 @@ random_sample(
 
 #### 8.12.56 RasterHistogram
 
-Creates a histogram from raster values..
+Creates a histogram from raster values.
 
 *Parameters*:
 
@@ -10658,8 +13396,8 @@ Creates a histogram from raster values..
 
 ~~~~{.python}
 raster_histogram(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10667,7 +13405,7 @@ raster_histogram(
 
 ```
 >>./whitebox_tools -r=RasterHistogram -v ^
---wd="/path/to/data/" -i="file1.tif" -o=outfile.html
+--wd="/path/to/data/" -i="file1.tif" -o=outfile.html 
 
 
 ```
@@ -10675,7 +13413,7 @@ raster_histogram(
 
 #### 8.12.57 RasterSummaryStats
 
-Measures a rasters average, standard deviation, num. non-nodata cells, and total..
+Measures a rasters average, standard deviation, num. non-nodata cells, and total.
 
 *Parameters*:
 
@@ -10688,7 +13426,7 @@ Measures a rasters average, standard deviation, num. non-nodata cells, and total
 
 ~~~~{.python}
 raster_summary_stats(
-    i,
+    i, 
     callback=default_callback)
 ~~~~
 
@@ -10696,7 +13434,7 @@ raster_summary_stats(
 
 ```
 >>./whitebox_tools -r=RasterSummaryStats -v ^
---wd="/path/to/data/" -i=DEM.tif
+--wd="/path/to/data/" -i=DEM.tif 
 
 
 ```
@@ -10704,7 +13442,7 @@ raster_summary_stats(
 
 #### 8.12.58 Reciprocal
 
-Returns the reciprocal (i.e. 1 / z) of values in a raster..
+Returns the reciprocal (i.e. 1 / z) of values in a raster.
 
 *Parameters*:
 
@@ -10718,8 +13456,8 @@ Returns the reciprocal (i.e. 1 / z) of values in a raster..
 
 ~~~~{.python}
 reciprocal(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10727,7 +13465,7 @@ reciprocal(
 
 ```
 >>./whitebox_tools -r=Reciprocal -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -10735,7 +13473,7 @@ reciprocal(
 
 #### 8.12.59 RescaleValueRange
 
-Performs a min-max contrast stretch on an input greytone image..
+Performs a min-max contrast stretch on an input greytone image.
 
 *Parameters*:
 
@@ -10753,12 +13491,12 @@ Performs a min-max contrast stretch on an input greytone image..
 
 ~~~~{.python}
 rescale_value_range(
-    i,
-    output,
-    out_min_val,
-    out_max_val,
-    clip_min=None,
-    clip_max=None,
+    i, 
+    output, 
+    out_min_val, 
+    out_max_val, 
+    clip_min=None, 
+    clip_max=None, 
     callback=default_callback)
 ~~~~
 
@@ -10771,7 +13509,7 @@ rescale_value_range(
 >>./whitebox_tools ^
 -r=RescaleValueRange -v --wd="/path/to/data/" -i=input.tif ^
 -o=output.tif --out_min_val=0.0 --out_max_val=1.0 ^
---clip_min=45.0 --clip_max=200.0
+--clip_min=45.0 --clip_max=200.0 
 
 
 ```
@@ -10779,7 +13517,7 @@ rescale_value_range(
 
 #### 8.12.60 RootMeanSquareError
 
-Calculates the RMSE and other accuracy statistics..
+Calculates the RMSE and other accuracy statistics.
 
 *Parameters*:
 
@@ -10793,8 +13531,8 @@ Calculates the RMSE and other accuracy statistics..
 
 ~~~~{.python}
 root_mean_square_error(
-    i,
-    base,
+    i, 
+    base, 
     callback=default_callback)
 ~~~~
 
@@ -10802,7 +13540,7 @@ root_mean_square_error(
 
 ```
 >>./whitebox_tools -r=RootMeanSquareError -v ^
---wd="/path/to/data/" -i=DEM.tif
+--wd="/path/to/data/" -i=DEM.tif 
 
 
 ```
@@ -10810,7 +13548,7 @@ root_mean_square_error(
 
 #### 8.12.61 Round
 
-Rounds the values in an input raster to the nearest integer value..
+Rounds the values in an input raster to the nearest integer value.
 
 *Parameters*:
 
@@ -10824,8 +13562,8 @@ Rounds the values in an input raster to the nearest integer value..
 
 ~~~~{.python}
 round(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10833,7 +13571,7 @@ round(
 
 ```
 >>./whitebox_tools -r=Round -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -10841,7 +13579,7 @@ round(
 
 #### 8.12.62 Sin
 
-Returns the sine (sin) of each values in a raster..
+Returns the sine (sin) of each values in a raster.
 
 *Parameters*:
 
@@ -10855,8 +13593,8 @@ Returns the sine (sin) of each values in a raster..
 
 ~~~~{.python}
 sin(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10864,7 +13602,7 @@ sin(
 
 ```
 >>./whitebox_tools -r=Sin -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -10872,7 +13610,7 @@ sin(
 
 #### 8.12.63 Sinh
 
-Returns the hyperbolic sine (sinh) of each values in a raster..
+Returns the hyperbolic sine (sinh) of each values in a raster.
 
 *Parameters*:
 
@@ -10886,8 +13624,8 @@ Returns the hyperbolic sine (sinh) of each values in a raster..
 
 ~~~~{.python}
 sinh(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10895,7 +13633,7 @@ sinh(
 
 ```
 >>./whitebox_tools -r=Sinh -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -10903,7 +13641,7 @@ sinh(
 
 #### 8.12.64 Square
 
-Squares the values in a raster..
+Squares the values in a raster.
 
 *Parameters*:
 
@@ -10917,8 +13655,8 @@ Squares the values in a raster..
 
 ~~~~{.python}
 square(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10926,7 +13664,7 @@ square(
 
 ```
 >>./whitebox_tools -r=Square -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -10934,7 +13672,7 @@ square(
 
 #### 8.12.65 SquareRoot
 
-Returns the square root of the values in a raster..
+Returns the square root of the values in a raster.
 
 *Parameters*:
 
@@ -10948,8 +13686,8 @@ Returns the square root of the values in a raster..
 
 ~~~~{.python}
 square_root(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10957,7 +13695,7 @@ square_root(
 
 ```
 >>./whitebox_tools -r=SquareRoot -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -10965,7 +13703,7 @@ square_root(
 
 #### 8.12.66 Subtract
 
-Performs a differencing operation on two rasters or a raster and a constant value..
+Performs a differencing operation on two rasters or a raster and a constant value.
 
 *Parameters*:
 
@@ -10980,9 +13718,9 @@ Performs a differencing operation on two rasters or a raster and a constant valu
 
 ~~~~{.python}
 subtract(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -10990,7 +13728,7 @@ subtract(
 
 ```
 >>./whitebox_tools -r=Subtract -v --wd="/path/to/data/" ^
---input1='in1.tif' --input2='in2.tif' -o=output.tif
+--input1='in1.tif' --input2='in2.tif' -o=output.tif 
 
 
 ```
@@ -10998,7 +13736,7 @@ subtract(
 
 #### 8.12.67 Tan
 
-Returns the tangent (tan) of each values in a raster..
+Returns the tangent (tan) of each values in a raster.
 
 *Parameters*:
 
@@ -11012,8 +13750,8 @@ Returns the tangent (tan) of each values in a raster..
 
 ~~~~{.python}
 tan(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -11021,7 +13759,7 @@ tan(
 
 ```
 >>./whitebox_tools -r=Tan -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -11029,7 +13767,7 @@ tan(
 
 #### 8.12.68 Tanh
 
-Returns the hyperbolic tangent (tanh) of each values in a raster..
+Returns the hyperbolic tangent (tanh) of each values in a raster.
 
 *Parameters*:
 
@@ -11043,8 +13781,8 @@ Returns the hyperbolic tangent (tanh) of each values in a raster..
 
 ~~~~{.python}
 tanh(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -11052,7 +13790,7 @@ tanh(
 
 ```
 >>./whitebox_tools -r=Tanh -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -11060,7 +13798,7 @@ tanh(
 
 #### 8.12.69 ToDegrees
 
-Converts a raster from radians to degrees..
+Converts a raster from radians to degrees.
 
 *Parameters*:
 
@@ -11074,8 +13812,8 @@ Converts a raster from radians to degrees..
 
 ~~~~{.python}
 to_degrees(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -11083,7 +13821,7 @@ to_degrees(
 
 ```
 >>./whitebox_tools -r=ToDegrees -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -11091,7 +13829,7 @@ to_degrees(
 
 #### 8.12.70 ToRadians
 
-Converts a raster from degrees to radians..
+Converts a raster from degrees to radians.
 
 *Parameters*:
 
@@ -11105,8 +13843,8 @@ Converts a raster from degrees to radians..
 
 ~~~~{.python}
 to_radians(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -11114,7 +13852,7 @@ to_radians(
 
 ```
 >>./whitebox_tools -r=ToRadians -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif
+-i='input.tif' -o=output.tif 
 
 
 ```
@@ -11122,7 +13860,23 @@ to_radians(
 
 #### 8.12.71 TrendSurface
 
-Estimates the trend surface of an input raster file..
+This tool can be used to interpolate a trend surface from a raster image. The
+technique uses a polynomial, least-squares regression analysis. The user must
+specify the name of the input raster file. In addition, the user must specify
+the polynomial order (1 to 10) for the analysis. A first-order polynomial is a
+planar surface with no curvature. As the polynomial order is increased, greater
+flexibility is allowed in the fitted surface. Although polynomial orders as high
+as 10 are accepted, numerical instability in the analysis often creates artifacts
+in trend surfaces of orders greater than 5. The operation will display a text
+report on completion, in addition to the output raster image. The report will
+list each of the coefficient values and the r-square value. Note that the entire
+raster image must be able to fit into computer memory, limiting the use of this
+tool to relatively small rasters. The Trend Surface (Vector Points) tool can be
+used instead if the input data is vector points contained in a shapefile.
+
+Numerical stability is enhanced by transforming the x, y, z data by their minimum
+values before performing the regression analysis. These transform parameters
+are also reported in the output report.
 
 *Parameters*:
 
@@ -11137,9 +13891,9 @@ Estimates the trend surface of an input raster file..
 
 ~~~~{.python}
 trend_surface(
-    i,
-    output,
-    order=1,
+    i, 
+    output, 
+    order=1, 
     callback=default_callback)
 ~~~~
 
@@ -11147,7 +13901,7 @@ trend_surface(
 
 ```
 >>./whitebox_tools -r=TrendSurface -v --wd="/path/to/data/" ^
--i='input.tif' -o='output.tif' --order=2
+-i='input.tif' -o='output.tif' --order=2 
 
 
 ```
@@ -11155,7 +13909,23 @@ trend_surface(
 
 #### 8.12.72 TrendSurfaceVectorPoints
 
-Estimates a trend surface from vector points..
+This tool can be used to interpolate a trend surface from a vector points file. The
+technique uses a polynomial, least-squares regression analysis. The user must specify
+the name of the input shapefile, which must be of a 'Points' base ShapeType and select
+the attribute in the shapefile's associated attribute table for which to base the trend
+surface analysis. The attribute must be numerical. In addition, the user must specify
+the polynomial order (1 to 10) for the analysis. A first-order polynomial is a planar
+surface with no curvature. As the polynomial order is increased, greater flexibility is
+allowed in the fitted surface. Although polynomial orders as high as 10 are accepted,
+numerical instability in the analysis often creates artifacts in trend surfaces of orders
+greater than 5. The operation will display a text report on completion, in addition to
+the output raster image. The report will list each of the coefficient values and the
+r-square value. The Trend Surface tool can be used instead if the input data is a raster
+image.
+
+Numerical stability is enhanced by transforming the x, y, z data by their minimum
+values before performing the regression analysis. These transform parameters
+are also reported in the output report.
 
 *Parameters*:
 
@@ -11165,19 +13935,19 @@ Estimates a trend surface from vector points..
 -\-field             Input field name in attribute table
 -o, -\-output        Output raster file
 -\-order             Polynomial order (1 to 10)
--\-cell_size         Optionally specified cell size of output raster. Not used when base raster is
-                     specified
+-\-cell_size         Optionally specified cell size of output raster. Not used when base raster is 
+                     specified 
 
 
 *Python function*:
 
 ~~~~{.python}
 trend_surface_vector_points(
-    i,
-    field,
-    output,
-    cell_size,
-    order=1,
+    i, 
+    field, 
+    output, 
+    cell_size, 
+    order=1, 
     callback=default_callback)
 ~~~~
 
@@ -11186,7 +13956,7 @@ trend_surface_vector_points(
 ```
 >>./whitebox_tools -r=TrendSurfaceVectorPoints -v ^
 --wd="/path/to/data/" -i='input.shp' --field=ELEV ^
--o='output.tif' --order=2 --cell_size=10.0
+-o='output.tif' --order=2 --cell_size=10.0 
 
 
 ```
@@ -11194,7 +13964,7 @@ trend_surface_vector_points(
 
 #### 8.12.73 Truncate
 
-Truncates the values in a raster to the desired number of decimal places..
+Truncates the values in a raster to the desired number of decimal places.
 
 *Parameters*:
 
@@ -11209,9 +13979,9 @@ Truncates the values in a raster to the desired number of decimal places..
 
 ~~~~{.python}
 truncate(
-    i,
-    output,
-    num_decimals=None,
+    i, 
+    output, 
+    num_decimals=None, 
     callback=default_callback)
 ~~~~
 
@@ -11219,7 +13989,7 @@ truncate(
 
 ```
 >>./whitebox_tools -r=Truncate -v --wd="/path/to/data/" ^
--i='input.tif' -o=output.tif --num_decimals=2
+-i='input.tif' -o=output.tif --num_decimals=2 
 
 
 ```
@@ -11227,7 +13997,7 @@ truncate(
 
 #### 8.12.74 TurningBandsSimulation
 
-Creates an image containing random values based on a turning-bands simulation..
+Creates an image containing random values based on a turning-bands simulation.
 
 *Parameters*:
 
@@ -11243,10 +14013,10 @@ Creates an image containing random values based on a turning-bands simulation..
 
 ~~~~{.python}
 turning_bands_simulation(
-    base,
-    output,
-    range,
-    iterations=1000,
+    base, 
+    output, 
+    range, 
+    iterations=1000, 
     callback=default_callback)
 ~~~~
 
@@ -11255,7 +14025,7 @@ turning_bands_simulation(
 ```
 >>./whitebox_tools -r=TurningBandsSimulation -v ^
 --wd="/path/to/data/" --base=in.tif -o=out.tif --range=850.0 ^
---iterations=2500
+--iterations=2500 
 
 
 ```
@@ -11263,7 +14033,7 @@ turning_bands_simulation(
 
 #### 8.12.75 Xor
 
-Performs a logical XOR operator on two Boolean raster images..
+Performs a logical XOR operator on two Boolean raster images.
 
 *Parameters*:
 
@@ -11278,9 +14048,9 @@ Performs a logical XOR operator on two Boolean raster images..
 
 ~~~~{.python}
 xor(
-    input1,
-    input2,
-    output,
+    input1, 
+    input2, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -11288,7 +14058,7 @@ xor(
 
 ```
 >>./whitebox_tools -r=Xor -v --wd="/path/to/data/" ^
---input1='in1.tif' --input2='in2.tif' -o=output.tif
+--input1='in1.tif' --input2='in2.tif' -o=output.tif 
 
 
 ```
@@ -11296,7 +14066,7 @@ xor(
 
 #### 8.12.76 ZScores
 
-Standardizes the values in an input raster by converting to z-scores..
+Standardizes the values in an input raster by converting to z-scores.
 
 *Parameters*:
 
@@ -11310,8 +14080,8 @@ Standardizes the values in an input raster by converting to z-scores..
 
 ~~~~{.python}
 z_scores(
-    i,
-    output,
+    i, 
+    output, 
     callback=default_callback)
 ~~~~
 
@@ -11319,7 +14089,7 @@ z_scores(
 
 ```
 >>./whitebox_tools -r=ZScores -v --wd="/path/to/data/" ^
--i=DEM.tif -o=output.tif
+-i=DEM.tif -o=output.tif 
 
 
 ```
@@ -11328,7 +14098,7 @@ z_scores(
 
 #### 8.13.1 DistanceToOutlet
 
-Calculates the distance of stream grid cells to the channel network outlet cell..
+Calculates the distance of stream grid cells to the channel network outlet cell.
 
 *Parameters*:
 
@@ -11345,11 +14115,11 @@ Calculates the distance of stream grid cells to the channel network outlet cell.
 
 ~~~~{.python}
 distance_to_outlet(
-    d8_pntr,
-    streams,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -11361,7 +14131,7 @@ distance_to_outlet(
 -o=output.tif
 >>./whitebox_tools -r=DistanceToOutlet -v ^
 --wd="/path/to/data/" --d8_pntr=D8.tif --streams=streams.tif ^
--o=output.tif --esri_pntr --zero_background
+-o=output.tif --esri_pntr --zero_background 
 
 
 ```
@@ -11369,7 +14139,7 @@ distance_to_outlet(
 
 #### 8.13.2 ExtractStreams
 
-Extracts stream grid cells from a flow accumulation raster..
+Extracts stream grid cells from a flow accumulation raster.
 
 *Parameters*:
 
@@ -11385,10 +14155,10 @@ Extracts stream grid cells from a flow accumulation raster..
 
 ~~~~{.python}
 extract_streams(
-    flow_accum,
-    output,
-    threshold,
-    zero_background=False,
+    flow_accum, 
+    output, 
+    threshold, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -11397,7 +14167,7 @@ extract_streams(
 ```
 >>./whitebox_tools -r=ExtractStreams -v --wd="/path/to/data/" ^
 --flow_accum='d8accum.tif' -o='output.tif' --threshold=100.0 ^
---zero_background
+--zero_background 
 
 
 ```
@@ -11405,7 +14175,7 @@ extract_streams(
 
 #### 8.13.3 ExtractValleys
 
-Identifies potential valley bottom grid cells based on local topolography alone..
+Identifies potential valley bottom grid cells based on local topolography alone.
 
 *Parameters*:
 
@@ -11413,23 +14183,23 @@ Identifies potential valley bottom grid cells based on local topolography alone.
 -------------------  ---------------
 -i, -\-dem           Input raster DEM file
 -o, -\-output        Output raster file
--\-variant           Options include 'lq' (lower quartile), 'JandR' (Johnston and Rosenfeld), and
-                     'PandD' (Peucker and Douglas); default is 'lq'
--\-line_thin         Optional flag indicating whether post-processing line-thinning should be
-                     performed
--\-filter            Optional argument (only used when variant='lq') providing the filter size, in
-                     grid cells, used for lq-filtering (default is 5)
+-\-variant           Options include 'lq' (lower quartile), 'JandR' (Johnston and Rosenfeld), and 
+                     'PandD' (Peucker and Douglas); default is 'lq' 
+-\-line_thin         Optional flag indicating whether post-processing line-thinning should be 
+                     performed 
+-\-filter            Optional argument (only used when variant='lq') providing the filter size, in 
+                     grid cells, used for lq-filtering (default is 5) 
 
 
 *Python function*:
 
 ~~~~{.python}
 extract_valleys(
-    dem,
-    output,
-    variant="Lower Quartile",
-    line_thin=True,
-    filter=5,
+    dem, 
+    output, 
+    variant="Lower Quartile", 
+    line_thin=True, 
+    filter=5, 
     callback=default_callback)
 ~~~~
 
@@ -11441,7 +14211,7 @@ extract_valleys(
 --line_thin
 >>./whitebox_tools -r=ExtractValleys -v ^
 --wd="/path/to/data/" --dem=pointer.tif -o=out.tif ^
---variant='lq' --filter=7 --line_thin
+--variant='lq' --filter=7 --line_thin 
 
 
 ```
@@ -11449,7 +14219,7 @@ extract_valleys(
 
 #### 8.13.4 FarthestChannelHead
 
-Calculates the distance to the furthest upstream channel head for each stream cell..
+Calculates the distance to the furthest upstream channel head for each stream cell.
 
 *Parameters*:
 
@@ -11466,11 +14236,11 @@ Calculates the distance to the furthest upstream channel head for each stream ce
 
 ~~~~{.python}
 farthest_channel_head(
-    d8_pntr,
-    streams,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -11482,7 +14252,7 @@ farthest_channel_head(
 -o=output.tif
 >>./whitebox_tools -r=FarthestChannelHead -v ^
 --wd="/path/to/data/" --d8_pntr=D8.tif --streams=streams.tif ^
--o=output.tif --esri_pntr --zero_background
+-o=output.tif --esri_pntr --zero_background 
 
 
 ```
@@ -11490,7 +14260,7 @@ farthest_channel_head(
 
 #### 8.13.5 FindMainStem
 
-Finds the main stem, based on stream lengths, of each stream network..
+Finds the main stem, based on stream lengths, of each stream network.
 
 *Parameters*:
 
@@ -11507,11 +14277,11 @@ Finds the main stem, based on stream lengths, of each stream network..
 
 ~~~~{.python}
 find_main_stem(
-    d8_pntr,
-    streams,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -11523,7 +14293,7 @@ find_main_stem(
 -o=output.tif
 >>./whitebox_tools -r=FindMainStem -v ^
 --wd="/path/to/data/" --d8_pntr=D8.tif --streams=streams.tif ^
--o=output.tif --esri_pntr --zero_background
+-o=output.tif --esri_pntr --zero_background 
 
 
 ```
@@ -11531,7 +14301,7 @@ find_main_stem(
 
 #### 8.13.6 HackStreamOrder
 
-Assigns the Hack stream order to each tributary in a stream network..
+Assigns the Hack stream order to each tributary in a stream network.
 
 *Parameters*:
 
@@ -11548,11 +14318,11 @@ Assigns the Hack stream order to each tributary in a stream network..
 
 ~~~~{.python}
 hack_stream_order(
-    d8_pntr,
-    streams,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -11564,7 +14334,7 @@ hack_stream_order(
 -o=output.tif
 >>./whitebox_tools -r=HackStreamOrder -v ^
 --wd="/path/to/data/" --d8_pntr=D8.tif --streams=streams.tif ^
--o=output.tif --esri_pntr --zero_background
+-o=output.tif --esri_pntr --zero_background 
 
 
 ```
@@ -11572,7 +14342,7 @@ hack_stream_order(
 
 #### 8.13.7 HortonStreamOrder
 
-Assigns the Horton stream order to each tributary in a stream network..
+Assigns the Horton stream order to each tributary in a stream network.
 
 *Parameters*:
 
@@ -11589,11 +14359,11 @@ Assigns the Horton stream order to each tributary in a stream network..
 
 ~~~~{.python}
 horton_stream_order(
-    d8_pntr,
-    streams,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -11605,7 +14375,7 @@ horton_stream_order(
 -o=output.tif
 >>./whitebox_tools -r=HortonStreamOrder -v ^
 --wd="/path/to/data/" --d8_pntr=D8.tif --streams=streams.tif ^
--o=output.tif --esri_pntr --zero_background
+-o=output.tif --esri_pntr --zero_background 
 
 
 ```
@@ -11613,7 +14383,7 @@ horton_stream_order(
 
 #### 8.13.8 LengthOfUpstreamChannels
 
-Calculates the total length of channels upstream..
+Calculates the total length of channels upstream.
 
 *Parameters*:
 
@@ -11630,11 +14400,11 @@ Calculates the total length of channels upstream..
 
 ~~~~{.python}
 length_of_upstream_channels(
-    d8_pntr,
-    streams,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -11646,7 +14416,7 @@ length_of_upstream_channels(
 -o=output.tif
 >>./whitebox_tools -r=LengthOfUpstreamChannels -v ^
 --wd="/path/to/data/" --d8_pntr=D8.tif --streams=streams.tif ^
--o=output.tif --esri_pntr --zero_background
+-o=output.tif --esri_pntr --zero_background 
 
 
 ```
@@ -11654,7 +14424,7 @@ length_of_upstream_channels(
 
 #### 8.13.9 LongProfile
 
-Plots the stream longitudinal profiles for one or more rivers..
+Plots the stream longitudinal profiles for one or more rivers.
 
 *Parameters*:
 
@@ -11671,11 +14441,11 @@ Plots the stream longitudinal profiles for one or more rivers..
 
 ~~~~{.python}
 long_profile(
-    d8_pntr,
-    streams,
-    dem,
-    output,
-    esri_pntr=False,
+    d8_pntr, 
+    streams, 
+    dem, 
+    output, 
+    esri_pntr=False, 
     callback=default_callback)
 ~~~~
 
@@ -11684,7 +14454,7 @@ long_profile(
 ```
 >>./whitebox_tools -r=LongProfile -v --wd="/path/to/data/" ^
 --d8_pntr=D8.tif --streams=streams.tif --dem=dem.tif ^
--o=output.html --esri_pntr
+-o=output.html --esri_pntr 
 
 
 ```
@@ -11692,7 +14462,7 @@ long_profile(
 
 #### 8.13.10 LongProfileFromPoints
 
-Plots the longitudinal profiles from flow-paths initiating from a set of vector points..
+Plots the longitudinal profiles from flow-paths initiating from a set of vector points.
 
 *Parameters*:
 
@@ -11709,11 +14479,11 @@ Plots the longitudinal profiles from flow-paths initiating from a set of vector 
 
 ~~~~{.python}
 long_profile_from_points(
-    d8_pntr,
-    points,
-    dem,
-    output,
-    esri_pntr=False,
+    d8_pntr, 
+    points, 
+    dem, 
+    output, 
+    esri_pntr=False, 
     callback=default_callback)
 ~~~~
 
@@ -11722,15 +14492,62 @@ long_profile_from_points(
 ```
 >>./whitebox_tools -r=LongProfileFromPoints -v ^
 --wd="/path/to/data/" --d8_pntr=D8.tif --points=stream_head.shp ^
---dem=dem.tif -o=output.html --esri_pntr
+--dem=dem.tif -o=output.html --esri_pntr 
 
 
 ```
 
 
-#### 8.13.11 RasterizeStreams
+#### 8.13.11 RasterStreamsToVector
 
-Rasterizes vector streams based on Lindsay (2016) method..
+This tool converts a raster stream file into a vector file. The user must specify
+1) the name of the raster streams file, 2) the name of the D8 flow pointer file,
+and 3) the name of the output vector file. Streams in the input raster streams
+file are denoted by cells containing any positive, non-zero integer. A field in
+the vector database file, called STRM_VAL, will correspond to this positive
+integer value. The database file will also have a field for the length of each
+link in the stream network. The flow pointer file must be calculated from a DEM with
+all topographic depressions and flat areas removed and must be calculated using the
+D8 flow pointer algorithm. The output vector will contain PolyLine features.
+
+*Parameters*:
+
+**Flag**             **Description**
+-------------------  ---------------
+-\-streams           Input raster streams file
+-\-d8_pntr           Input raster D8 pointer file
+-o, -\-output        Output vector file
+-\-esri_pntr         D8 pointer uses the ESRI style scheme
+
+
+*Python function*:
+
+~~~~{.python}
+raster_streams_to_vector(
+    streams, 
+    d8_pntr, 
+    output, 
+    esri_pntr=False, 
+    callback=default_callback)
+~~~~
+
+*Command-line Interface*:
+
+```
+>>./whitebox_tools -r=RasterStreamsToVector -v ^
+--wd="/path/to/data/" --streams=streams.tif --d8_pntr=D8.tif ^
+-o=output.shp
+>>./whitebox_tools -r=RasterStreamsToVector -v ^
+--wd="/path/to/data/" --streams=streams.tif --d8_pntr=D8.tif ^
+-o=output.shp --esri_pntr 
+
+
+```
+
+
+#### 8.13.12 RasterizeStreams
+
+Rasterizes vector streams based on Lindsay (2016) method.
 
 *Parameters*:
 
@@ -11747,11 +14564,11 @@ Rasterizes vector streams based on Lindsay (2016) method..
 
 ~~~~{.python}
 rasterize_streams(
-    streams,
-    base,
-    output,
-    nodata=True,
-    feature_id=False,
+    streams, 
+    base, 
+    output, 
+    nodata=True, 
+    feature_id=False, 
     callback=default_callback)
 ~~~~
 
@@ -11760,15 +14577,15 @@ rasterize_streams(
 ```
 >>./whitebox_tools -r=RasterizeStreams -v ^
 --wd="/path/to/data/" --streams=streams.shp --base=raster.tif ^
--o=output.tif
+-o=output.tif 
 
 
 ```
 
 
-#### 8.13.12 RemoveShortStreams
+#### 8.13.13 RemoveShortStreams
 
-Removes short first-order streams from a stream network..
+Removes short first-order streams from a stream network.
 
 *Parameters*:
 
@@ -11785,11 +14602,11 @@ Removes short first-order streams from a stream network..
 
 ~~~~{.python}
 remove_short_streams(
-    d8_pntr,
-    streams,
-    output,
-    min_length,
-    esri_pntr=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    min_length, 
+    esri_pntr=False, 
     callback=default_callback)
 ~~~~
 
@@ -11798,15 +14615,15 @@ remove_short_streams(
 ```
 >>./whitebox_tools -r=RemoveShortStreams -v ^
 --wd="/path/to/data/" --d8_pntr=D8.tif --streams=streams.tif ^
--o=output.tif
+-o=output.tif 
 
 
 ```
 
 
-#### 8.13.13 ShreveStreamMagnitude
+#### 8.13.14 ShreveStreamMagnitude
 
-Assigns the Shreve stream magnitude to each link in a stream network..
+Assigns the Shreve stream magnitude to each link in a stream network.
 
 *Parameters*:
 
@@ -11823,11 +14640,11 @@ Assigns the Shreve stream magnitude to each link in a stream network..
 
 ~~~~{.python}
 shreve_stream_magnitude(
-    d8_pntr,
-    streams,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -11839,15 +14656,15 @@ shreve_stream_magnitude(
 -o=output.tif
 >>./whitebox_tools -r=ShreveStreamMagnitude -v ^
 --wd="/path/to/data/" --d8_pntr=D8.tif --streams=streams.tif ^
--o=output.tif --esri_pntr --zero_background
+-o=output.tif --esri_pntr --zero_background 
 
 
 ```
 
 
-#### 8.13.14 StrahlerStreamOrder
+#### 8.13.15 StrahlerStreamOrder
 
-Assigns the Strahler stream order to each link in a stream network..
+Assigns the Strahler stream order to each link in a stream network.
 
 *Parameters*:
 
@@ -11864,11 +14681,11 @@ Assigns the Strahler stream order to each link in a stream network..
 
 ~~~~{.python}
 strahler_stream_order(
-    d8_pntr,
-    streams,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -11880,15 +14697,15 @@ strahler_stream_order(
 -o=output.tif
 >>./whitebox_tools -r=StrahlerStreamOrder -v ^
 --wd="/path/to/data/" --d8_pntr=D8.tif --streams=streams.tif ^
--o=output.tif --esri_pntr --zero_background
+-o=output.tif --esri_pntr --zero_background 
 
 
 ```
 
 
-#### 8.13.15 StreamLinkClass
+#### 8.13.16 StreamLinkClass
 
-Identifies the exterior/interior links and nodes in a stream network..
+Identifies the exterior/interior links and nodes in a stream network.
 
 *Parameters*:
 
@@ -11905,11 +14722,11 @@ Identifies the exterior/interior links and nodes in a stream network..
 
 ~~~~{.python}
 stream_link_class(
-    d8_pntr,
-    streams,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -11921,15 +14738,15 @@ stream_link_class(
 -o=output.tif
 >>./whitebox_tools -r=StreamLinkClass -v ^
 --wd="/path/to/data/" --d8_pntr=D8.tif --streams=streams.tif ^
--o=output.tif --esri_pntr --zero_background
+-o=output.tif --esri_pntr --zero_background 
 
 
 ```
 
 
-#### 8.13.16 StreamLinkIdentifier
+#### 8.13.17 StreamLinkIdentifier
 
-Assigns a unique identifier to each link in a stream network..
+Assigns a unique identifier to each link in a stream network.
 
 *Parameters*:
 
@@ -11946,11 +14763,11 @@ Assigns a unique identifier to each link in a stream network..
 
 ~~~~{.python}
 stream_link_identifier(
-    d8_pntr,
-    streams,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -11962,15 +14779,15 @@ stream_link_identifier(
 -o=output.tif
 >>./whitebox_tools -r=StreamLinkIdentifier -v ^
 --wd="/path/to/data/" --d8_pntr=D8.tif --streams=streams.tif ^
--o=output.tif --esri_pntr --zero_background
+-o=output.tif --esri_pntr --zero_background 
 
 
 ```
 
 
-#### 8.13.17 StreamLinkLength
+#### 8.13.18 StreamLinkLength
 
-Estimates the length of each link (or tributary) in a stream network..
+Estimates the length of each link (or tributary) in a stream network.
 
 *Parameters*:
 
@@ -11987,11 +14804,11 @@ Estimates the length of each link (or tributary) in a stream network..
 
 ~~~~{.python}
 stream_link_length(
-    d8_pntr,
-    linkid,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    d8_pntr, 
+    linkid, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -12004,15 +14821,15 @@ stream_link_length(
 >>./whitebox_tools ^
 -r=StreamLinkLength -v --wd="/path/to/data/" --d8_pntr=D8.tif ^
 --linkid=streamsID.tif --dem=dem.tif -o=output.tif --esri_pntr ^
---zero_background
+--zero_background 
 
 
 ```
 
 
-#### 8.13.18 StreamLinkSlope
+#### 8.13.19 StreamLinkSlope
 
-Estimates the average slope of each link (or tributary) in a stream network..
+Estimates the average slope of each link (or tributary) in a stream network.
 
 *Parameters*:
 
@@ -12030,12 +14847,12 @@ Estimates the average slope of each link (or tributary) in a stream network..
 
 ~~~~{.python}
 stream_link_slope(
-    d8_pntr,
-    linkid,
-    dem,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    d8_pntr, 
+    linkid, 
+    dem, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -12048,15 +14865,15 @@ stream_link_slope(
 >>./whitebox_tools ^
 -r=StreamLinkSlope -v --wd="/path/to/data/" --d8_pntr=D8.tif ^
 --linkid=streamsID.tif --dem=dem.tif -o=output.tif --esri_pntr ^
---zero_background
+--zero_background 
 
 
 ```
 
 
-#### 8.13.19 StreamSlopeContinuous
+#### 8.13.20 StreamSlopeContinuous
 
-Estimates the slope of each grid cell in a stream network..
+Estimates the slope of each grid cell in a stream network.
 
 *Parameters*:
 
@@ -12074,12 +14891,12 @@ Estimates the slope of each grid cell in a stream network..
 
 ~~~~{.python}
 stream_slope_continuous(
-    d8_pntr,
-    streams,
-    dem,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    d8_pntr, 
+    streams, 
+    dem, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -12092,15 +14909,15 @@ stream_slope_continuous(
 >>./whitebox_tools ^
 -r=StreamSlopeContinuous -v --wd="/path/to/data/" ^
 --d8_pntr=D8.tif --streams=streamsID.tif --dem=dem.tif ^
--o=output.tif --esri_pntr --zero_background
+-o=output.tif --esri_pntr --zero_background 
 
 
 ```
 
 
-#### 8.13.20 TopologicalStreamOrder
+#### 8.13.21 TopologicalStreamOrder
 
-Assigns each link in a stream network its topological order..
+Assigns each link in a stream network its topological order.
 
 *Parameters*:
 
@@ -12117,11 +14934,11 @@ Assigns each link in a stream network its topological order..
 
 ~~~~{.python}
 topological_stream_order(
-    d8_pntr,
-    streams,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -12133,15 +14950,15 @@ topological_stream_order(
 -o=output.tif
 >>./whitebox_tools -r=TopologicalStreamOrder -v ^
 --wd="/path/to/data/" --d8_pntr=D8.tif --streams=streams.tif ^
--o=output.tif --esri_pntr --zero_background
+-o=output.tif --esri_pntr --zero_background 
 
 
 ```
 
 
-#### 8.13.21 TributaryIdentifier
+#### 8.13.22 TributaryIdentifier
 
-Assigns a unique identifier to each tributary in a stream network..
+Assigns a unique identifier to each tributary in a stream network.
 
 *Parameters*:
 
@@ -12158,11 +14975,11 @@ Assigns a unique identifier to each tributary in a stream network..
 
 ~~~~{.python}
 tributary_identifier(
-    d8_pntr,
-    streams,
-    output,
-    esri_pntr=False,
-    zero_background=False,
+    d8_pntr, 
+    streams, 
+    output, 
+    esri_pntr=False, 
+    zero_background=False, 
     callback=default_callback)
 ~~~~
 
@@ -12174,10 +14991,24 @@ tributary_identifier(
 -o=output.tif
 >>./whitebox_tools -r=TributaryIdentifier -v ^
 --wd="/path/to/data/" --d8_pntr=D8.tif --streams=streams.tif ^
--o=output.tif --esri_pntr --zero_background
+-o=output.tif --esri_pntr --zero_background 
 
 
 ```
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
 
 
 

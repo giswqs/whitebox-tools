@@ -2,31 +2,35 @@
 This code is part of the WhiteboxTools geospatial analysis library.
 Authors: Dr. John Lindsay
 Created: June 21, 2017
-Last Modified: 12/04/2018
+Last Modified: 17/10/2018
 License: MIT
 
 Notes: The logic behind working with the ESRI Shapefile format.
 */
-extern crate time;
+// extern crate time;
+// extern crate chrono;
 
 pub mod attributes;
 pub mod geometry;
 pub use self::attributes::{
-    AttributeField, AttributeHeader, DateData, FieldData, FieldDataType, ShapefileAttributes,
+    AttributeField, AttributeHeader, DateData, FieldData, FieldDataType, Intersector,
+    ShapefileAttributes,
 };
-pub use self::geometry::{ShapeType, ShapefileGeometry};
+pub use self::geometry::{ShapeType, ShapeTypeDimension, ShapefileGeometry};
 use byteorder::{BigEndian, LittleEndian, WriteBytesExt};
-use io_utils::{ByteOrderReader, Endianness};
+use chrono::prelude::*;
 use std::f64;
 use std::fmt;
 use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{BufReader, BufWriter, Error, ErrorKind};
+use std::path::Path;
 use std::str;
 use structures::Point2D;
+use utils::{ByteOrderReader, Endianness};
 
-// 100 bytes in size
+/// `ShapefileHeader` stores the header variables of a ShapeFile header.
 #[derive(Default, Clone)]
 pub struct ShapefileHeader {
     file_code: i32,            // BigEndian; value is 9994
@@ -80,6 +84,24 @@ m_max: {}",
     }
 }
 
+/// `Shapefile` is an in-memory ESRI Shapefile.
+///
+/// Examples:
+///
+/// ```
+/// // Read a Shapefile from a file.
+/// let input = Shapefile::read(&input_file)?;
+///
+/// // Create a new output Shapefile
+/// let mut output = Shapefile::initialize_using_file(&output_file, &input, ShapeType::PolyLine, true)?;
+///
+/// // add attributes
+/// let fid = AttributeField::new("FID", FieldDataType::Int, 2u8, 0u8);
+/// let val = AttributeField::new("Value", FieldDataType::Real, 12u8, 4u8);
+/// output.attributes.add_field(&fid);
+/// output.attributes.add_field(&val);
+///
+/// ```
 #[derive(Default, Clone)]
 pub struct Shapefile {
     pub file_name: String,
@@ -103,13 +125,35 @@ impl Shapefile {
     }
 
     pub fn new<'a>(file_name: &'a str, file_type: ShapeType) -> Result<Shapefile, Error> {
+        let new_file_name = if file_name.contains(".") {
+            file_name.to_string()
+        } else {
+            // likely no extension provided; default to .shp
+            format!("{}.shp", file_name)
+        };
         let mut sf = Shapefile {
-            file_name: file_name.to_string(),
+            file_name: new_file_name.to_string(),
             file_mode: "w".to_string(),
             ..Default::default()
         };
         sf.header.shape_type = file_type;
         Ok(sf)
+    }
+
+    pub fn get_total_num_parts(&self) -> usize {
+        let mut ret = 0;
+        for a in 0..self.num_records {
+            ret += self.records[a].num_parts as usize;
+        }
+        ret
+    }
+
+    pub fn get_total_num_points(&self) -> usize {
+        let mut ret = 0;
+        for a in 0..self.num_records {
+            ret += self.records[a].num_points as usize;
+        }
+        ret
     }
 
     pub fn initialize_using_file<'a>(
@@ -137,6 +181,14 @@ impl Shapefile {
             sf.attributes.header.num_fields = sf.attributes.fields.len() as u32;
         }
         Ok(sf)
+    }
+
+    /// Returns the filename, in shortened form (e.g. file.shp).
+    pub fn get_short_filename(&self) -> String {
+        let path = Path::new(&self.file_name);
+        let file_name = path.file_stem().unwrap();
+        let f = file_name.to_str().unwrap();
+        f.to_string()
     }
 
     /// Returns the ShapefileGeometry for a specified index, starting at zero.
@@ -1010,10 +1062,14 @@ impl Shapefile {
         writer.write_u8(3u8)?;
 
         // write the date
-        let now = time::now();
-        writer.write_u8(now.tm_year as u8)?;
-        writer.write_u8(now.tm_mon as u8 + 1u8)?;
-        writer.write_u8(now.tm_mday as u8)?;
+        // let now = time::now();
+        // writer.write_u8(now.tm_year as u8)?;
+        // writer.write_u8(now.tm_mon as u8 + 1u8)?;
+        // writer.write_u8(now.tm_mday as u8)?;
+        let now = Local::now();
+        writer.write_u8((now.year() - 1900) as u8)?;
+        writer.write_u8(now.month() as u8)?;
+        writer.write_u8(now.day() as u8)?;
 
         writer.write_u32::<LittleEndian>(self.attributes.header.num_records)?; // number of records
         let header_size = 32u16 + self.attributes.header.num_fields as u16 * 32u16 + 1u16;
@@ -1071,7 +1127,8 @@ impl Shapefile {
                 let fl = self.attributes.fields[j as usize].field_length as usize;
                 match &rec[j as usize] {
                     FieldData::Null => {
-                        writer.write_all("?".as_bytes())?;
+                        let spcs: String = vec![' '; fl].into_iter().collect();
+                        writer.write_all(spcs.as_bytes())?;
                     }
                     FieldData::Int(v) => {
                         let b = v.to_string();
@@ -1101,7 +1158,11 @@ impl Shapefile {
                         let dc = self.attributes.fields[j as usize].decimal_count as usize;
                         let s = v.to_string();
                         let d = v.trunc().to_string();
-                        let mut c = s[d.len() + 1..s.len()].to_string();
+                        let mut c = if s.len() > d.len() {
+                            s[d.len() + 1..s.len()].to_string()
+                        } else {
+                            String::new()
+                        };
                         if c.len() > dc {
                             c = c[0..dc].to_string();
                         }

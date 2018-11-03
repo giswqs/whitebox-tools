@@ -2,7 +2,7 @@
 This tool is part of the WhiteboxTools geospatial analysis library.
 Authors: Dr. John Lindsay
 Created: 28/05/2018
-Last Modified: 27/07/2018
+Last Modified: 12/10/2018
 License: MIT
 */
 
@@ -19,7 +19,6 @@ use std::path::Path;
 // use std::sync::Arc;
 // use std::thread;
 use structures::Array2D;
-use time;
 use tools::*;
 
 /// Calculates the impoundment size resulting from damming a DEM.
@@ -241,7 +240,7 @@ impl WhiteboxTool for ImpoundmentIndex {
         // let input = Arc::new(Raster::new(&input_file, "r")?);
         let input = Raster::new(&input_file, "r")?;
 
-        let start = time::now();
+        let start = Instant::now();
         let rows = input.configs.rows as isize;
         let columns = input.configs.columns as isize;
         let num_cells = rows * columns;
@@ -594,7 +593,9 @@ impl WhiteboxTool for ImpoundmentIndex {
                     output.increment(row_n, col_n, vol);
                 } else {
                     // mean depth
-                    output.increment(row_n, col_n, vol / (num_upslope * grid_area));
+                    if num_upslope > 0f64 {
+                        output.increment(row_n, col_n, vol / (num_upslope * grid_area));
+                    }
                 }
 
                 num_inflowing.decrement(row_n, col_n, 1i8);
@@ -641,8 +642,7 @@ impl WhiteboxTool for ImpoundmentIndex {
             }
         }
 
-        let end = time::now();
-        let elapsed_time = end - start;
+        let elapsed_time = get_formatted_elapsed_time(start);
 
         output.configs.palette = "spectrum.plt".to_string();
         output.add_metadata_entry(format!(
@@ -653,12 +653,12 @@ impl WhiteboxTool for ImpoundmentIndex {
         output.add_metadata_entry(format!("Dam length: {}", dam_length));
         if out_type == 0 {
             output.add_metadata_entry(format!("Out type: flooded area"));
-        } else {
+        } else if out_type == 1 {
             output.add_metadata_entry(format!("Out type: reservoir volume"));
+        } else {
+            output.add_metadata_entry(format!("Out type: average reservoir depth"));
         }
-        output.add_metadata_entry(
-            format!("Elapsed Time (excluding I/O): {}", elapsed_time).replace("PT", ""),
-        );
+        output.add_metadata_entry(format!("Elapsed Time (excluding I/O): {}", elapsed_time));
 
         if verbose {
             println!("Saving index data...")
@@ -682,9 +682,7 @@ impl WhiteboxTool for ImpoundmentIndex {
         } else {
             output_hgt.add_metadata_entry(format!("Out type: reservoir volume"));
         }
-        output_hgt.add_metadata_entry(
-            format!("Elapsed Time (excluding I/O): {}", elapsed_time).replace("PT", ""),
-        );
+        output_hgt.add_metadata_entry(format!("Elapsed Time (excluding I/O): {}", elapsed_time));
 
         if verbose {
             println!("Saving dam height data...")
@@ -699,7 +697,7 @@ impl WhiteboxTool for ImpoundmentIndex {
         if verbose {
             println!(
                 "{}",
-                &format!("Elapsed Time (excluding I/O): {}", elapsed_time).replace("PT", "")
+                &format!("Elapsed Time (excluding I/O): {}", elapsed_time)
             );
         }
 

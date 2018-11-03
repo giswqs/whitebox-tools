@@ -2,7 +2,7 @@
 This tool is part of the WhiteboxTools geospatial analysis library.
 Authors: Dr. John Lindsay
 Created: July 2, 2017
-Last Modified: Feb. 6, 2018
+Last Modified: 12/10/2018
 License: MIT
 */
 
@@ -17,10 +17,9 @@ use std::path;
 use std::sync::mpsc;
 use std::sync::Arc;
 use std::thread;
-use time;
 use tools::*;
 
-pub struct BlockMaximum {
+pub struct LidarBlockMaximum {
     name: String,
     description: String,
     toolbox: String,
@@ -28,10 +27,10 @@ pub struct BlockMaximum {
     example_usage: String,
 }
 
-impl BlockMaximum {
-    pub fn new() -> BlockMaximum {
+impl LidarBlockMaximum {
+    pub fn new() -> LidarBlockMaximum {
         // public constructor
-        let name = "BlockMaximum".to_string();
+        let name = "LidarBlockMaximum".to_string();
         let toolbox = "LiDAR Tools".to_string();
         let description = "Creates a block-maximum raster from an input LAS file. When the input/output parameters are not specified, the tool grids all LAS files contained within the working directory.".to_string();
 
@@ -86,7 +85,7 @@ impl BlockMaximum {
         let usage = format!(">>.*{0} -r={1} -v --wd=\"*path*to*data*\" -i=file.las -o=outfile.tif --resolution=2.0\"
 .*{0} -r={1} -v --wd=\"*path*to*data*\" -i=file.las -o=outfile.tif --resolution=5.0 --palette=light_quant.plt", short_exe, name).replace("*", &sep);
 
-        BlockMaximum {
+        LidarBlockMaximum {
             name: name,
             description: description,
             toolbox: toolbox,
@@ -96,7 +95,7 @@ impl BlockMaximum {
     }
 }
 
-impl WhiteboxTool for BlockMaximum {
+impl WhiteboxTool for LidarBlockMaximum {
     fn get_source_file(&self) -> String {
         String::from(file!())
     }
@@ -186,7 +185,7 @@ impl WhiteboxTool for BlockMaximum {
             }
         }
 
-        let start = time::now();
+        let start = Instant::now();
 
         let mut inputs = vec![];
         let mut outputs = vec![];
@@ -257,7 +256,7 @@ impl WhiteboxTool for BlockMaximum {
                 Err(err) => panic!("Error reading file {}: {}", input_file, err),
             };
 
-            let start_run = time::now();
+            let start_run = Instant::now();
 
             if verbose && inputs.len() == 1 {
                 println!("Performing analysis...");
@@ -307,9 +306,9 @@ impl WhiteboxTool for BlockMaximum {
                     for i in (0..n_points).filter(|point_num| point_num % num_procs == tid) {
                         let p: PointData = input.get_point_info(i);
                         col = (((columns - 1) as f64 * (p.x - west - half_grid_res) / ew_range)
-                            .round()) as isize;
+                            .floor()) as isize;
                         row = (((rows - 1) as f64 * (north - half_grid_res - p.y) / ns_range)
-                            .round()) as isize;
+                            .floor()) as isize;
                         tx.send((row, col, p.z)).unwrap();
                     }
                 });
@@ -337,16 +336,16 @@ impl WhiteboxTool for BlockMaximum {
                 }
             }
 
-            let end_run = time::now();
-            let elapsed_time_run = end_run - start_run;
+            let elapsed_time_run = get_formatted_elapsed_time(start_run);
             output.add_metadata_entry(format!(
                 "Created by whitebox_tools\' {} tool",
                 self.get_tool_name()
             ));
             output.add_metadata_entry(format!("Input file: {}", input_file));
-            output.add_metadata_entry(
-                format!("Elapsed Time (excluding I/O): {}", elapsed_time_run).replace("PT", ""),
-            );
+            output.add_metadata_entry(format!(
+                "Elapsed Time (excluding I/O): {}",
+                elapsed_time_run
+            ));
 
             if verbose {
                 println!("Saving data...")
@@ -361,12 +360,11 @@ impl WhiteboxTool for BlockMaximum {
             };
         }
 
-        let end = time::now();
-        let elapsed_time = end - start;
+        let elapsed_time = get_formatted_elapsed_time(start);
         if verbose {
             println!(
                 "{}",
-                &format!("Elapsed Time (including I/O): {}", elapsed_time).replace("PT", "")
+                &format!("Elapsed Time (including I/O): {}", elapsed_time)
             );
         }
 

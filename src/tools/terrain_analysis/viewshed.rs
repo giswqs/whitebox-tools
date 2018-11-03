@@ -2,7 +2,7 @@
 This tool is part of the WhiteboxTools geospatial analysis library.
 Authors: Dr. John Lindsay
 Created: January 10, 2018
-Last Modified: January 10, 2018
+Last Modified: 12/10/2018
 License: MIT
 
 Help: This tool can be used to calculate the viewshed (i.e. the visible area) from a 
@@ -27,7 +27,6 @@ use std::sync::mpsc;
 use std::sync::Arc;
 use std::thread;
 use structures::Array2D;
-use time;
 use tools::*;
 use vector::*;
 
@@ -88,7 +87,8 @@ impl Viewshed {
         let sep: String = path::MAIN_SEPARATOR.to_string();
         let p = format!("{}", env::current_dir().unwrap().display());
         let e = format!("{}", env::current_exe().unwrap().display());
-        let mut short_exe = e.replace(&p, "")
+        let mut short_exe = e
+            .replace(&p, "")
             .replace(".exe", "")
             .replace(".", "")
             .replace(&sep, "");
@@ -224,7 +224,7 @@ impl WhiteboxTool for Viewshed {
         };
         let dem = Arc::new(Raster::new(&input_file, "r")?);
 
-        let start = time::now();
+        let start = Instant::now();
 
         if height < 0f64 {
             println!("Warning: Input station height cannot be less than zero.");
@@ -301,6 +301,13 @@ impl WhiteboxTool for Viewshed {
             stn_y = station_y.pop().unwrap();
             stn_row = dem.get_row_from_y(stn_y);
             stn_z = dem.get_value(stn_row, stn_col) + height;
+
+            if (stn_col < 0 || stn_col >= columns) && (stn_row < 0 || stn_row >= rows) {
+                return Err(Error::new(
+                    ErrorKind::InvalidInput,
+                    "The input stations is not located within the footprint of the DEM.",
+                ));
+            }
 
             // now calculate the view angle
             let (tx, rx) = mpsc::channel();
@@ -653,17 +660,13 @@ impl WhiteboxTool for Viewshed {
             }
         }
 
-        let end = time::now();
-        let elapsed_time = end - start;
-        // output.configs.palette = "grey.plt".to_string();
+        let elapsed_time = get_formatted_elapsed_time(start);
         output.add_metadata_entry(format!(
             "Created by whitebox_tools\' {} tool",
             self.get_tool_name()
         ));
         output.add_metadata_entry(format!("DEM file: {}", input_file));
-        output.add_metadata_entry(
-            format!("Elapsed Time (excluding I/O): {}", elapsed_time).replace("PT", ""),
-        );
+        output.add_metadata_entry(format!("Elapsed Time (excluding I/O): {}", elapsed_time));
 
         if verbose {
             println!("Saving data...")
@@ -677,7 +680,7 @@ impl WhiteboxTool for Viewshed {
         if verbose {
             println!(
                 "{}",
-                &format!("Elapsed Time (excluding I/O): {}", elapsed_time).replace("PT", "")
+                &format!("Elapsed Time (excluding I/O): {}", elapsed_time)
             );
         }
 

@@ -1,13 +1,14 @@
 /* 
-This tool is part of the WhiteboxTools geospatial analysis library.
+This code is part of the WhiteboxTools geospatial analysis library.
 Authors: Dr. John Lindsay
 Created: 30/08/2018
 Last Modified: 30/08/2018
 License: MIT
 */
 use std::f64;
+use structures::Point2D;
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug)]
 pub struct BoundingBox {
     pub min_x: f64,
     pub min_y: f64,
@@ -23,6 +24,17 @@ impl PartialEq for BoundingBox {
             && self.min_y == other.min_y
             && self.max_x == other.max_x
             && self.max_y == other.max_y
+    }
+}
+
+impl Default for BoundingBox {
+    fn default() -> BoundingBox {
+        BoundingBox {
+            min_x: f64::INFINITY,
+            min_y: f64::INFINITY,
+            max_x: f64::NEG_INFINITY,
+            max_y: f64::NEG_INFINITY,
+        }
     }
 }
 
@@ -43,6 +55,36 @@ impl BoundingBox {
             min_y: y1,
             max_x: x2,
             max_y: y2,
+        }
+    }
+
+    pub fn from_points(points: &[Point2D]) -> BoundingBox {
+        let mut bb = BoundingBox {
+            ..Default::default()
+        };
+        for i in 0..points.len() {
+            if points[i].x < bb.min_x {
+                bb.min_x = points[i].x;
+            }
+            if points[i].x > bb.max_x {
+                bb.max_x = points[i].x;
+            }
+            if points[i].y < bb.min_y {
+                bb.min_y = points[i].y;
+            }
+            if points[i].y > bb.max_y {
+                bb.max_y = points[i].y;
+            }
+        }
+        bb
+    }
+
+    pub fn from_two_points(p1: Point2D, p2: Point2D) -> BoundingBox {
+        BoundingBox {
+            min_x: p1.x.min(p2.x),
+            max_x: p1.x.max(p2.x),
+            min_y: p1.y.min(p2.y),
+            max_y: p1.y.max(p2.y),
         }
     }
 
@@ -162,7 +204,7 @@ impl BoundingBox {
     }
 
     pub fn is_point_in_box(&self, x: f64, y: f64) -> bool {
-        !(self.max_y < y || self.max_x < x || self.min_y > y || self.min_x > x)
+        !(self.max_y <= y || self.max_x <= x || self.min_y >= y || self.min_x >= x)
     }
 
     pub fn expand_to(&mut self, other: BoundingBox) {

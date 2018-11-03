@@ -2,7 +2,7 @@
 This tool is part of the WhiteboxTools geospatial analysis library.
 Authors: Dr. John Lindsay
 Created: July 15, 2017
-Last Modified: 05/05/2018
+Last Modified: 13/10/2018
 License: MIT
 
 NOTES: This tool uses the efficient running-median filtering algorithm of Huang, Yang, and Tang (1979).
@@ -20,10 +20,9 @@ use std::sync::mpsc;
 use std::sync::Arc;
 use std::thread;
 use structures::Array2D;
-use time;
 use tools::*;
 
-/// Tool struct containing the essential descriptors required to interact with the tool.
+/// Performs an efficient median filter based on Huang, Yang, and Tang's (1979) method.
 pub struct MedianFilter {
     name: String,
     description: String,
@@ -88,7 +87,8 @@ impl MedianFilter {
         let sep: String = path::MAIN_SEPARATOR.to_string();
         let p = format!("{}", env::current_dir().unwrap().display());
         let e = format!("{}", env::current_exe().unwrap().display());
-        let mut short_exe = e.replace(&p, "")
+        let mut short_exe = e
+            .replace(&p, "")
             .replace(".exe", "")
             .replace(".", "")
             .replace(&sep, "");
@@ -171,40 +171,39 @@ impl WhiteboxTool for MedianFilter {
             if vec.len() > 1 {
                 keyval = true;
             }
-            if vec[0].to_lowercase() == "-i" || vec[0].to_lowercase() == "--input" {
+            let flag_val = vec[0].to_lowercase().replace("--", "-");
+            if flag_val == "-i" || flag_val == "-input" {
                 if keyval {
                     input_file = vec[1].to_string();
                 } else {
                     input_file = args[i + 1].to_string();
                 }
-            } else if vec[0].to_lowercase() == "-o" || vec[0].to_lowercase() == "--output" {
+            } else if flag_val == "-o" || flag_val == "-output" {
                 if keyval {
                     output_file = vec[1].to_string();
                 } else {
                     output_file = args[i + 1].to_string();
                 }
-            } else if vec[0].to_lowercase() == "-filter" || vec[0].to_lowercase() == "--filter" {
+            } else if flag_val == "-filter" {
                 if keyval {
                     filter_size_x = vec[1].to_string().parse::<f32>().unwrap() as usize;
                 } else {
                     filter_size_x = args[i + 1].to_string().parse::<f32>().unwrap() as usize;
                 }
                 filter_size_y = filter_size_x;
-            } else if vec[0].to_lowercase() == "-filterx" || vec[0].to_lowercase() == "--filterx" {
+            } else if flag_val == "-filterx" {
                 if keyval {
                     filter_size_x = vec[1].to_string().parse::<f32>().unwrap() as usize;
                 } else {
                     filter_size_x = args[i + 1].to_string().parse::<f32>().unwrap() as usize;
                 }
-            } else if vec[0].to_lowercase() == "-filtery" || vec[0].to_lowercase() == "--filtery" {
+            } else if flag_val == "-filtery" {
                 if keyval {
                     filter_size_y = vec[1].to_string().parse::<f32>().unwrap() as usize;
                 } else {
                     filter_size_y = args[i + 1].to_string().parse::<f32>().unwrap() as usize;
                 }
-            } else if vec[0].to_lowercase() == "-sig_digits"
-                || vec[0].to_lowercase() == "--sig_digits"
-            {
+            } else if flag_val == "-sig_digits" {
                 if keyval {
                     num_sig_digits = vec[1].to_string().parse::<i32>().unwrap();
                 } else {
@@ -257,7 +256,7 @@ impl WhiteboxTool for MedianFilter {
         let input = Arc::new(Raster::new(&input_file, "r")?);
         // let input = Raster::new(&input_file, "r")?;
 
-        let start = time::now();
+        let start = Instant::now();
 
         let is_rgb_image = if input.configs.data_type == DataType::RGB24
             || input.configs.data_type == DataType::RGBA32
@@ -498,8 +497,7 @@ impl WhiteboxTool for MedianFilter {
             }
         }
 
-        let end = time::now();
-        let elapsed_time = end - start;
+        let elapsed_time = get_formatted_elapsed_time(start);
         output.configs.display_min = display_min;
         output.configs.display_max = display_max;
         output.add_metadata_entry(format!(
@@ -510,9 +508,7 @@ impl WhiteboxTool for MedianFilter {
         output.add_metadata_entry(format!("Filter size x: {}", filter_size_x));
         output.add_metadata_entry(format!("Filter size y: {}", filter_size_y));
         output.add_metadata_entry(format!("Num. significant digits: {}", num_sig_digits));
-        output.add_metadata_entry(
-            format!("Elapsed Time (excluding I/O): {}", elapsed_time).replace("PT", ""),
-        );
+        output.add_metadata_entry(format!("Elapsed Time (excluding I/O): {}", elapsed_time));
 
         if verbose {
             println!("Saving data...")
@@ -526,7 +522,7 @@ impl WhiteboxTool for MedianFilter {
         if verbose {
             println!(
                 "{}",
-                &format!("Elapsed Time (excluding I/O): {}", elapsed_time).replace("PT", "")
+                &format!("Elapsed Time (excluding I/O): {}", elapsed_time)
             );
         }
 

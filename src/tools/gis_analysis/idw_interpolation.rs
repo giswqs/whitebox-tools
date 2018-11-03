@@ -2,7 +2,7 @@
 This tool is part of the WhiteboxTools geospatial analysis library.
 Authors: Dr. John Lindsay
 Created: 10/05/2018
-Last Modified: 10/05/2018
+Last Modified: 13/10/2018
 License: MIT
 
 NOTES: Most IDW tool have the option to work either based on a fixed number of neighbouring 
@@ -17,21 +17,18 @@ Whitebox GAT tool allows for use of a constant or a quadratic. This tool only al
 former.
 */
 
+use num_cpus;
 use raster::*;
 use std::env;
 use std::f64;
 use std::io::{Error, ErrorKind};
 use std::path;
-use structures::FixedRadiusSearch2D;
-use time;
-use tools::*;
-use vector::{FieldData, ShapeType, Shapefile};
-// use kdtree::KdTree;
-// use kdtree::distance::squared_euclidean;
-use num_cpus;
 use std::sync::mpsc;
 use std::sync::Arc;
 use std::thread;
+use structures::{DistanceMetric, FixedRadiusSearch2D};
+use tools::*;
+use vector::{FieldData, ShapeType, Shapefile};
 
 /// Interpolates vector points into a raster surface using an inverse-distance weighted scheme.
 pub struct IdwInterpolation {
@@ -46,7 +43,7 @@ impl IdwInterpolation {
     /// public constructor
     pub fn new() -> IdwInterpolation {
         let name = "IdwInterpolation".to_string();
-        let toolbox = "Data Tools".to_string();
+        let toolbox = "GIS Analysis".to_string();
         let description = "Interpolates vector points into a raster surface using an inverse-distance weighted scheme.".to_string();
 
         let mut parameters = vec![];
@@ -118,15 +115,6 @@ impl IdwInterpolation {
             optional: true,
         });
 
-        // parameters.push(ToolParameter{
-        //     name: "Max. Distance".to_owned(),
-        //     flags: vec!["--max_dist".to_owned()],
-        //     description: "Maximum distance (used with min_points).".to_owned(),
-        //     parameter_type: ParameterType::Float,
-        //     default_value: None,
-        //     optional: true
-        // });
-
         parameters.push(ToolParameter{
             name: "Cell Size (optional)".to_owned(), 
             flags: vec!["--cell_size".to_owned()], 
@@ -148,15 +136,16 @@ impl IdwInterpolation {
         let sep: String = path::MAIN_SEPARATOR.to_string();
         let p = format!("{}", env::current_dir().unwrap().display());
         let e = format!("{}", env::current_exe().unwrap().display());
-        let mut short_exe = e.replace(&p, "")
+        let mut short_exe = e
+            .replace(&p, "")
             .replace(".exe", "")
             .replace(".", "")
             .replace(&sep, "");
         if e.contains(".exe") {
             short_exe += ".exe";
         }
-        let usage = format!(">>.*{0} -r={1} -v --wd=\"*path*to*data*\" -i=points.shp --field=ELEV -o=output.tif --assign=min --nodata --cell_size=10.0
-        >>.*{0} -r={1} -v --wd=\"*path*to*data*\" -i=points.shp --field=FID -o=output.tif --assign=last --base=existing_raster.tif", short_exe, name).replace("*", &sep);
+        let usage = format!(">>.*{0} -r={1} -v --wd=\"*path*to*data*\" -i=points.shp --field=ELEV -o=output.tif --weight=2.0 --radius=4.0 --min_points=3 --cell_size=1.0
+>>.*{0} -r={1} -v --wd=\"*path*to*data*\" -i=points.shp --use_z -o=output.tif --weight=2.0 --radius=4.0 --min_points=3 --base=existing_raster.tif", short_exe, name).replace("*", &sep);
 
         IdwInterpolation {
             name: name,
@@ -317,7 +306,7 @@ impl WhiteboxTool for IdwInterpolation {
         };
         let vector_data = Shapefile::read(&input_file)?;
 
-        let start = time::now();
+        let start = Instant::now();
 
         // make sure the input vector file is of points type
         if vector_data.header.shape_type.base_shape_type() != ShapeType::Point {
@@ -444,7 +433,8 @@ impl WhiteboxTool for IdwInterpolation {
                 ));
             }
 
-            let mut frs: FixedRadiusSearch2D<f64> = FixedRadiusSearch2D::new(radius as f32);
+            let mut frs: FixedRadiusSearch2D<f64> =
+                FixedRadiusSearch2D::new(radius, DistanceMetric::Euclidean);
 
             for record_num in 0..vector_data.num_records {
                 let record = vector_data.get_record(record_num);
@@ -452,13 +442,13 @@ impl WhiteboxTool for IdwInterpolation {
                 y = record.points[0].y;
                 match vector_data.attributes.get_value(record_num, &field_name) {
                     FieldData::Int(val) => {
-                        frs.insert(x as f32, y as f32, val as f64);
+                        frs.insert(x, y, val as f64);
                     }
                     // FieldData::Int64(val) => {
                     //     frs.insert(x, y, val as f64);
                     // },
                     FieldData::Real(val) => {
-                        frs.insert(x as f32, y as f32, val);
+                        frs.insert(x, y, val);
                     }
                     _ => {
                         // do nothing; likely due to null value for record.
@@ -470,7 +460,7 @@ impl WhiteboxTool for IdwInterpolation {
                         / (vector_data.num_records - 1) as f64)
                         as usize;
                     if progress != old_progress {
-                        println!("Creating kd-tree: {}%", progress);
+                        println!("Creating search structure: {}%", progress);
                         old_progress = progress;
                     }
                 }
@@ -488,7 +478,8 @@ impl WhiteboxTool for IdwInterpolation {
                     "The input vector data must be of PointZ, PointM, MultiPointZ, or MultiPointM shape type."));
             }
 
-            let mut frs: FixedRadiusSearch2D<f64> = FixedRadiusSearch2D::new(radius as f32);
+            let mut frs: FixedRadiusSearch2D<f64> =
+                FixedRadiusSearch2D::new(radius, DistanceMetric::Euclidean);
 
             // let mut p = 0;
             for record_num in 0..vector_data.num_records {
@@ -497,7 +488,7 @@ impl WhiteboxTool for IdwInterpolation {
                     x = record.points[i].x;
                     y = record.points[i].y;
                     z = record.z_array[i];
-                    frs.insert(x as f32, y as f32, z);
+                    frs.insert(x, y, z);
                     // p += 1;
                 }
 
@@ -506,7 +497,7 @@ impl WhiteboxTool for IdwInterpolation {
                         / (vector_data.num_records - 1) as f64)
                         as usize;
                     if progress != old_progress {
-                        println!("Creating kd-tree: {}%", progress);
+                        println!("Creating search structure: {}%", progress);
                         old_progress = progress;
                     }
                 }
@@ -579,9 +570,12 @@ impl WhiteboxTool for IdwInterpolation {
                 for row in (0..rows).filter(|r| r % num_procs == tid) {
                     let mut data = vec![nodata; columns as usize];
                     for col in 0..columns {
-                        x = west + col as f64 * grid_res + 0.5;
-                        y = north - row as f64 * grid_res - 0.5;
-                        let ret = frs.search(x as f32, y as f32);
+                        x = west + (col as f64 + 0.5) * grid_res;
+                        y = north - (row as f64 + 0.5) * grid_res;
+                        let mut ret = frs.search(x, y);
+                        if ret.len() < min_points {
+                            ret = frs.knn_search(x, y, min_points);
+                        }
                         if ret.len() >= min_points {
                             sum_weights = 0.0;
                             val = 0.0;
@@ -683,16 +677,13 @@ impl WhiteboxTool for IdwInterpolation {
             }
         }
 
-        let end = time::now();
-        let elapsed_time = end - start;
+        let elapsed_time = get_formatted_elapsed_time(start);
         output.add_metadata_entry(format!(
             "Created by whitebox_tools\' {} tool",
             self.get_tool_name()
         ));
         output.add_metadata_entry(format!("Input file: {}", input_file));
-        output.add_metadata_entry(
-            format!("Elapsed Time (excluding I/O): {}", elapsed_time).replace("PT", ""),
-        );
+        output.add_metadata_entry(format!("Elapsed Time (excluding I/O): {}", elapsed_time));
 
         if verbose {
             println!("Saving data...")
@@ -707,7 +698,7 @@ impl WhiteboxTool for IdwInterpolation {
         if verbose {
             println!(
                 "{}",
-                &format!("Elapsed Time (excluding I/O): {}", elapsed_time).replace("PT", "")
+                &format!("Elapsed Time (excluding I/O): {}", elapsed_time)
             );
         }
 

@@ -2,7 +2,7 @@
 This tool is part of the WhiteboxTools geospatial analysis library.
 Authors: Dr. John Lindsay
 Created: 12/04/2018
-Last Modified: 05/05/2018
+Last Modified: 12/10/2018
 License: MIT
 */
 
@@ -16,7 +16,6 @@ use std::io::BufWriter;
 use std::io::{Error, ErrorKind};
 use std::path;
 use std::process::Command;
-use time;
 use tools::*;
 use vector::{FieldData, Shapefile};
 
@@ -74,7 +73,8 @@ impl AttributeHistogram {
         let sep: String = path::MAIN_SEPARATOR.to_string();
         let p = format!("{}", env::current_dir().unwrap().display());
         let e = format!("{}", env::current_exe().unwrap().display());
-        let mut short_exe = e.replace(&p, "")
+        let mut short_exe = e
+            .replace(&p, "")
             .replace(".exe", "")
             .replace(".", "")
             .replace(&sep, "");
@@ -189,7 +189,7 @@ impl WhiteboxTool for AttributeHistogram {
         let mut progress: usize;
         let mut old_progress: usize = 1;
 
-        let start = time::now();
+        let start = Instant::now();
 
         if !input_file.contains(&sep) && !input_file.contains("/") {
             input_file = format!("{}{}", working_directory, input_file);
@@ -236,11 +236,6 @@ impl WhiteboxTool for AttributeHistogram {
                         max = valf64;
                     }
                 }
-                // FieldData::Int64(val) => {
-                //     let valf64 = val as f64;
-                //     if valf64 < min { min = valf64; }
-                //     if valf64 > max { max = valf64; }
-                // },
                 FieldData::Real(val) => {
                     if val < min {
                         min = val;
@@ -301,13 +296,12 @@ impl WhiteboxTool for AttributeHistogram {
             }
         }
 
-        let end = time::now();
-        let elapsed_time = end - start;
+        let elapsed_time = get_formatted_elapsed_time(start);
 
         if verbose {
             println!(
                 "\n{}",
-                &format!("Elapsed Time (excluding I/O): {}", elapsed_time).replace("PT", "")
+                &format!("Elapsed Time (excluding I/O): {}", elapsed_time)
             );
         }
 
@@ -322,9 +316,12 @@ impl WhiteboxTool for AttributeHistogram {
         // get the style sheet
         writer.write_all(&get_css().as_bytes())?;
 
-        writer.write_all(&r#"</head>
+        writer.write_all(
+            &r#"</head>
         <body>
-            <h1>Histogram Analysis</h1>"#.as_bytes())?;
+            <h1>Histogram Analysis</h1>"#
+                .as_bytes(),
+        )?;
 
         writer.write_all(
             &format!("<p><strong>Input</strong>: {}</p>", input_file.clone()).as_bytes(),

@@ -28,7 +28,7 @@ pub struct AttributeHeader {
     pub language_driver_id: u8,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct DateData {
     pub year: u16,
     pub month: u8,
@@ -56,15 +56,20 @@ impl fmt::Display for DateData {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum FieldData {
     Int(i32),
-    // Int64(i64),
     Real(f64),
     Text(String),
     Date(DateData),
     Bool(bool),
     Null,
+}
+
+impl fmt::Display for FieldData {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?})", self)
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -95,9 +100,12 @@ pub struct AttributeField {
     pub field_type: char,
     pub field_length: u8,
     pub decimal_count: u8,
-    // pub work_area_id: u8,
-    // pub set_field_flag: u8,
-    // pub index_field_flag: u8,
+}
+
+impl PartialEq for AttributeField {
+    fn eq(&self, other: &AttributeField) -> bool {
+        other.name == self.name && other.field_type == self.field_type
+    }
 }
 
 impl AttributeField {
@@ -118,6 +126,41 @@ impl AttributeField {
             // work_area_id: work_area_id,
             // set_field_flag: set_field_flag,
             // index_field_flag: index_field_flag,
+        }
+    }
+
+    pub fn intersection(atts1: &[AttributeField], atts2: &[AttributeField]) -> Vec<AttributeField> {
+        let mut ret: Vec<AttributeField> = Vec::with_capacity(atts1.len().max(atts2.len()));
+        for i in 0..atts1.len() {
+            for j in 0..atts2.len() {
+                if atts1[i] == atts2[j] {
+                    ret.push(atts1[i].clone());
+                }
+            }
+        }
+
+        ret
+    }
+}
+
+pub trait Intersector {
+    fn intersection(&mut self, other: &Self);
+}
+
+impl Intersector for Vec<AttributeField> {
+    fn intersection(&mut self, other: &Self) {
+        let mut in_other: bool;
+        for i in (0..self.len()).rev() {
+            in_other = false;
+            for j in 0..other.len() {
+                if self[i] == other[j] {
+                    in_other = true;
+                    break;
+                }
+            }
+            if !in_other {
+                self.remove(i);
+            }
         }
     }
 }
@@ -169,15 +212,19 @@ impl ShapefileAttributes {
         &self.fields[index]
     }
 
+    /// Returns the fields of a table
+    pub fn get_fields<'a>(&'a self) -> &'a Vec<AttributeField> {
+        &self.fields
+    }
+
     /// Adds an attribute record to the table.
     pub fn add_record(&mut self, rec: Vec<FieldData>, deleted: bool) {
         self.data.push(rec);
-        // println!("{} {:?}", self.data.len(), self.data);
         self.is_deleted.push(deleted);
         self.header.num_records = self.data.len() as u32; //+= 1;
     }
 
-    /// Retrieves an attribute record for a zero-based index.
+    /// Retrieves an attribute record for a zero-based index. The returned data is a copy of the original.
     pub fn get_record(&self, index: usize) -> Vec<FieldData> {
         if index >= self.header.num_records as usize {
             panic!("Error: Specified record index is greater than the number of records.");
@@ -211,6 +258,7 @@ impl ShapefileAttributes {
     //     self.data[record_index][field_index].clone()
     // }
 
+    /// Returns the field number associated with a specified field name.
     pub fn get_field_num(&self, name: &str) -> Option<usize> {
         for i in 0..self.fields.len() {
             if self.fields[i].name == name {
@@ -218,6 +266,11 @@ impl ShapefileAttributes {
             }
         }
         None
+    }
+
+    /// Returns the number of fields in the attribute table.
+    pub fn get_num_fields(&self) -> usize {
+        self.fields.len()
     }
 
     fn get_field_hashmap(&mut self) {

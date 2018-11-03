@@ -1,8 +1,8 @@
 /* 
 This tool is part of the WhiteboxTools geospatial analysis library.
 Authors: Dr. John Lindsay
-Created: June 22, 2017
-Last Modified: February 14, 2018
+Created: 22/09/2017
+Last Modified: 12/10/2018
 License: MIT
 */
 
@@ -15,8 +15,7 @@ use std::path;
 use std::sync::mpsc;
 use std::sync::Arc;
 use std::thread;
-use structures::FixedRadiusSearch2D;
-use time;
+use structures::{DistanceMetric, FixedRadiusSearch2D};
 use tools::*;
 
 /// Performs a white top-hat transform on a Lidar dataset; as an estimate of height above ground, this is useful for modelling the vegetation canopy.
@@ -66,7 +65,8 @@ impl LidarTophatTransform {
         let sep: String = path::MAIN_SEPARATOR.to_string();
         let p = format!("{}", env::current_dir().unwrap().display());
         let e = format!("{}", env::current_exe().unwrap().display());
-        let mut short_exe = e.replace(&p, "")
+        let mut short_exe = e
+            .replace(&p, "")
             .replace(".exe", "")
             .replace(".", "")
             .replace(&sep, "");
@@ -128,7 +128,7 @@ impl WhiteboxTool for LidarTophatTransform {
     ) -> Result<(), Error> {
         let mut input_file: String = "".to_string();
         let mut output_file: String = "".to_string();
-        let mut search_radius: f32 = -1.0;
+        let mut search_radius = -1f64;
 
         // read the arguments
         if args.len() == 0 {
@@ -146,24 +146,25 @@ impl WhiteboxTool for LidarTophatTransform {
             if vec.len() > 1 {
                 keyval = true;
             }
-            if vec[0].to_lowercase() == "-i" || vec[0].to_lowercase() == "--input" {
-                if keyval {
-                    input_file = vec[1].to_string();
+            let flag_val = vec[0].to_lowercase().replace("--", "-");
+            if flag_val == "-i" || flag_val == "-input" {
+                input_file = if keyval {
+                    vec[1].to_string()
                 } else {
-                    input_file = args[i + 1].to_string();
-                }
-            } else if vec[0].to_lowercase() == "-o" || vec[0].to_lowercase() == "--output" {
-                if keyval {
-                    output_file = vec[1].to_string();
+                    args[i + 1].to_string()
+                };
+            } else if flag_val == "-o" || flag_val == "-output" {
+                output_file = if keyval {
+                    vec[1].to_string()
                 } else {
-                    output_file = args[i + 1].to_string();
-                }
-            } else if vec[0].to_lowercase() == "-radius" || vec[0].to_lowercase() == "--radius" {
-                if keyval {
-                    search_radius = vec[1].to_string().parse::<f32>().unwrap();
+                    args[i + 1].to_string()
+                };
+            } else if flag_val == "-radius" {
+                search_radius = if keyval {
+                    vec[1].to_string().parse::<f64>().unwrap()
                 } else {
-                    search_radius = args[i + 1].to_string().parse::<f32>().unwrap();
-                }
+                    args[i + 1].to_string().parse::<f64>().unwrap()
+                };
             }
         }
 
@@ -189,7 +190,7 @@ impl WhiteboxTool for LidarTophatTransform {
             Err(err) => panic!("Error reading file {}: {}", input_file, err),
         };
 
-        let start = time::now();
+        let start = Instant::now();
 
         if verbose {
             println!("Performing analysis...");
@@ -200,11 +201,11 @@ impl WhiteboxTool for LidarTophatTransform {
 
         let mut progress: i32;
         let mut old_progress: i32 = -1;
-        let mut frs: FixedRadiusSearch2D<usize> = FixedRadiusSearch2D::new(search_radius);
-        frs.is_distance_squared(true);
+        let mut frs: FixedRadiusSearch2D<usize> =
+            FixedRadiusSearch2D::new(search_radius, DistanceMetric::SquaredEuclidean);
         for i in 0..n_points {
             let p: PointData = input.get_point_info(i);
-            frs.insert(p.x as f32, p.y as f32, i);
+            frs.insert(p.x, p.y, i);
             if verbose {
                 progress = (100.0_f64 * i as f64 / num_points) as i32;
                 if progress != old_progress {
@@ -220,7 +221,6 @@ impl WhiteboxTool for LidarTophatTransform {
         /////////////
         // Erosion //
         /////////////
-
         let frs = Arc::new(frs); // wrap FRS in an Arc
         let input = Arc::new(input); // wrap input in an Arc
         let num_procs = num_cpus::get();
@@ -233,9 +233,10 @@ impl WhiteboxTool for LidarTophatTransform {
                 let mut index_n: usize;
                 let mut z_n: f64;
                 let mut min_z: f64;
+                let mut ret: Vec<(usize, f64)>;
                 for i in (0..n_points).filter(|point_num| point_num % num_procs == tid) {
                     let p: PointData = input.get_point_info(i);
-                    let ret = frs.search(p.x as f32, p.y as f32);
+                    ret = frs.search(p.x, p.y);
                     min_z = f64::MAX;
                     for j in 0..ret.len() {
                         index_n = ret[j].0;
@@ -274,9 +275,10 @@ impl WhiteboxTool for LidarTophatTransform {
                 let mut index_n: usize;
                 let mut z_n: f64;
                 let mut max_z: f64;
+                let mut ret: Vec<(usize, f64)>;
                 for i in (0..n_points).filter(|point_num| point_num % num_procs == tid) {
                     let p: PointData = input.get_point_info(i);
-                    let ret = frs.search(p.x as f32, p.y as f32);
+                    ret = frs.search(p.x, p.y);
                     max_z = f64::MIN;
                     for j in 0..ret.len() {
                         index_n = ret[j].0;
@@ -446,8 +448,7 @@ impl WhiteboxTool for LidarTophatTransform {
             }
         }
 
-        let end = time::now();
-        let elapsed_time = end - start;
+        let elapsed_time = get_formatted_elapsed_time(start);
 
         if verbose {
             println!("Writing output LAS file...");
@@ -459,7 +460,7 @@ impl WhiteboxTool for LidarTophatTransform {
         if verbose {
             println!(
                 "{}",
-                &format!("Elapsed Time (excluding I/O): {}", elapsed_time).replace("PT", "")
+                &format!("Elapsed Time (excluding I/O): {}", elapsed_time)
             );
         }
 

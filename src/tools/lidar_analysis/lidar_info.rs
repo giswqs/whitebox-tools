@@ -2,7 +2,7 @@
 This tool is part of the WhiteboxTools geospatial analysis library.
 Authors: Dr. John Lindsay
 Created: June 1, 2017
-Last Modified: December 26, 2017
+Last Modified: 12/10/2018
 License: MIT
 */
 
@@ -21,20 +21,6 @@ use tools::*;
 /// This tool can be used to print basic information about the data contained within a LAS file, used to store LiDAR
 /// data. The reported information will include including data on the header, point return frequency, and classification
 /// data and information about the variable length records (VLRs) and geokeys.
-///
-/// # Input Parameters
-///
-/// | Flag      | Description                                                     |
-/// |-----------|-----------------------------------------------------------------|
-/// | -i, input | Input LAS file.                                                 |
-/// | --vlr     | Flag indicates whether to print variable length records (VLRs). |
-/// | --geokeys | Flag indicates whether to print the geokeys.                    |
-///
-/// # Example
-/// ```
-/// >>./whitebox_tools -r=LidarInfo --wd=/path/to/data/ -i=file.las --vlr --geokeys
-/// ```
-
 pub struct LidarInfo {
     name: String,
     description: String,
@@ -92,7 +78,8 @@ impl LidarInfo {
         let sep: String = path::MAIN_SEPARATOR.to_string();
         let p = format!("{}", env::current_dir().unwrap().display());
         let e = format!("{}", env::current_exe().unwrap().display());
-        let mut short_exe = e.replace(&p, "")
+        let mut short_exe = e
+            .replace(&p, "")
             .replace(".exe", "")
             .replace(".", "")
             .replace(&sep, "");
@@ -178,17 +165,17 @@ impl WhiteboxTool for LidarInfo {
             }
             let flag_val = vec[0].to_lowercase().replace("--", "-");
             if flag_val == "-i" || flag_val == "-input" {
-                if keyval {
-                    input_file = vec[1].to_string();
+                input_file = if keyval {
+                    vec[1].to_string()
                 } else {
-                    input_file = args[i + 1].to_string();
-                }
+                    args[i + 1].to_string()
+                };
             } else if flag_val == "-o" || flag_val == "-output" {
-                if keyval {
-                    output_file = vec[1].to_string();
+                output_file = if keyval {
+                    vec[1].to_string()
                 } else {
-                    output_file = args[i + 1].to_string();
-                }
+                    args[i + 1].to_string()
+                };
             } else if flag_val == "-vlr" {
                 show_vlrs = true;
             } else if flag_val == "-geokeys" {

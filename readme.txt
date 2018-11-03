@@ -56,16 +56,113 @@ for more details.
 * Release Notes: *
 ******************
 
-Version 0.10.0 (XX-XX-2018)
-- Added the following tools:
+Version 0.12.0 (XX-XX-2018)
+- The following tools were added to the project:
+    BlockMaximumGridding
+    BlockMinimumGridding
+    JoinTables
+    LasToShapefile
+    LidarClassifySubset
+    LinearityIndex
+    LineIntersections
+    MergeTableWithCsv
+    MergeVectors
+    NearestNeighbourGridding
+    PatchOrientation
+    Polygonize
+    RasterToVectorLines
+    SplitWithLines
+    VoronoiDiagram
+
+
+Version 0.11.0 (01-10-2018)
+- This release is marked by the addition of several vector data processing capabilities. 
+  Most notably, this includes support for TINing and TIN based gridding (vector and 
+  LiDAR), as well as several vector patch shape indicies. The following tools were 
+  added to the project:
+    AddPointCoordinatesToTable
+    CentroidVector
+    CompactnessRatio
+    ConstructVectorTIN
+    ElongationRatio
+    ExtendVectorLines
+    HoleProportion
+    LayerFootprint
+    LidarConstructVectorTIN
+    LidarTINGridding
+    LinesToPolygons
+    Medoid
+    MinimumBoundingCircle
+    MinimumBoundingEnvelope
+    MultiPartToSinglePart
+    PerimeterAreaRatio
+    PolygonArea
+    PolygonPerimeter
+    RasterStreamsToVector
+    RasterToVectorPoints
+    RelatedCircumscribingCircle
+    RemovePolygonHoles
+    ShapeComplexityIndex
+    SinglePartToMultiPart
+    SmoothVectors
+    SumOverlay
+    TINGridding
+
+- Added a minimum number of neighbours criteria in the neighbourhood search of the
+  LidarGroundPointFilter tool. In this way, if the fixed-radius search yields fewer
+  neighbours than this minimum neighbours threshold, a second kNN search is carried
+  out to identify the k nearest neighbours. This can be preferable for cases where
+  the point density varies significantly in the data set, e.g. in the case of 
+  terrestrial LiDAR point clouds.
+- The MinimumBoundingBox tool has been modified to take an optional minimization 
+  criteria, including minimum box area, length, width, or perimeter.
+- Fixed: Bug that resulted in a 0.5 m offset in the positioning of interpolated grids.
+- Fixed: Viewshed tool now emits an intelligible error when the viewing station does 
+  not overlap with the DEM.
+
+
+Version 0.10.0 (16-09-2018)
+- The following tools were added to the project:
+    CreateHexagonalVectorGrid
+    CreateRectangularVectorGrid
+    DrainagePreservingSmoothing
+    EliminateCoincidentPoints
+    ExtractNodes
+    HighPassMedianFilter
+    LasToMultipointShapefile
+    LidarHexBinning and VectorHexBinning
     LidarTileFootprint
     MaxDifferenceFromMean
+    MinimumBoundingBox
+    MinimumConvexHull
+    PolygonLongAxis and PolygonShortAxis
+    PolygonsToLines
+    ReinitializeAttributeTable
 
 - Refactoring of some data related to Point2D, and common algorithms (e.g. 
   point-in-poly, convex hull).
-- Added unit tests to BoundingBox, point_in_poly, and convex_hull.
+- Added unit tests to BoundingBox, point_in_poly, convex_hull, and elsewhere.
 - Fixed a bug in LiDAR join related to tiles with fewer than two points. LAS files
   now issue a warning upon saving when they contain less than two points.
+- The default callback can now be modified in whitebox_tools.py, such that
+  a single custom callback can be used without having to specify it for each
+  tool function call.
+- Added initial support for getting projection ESPG and WKT info from LAS files 
+  and GeoTiff data. This is the start of a more fullsome approach to handling
+  spatial reference system information in the library.
+- Fixed a bug in saving Shapefile m and z data.
+- Fixed a bug that wouldn't allow the LidarIdwInterpolation and 
+  LidarNearestNeighbourGridding tool to interpolate point classification data.
+- LidarGroundPointFilter now has the ability to output a classified LAS file rather 
+  than merely filtering non-ground points. Ground points are assigned classification
+  values of 2 while non-ground points are classified as 1.
+- Updated the LidarKappaIndex tool to use a NN-search to find matching points between
+  the compared point clouds.
+- Modified the FixedRadiusSearch structure to use 64-bit floats for storing coordinates.
+  This impacts performance efficiency but is needed for the fine precision of 
+  positional information found in terrestrial LiDAR data. FixedRadiusSearch structures
+  have also had approximate kNN search methods added.
+
 
 Version 0.9.0 (22-08-2018)
 - Added the following tools:

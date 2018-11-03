@@ -1,23 +1,21 @@
 /* 
 This tool is part of the WhiteboxTools geospatial analysis library.
 Authors: Dr. John Lindsay
-Created: June 2, 2017
-Last Modified: December 15, 2017
+Created: 02/06/2017
+Last Modified: 12/10/2018
 License: MIT
 */
 
 use lidar::*;
 use num_cpus;
 use std::env;
-// use std::f64;
-use std::f32;
+use std::f64;
 use std::io::{Error, ErrorKind};
 use std::path;
 use std::sync::mpsc;
 use std::sync::Arc;
 use std::thread;
-use structures::FixedRadiusSearch2D;
-use time;
+use structures::{DistanceMetric, FixedRadiusSearch2D};
 use tools::*;
 
 pub struct LidarGroundPointFilter {
@@ -65,6 +63,15 @@ impl LidarGroundPointFilter {
         });
 
         parameters.push(ToolParameter {
+            name: "Minimum Number of Neighbours".to_owned(),
+            flags: vec!["--min_neighbours".to_owned()],
+            description: "The minimum number of neighbouring points within search areas. If fewer points than this threshold are idenfied during the fixed-radius search, a subsequent kNN search is performed to identify the k number of neighbours.".to_owned(),
+            parameter_type: ParameterType::Integer,
+            default_value: Some("0".to_owned()),
+            optional: true,
+        });
+
+        parameters.push(ToolParameter {
             name: "Inter-point Slope Threshold".to_owned(),
             flags: vec!["--slope_threshold".to_owned()],
             description: "Maximum inter-point slope to be considered an off-terrain point."
@@ -84,17 +91,36 @@ impl LidarGroundPointFilter {
             optional: true,
         });
 
+        parameters.push(ToolParameter {
+            name: "Classify Points".to_owned(),
+            flags: vec!["--classify".to_owned()],
+            description: "Classify points as ground (2) or off-ground (1).".to_owned(),
+            parameter_type: ParameterType::Boolean,
+            default_value: Some("true".to_string()),
+            optional: true,
+        });
+
+        parameters.push(ToolParameter {
+            name: "Perform initial ground slope normalization?".to_owned(),
+            flags: vec!["--slope_norm".to_owned()],
+            description: "Perform initial ground slope normalization?".to_owned(),
+            parameter_type: ParameterType::Boolean,
+            default_value: Some("true".to_owned()),
+            optional: true,
+        });
+
         let sep: String = path::MAIN_SEPARATOR.to_string();
         let p = format!("{}", env::current_dir().unwrap().display());
         let e = format!("{}", env::current_exe().unwrap().display());
-        let mut short_exe = e.replace(&p, "")
+        let mut short_exe = e
+            .replace(&p, "")
             .replace(".exe", "")
             .replace(".", "")
             .replace(&sep, "");
         if e.contains(".exe") {
             short_exe += ".exe";
         }
-        let usage = format!(">>.*{0} -r={1} -v --wd=\"*path*to*data*\" -i=\"input.las\" -o=\"output.las\" --radius=10.0", short_exe, name).replace("*", &sep);
+        let usage = format!(">>.*{0} -r={1} -v --wd=\"*path*to*data*\" -i=\"input.las\" -o=\"output.las\" --radius=10.0 --min_neighbours=10 --slope_threshold=30.0 --height_threshold=0.5 --classify --slope_norm", short_exe, name).replace("*", &sep);
 
         LidarGroundPointFilter {
             name: name,
@@ -149,9 +175,14 @@ impl WhiteboxTool for LidarGroundPointFilter {
     ) -> Result<(), Error> {
         let mut input_file: String = "".to_string();
         let mut output_file: String = "".to_string();
-        let mut search_radius: f32 = -1.0;
-        let mut height_threshold: f32 = 1.0;
-        let mut slope_threshold: f32 = 15.0;
+        let mut search_radius: f64 = -1.0;
+        let mut min_neighbours = 0usize;
+        let mut height_threshold: f64 = 1.0;
+        let mut slope_threshold: f64 = 15.0;
+        let ground_class_value = 2u8;
+        let otp_class_value = 1u8;
+        let mut filter = true;
+        let mut slope_norm = false;
 
         // read the arguments
         if args.len() == 0 {
@@ -169,40 +200,47 @@ impl WhiteboxTool for LidarGroundPointFilter {
             if vec.len() > 1 {
                 keyval = true;
             }
-            if vec[0].to_lowercase() == "-i" || vec[0].to_lowercase() == "--input" {
-                if keyval {
-                    input_file = vec[1].to_string();
+            let flag_val = vec[0].to_lowercase().replace("--", "-");
+            if flag_val == "-i" || flag_val == "-input" {
+                input_file = if keyval {
+                    vec[1].to_string()
                 } else {
-                    input_file = args[i + 1].to_string();
-                }
-            } else if vec[0].to_lowercase() == "-o" || vec[0].to_lowercase() == "--output" {
-                if keyval {
-                    output_file = vec[1].to_string();
+                    args[i + 1].to_string()
+                };
+            } else if flag_val == "-o" || flag_val == "-output" {
+                output_file = if keyval {
+                    vec[1].to_string()
                 } else {
-                    output_file = args[i + 1].to_string();
-                }
-            } else if vec[0].to_lowercase() == "-radius" || vec[0].to_lowercase() == "--radius" {
-                if keyval {
-                    search_radius = vec[1].to_string().parse::<f32>().unwrap();
+                    args[i + 1].to_string()
+                };
+            } else if flag_val == "-radius" {
+                search_radius = if keyval {
+                    vec[1].to_string().parse::<f64>().unwrap()
                 } else {
-                    search_radius = args[i + 1].to_string().parse::<f32>().unwrap();
-                }
-            } else if vec[0].to_lowercase() == "-height_threshold"
-                || vec[0].to_lowercase() == "--height_threshold"
-            {
-                if keyval {
-                    height_threshold = vec[1].to_string().parse::<f32>().unwrap();
+                    args[i + 1].to_string().parse::<f64>().unwrap()
+                };
+            } else if flag_val == "-min_neighbours" || flag_val == "-min_neighbors" {
+                min_neighbours = if keyval {
+                    vec[1].to_string().parse::<usize>().unwrap()
                 } else {
-                    height_threshold = args[i + 1].to_string().parse::<f32>().unwrap();
-                }
-            } else if vec[0].to_lowercase() == "-slope_threshold"
-                || vec[0].to_lowercase() == "--slope_threshold"
-            {
-                if keyval {
-                    slope_threshold = vec[1].to_string().parse::<f32>().unwrap();
+                    args[i + 1].to_string().parse::<usize>().unwrap()
+                };
+            } else if flag_val == "-height_threshold" {
+                height_threshold = if keyval {
+                    vec[1].to_string().parse::<f64>().unwrap()
                 } else {
-                    slope_threshold = args[i + 1].to_string().parse::<f32>().unwrap();
-                }
+                    args[i + 1].to_string().parse::<f64>().unwrap()
+                };
+            } else if flag_val == "-slope_threshold" {
+                slope_threshold = if keyval {
+                    vec[1].to_string().parse::<f64>().unwrap()
+                } else {
+                    args[i + 1].to_string().parse::<f64>().unwrap()
+                };
+            } else if flag_val == "-classify" {
+                filter = false;
+            } else if flag_val == "-slope_norm" {
+                slope_norm = true;
             }
         }
 
@@ -228,7 +266,7 @@ impl WhiteboxTool for LidarGroundPointFilter {
             Err(err) => panic!("Error reading file {}: {}", input_file, err),
         };
 
-        let start = time::now();
+        let start = Instant::now();
 
         if verbose {
             println!("Performing analysis...");
@@ -239,14 +277,21 @@ impl WhiteboxTool for LidarGroundPointFilter {
         let n_points = input.header.number_of_points as usize;
         let num_points: f64 = (input.header.number_of_points - 1) as f64; // used for progress calculation only
 
+        let mut residuals = vec![f64::MIN; n_points];
+        let mut is_off_terrain = vec![false; n_points];
+
+        let mut frs: FixedRadiusSearch2D<usize> =
+            FixedRadiusSearch2D::new(search_radius, DistanceMetric::SquaredEuclidean);
+
         let mut progress: i32;
         let mut old_progress: i32 = -1;
-        let mut frs: FixedRadiusSearch2D<usize> = FixedRadiusSearch2D::new(search_radius);
-        frs.is_distance_squared(true);
         for i in 0..n_points {
             let p: PointData = input.get_point_info(i);
             if p.is_late_return() && !p.is_classified_noise() {
-                frs.insert(p.x as f32, p.y as f32, i);
+                frs.insert(p.x, p.y, i);
+                if !slope_norm {
+                    residuals[i] = p.z;
+                }
             }
             if verbose {
                 progress = (100.0_f64 * i as f64 / num_points) as i32;
@@ -257,103 +302,109 @@ impl WhiteboxTool for LidarGroundPointFilter {
             }
         }
 
-        let mut neighbourhood_min = vec![f32::MAX; n_points];
-        let mut residuals = vec![f32::MIN; n_points];
-
-        /////////////
-        // Erosion //
-        /////////////
-
         let frs = Arc::new(frs); // wrap FRS in an Arc
-        let input = Arc::new(input); // wrap input in an Arc
         let num_procs = num_cpus::get();
-        let (tx, rx) = mpsc::channel();
-        for tid in 0..num_procs {
-            let frs = frs.clone();
-            let input = input.clone();
-            let tx = tx.clone();
-            thread::spawn(move || {
-                let mut index_n: usize;
-                let mut z_n: f32;
-                let mut min_z: f32;
-                for point_num in (0..n_points).filter(|point_num| point_num % num_procs == tid) {
-                    let p: PointData = input.get_point_info(point_num);
-                    if p.is_late_return() && !p.is_classified_noise() {
-                        let ret = frs.search(p.x as f32, p.y as f32);
-                        min_z = f32::MAX;
-                        for j in 0..ret.len() {
-                            index_n = ret[j].0;
-                            z_n = input.get_point_info(index_n).z as f32;
-                            if z_n < min_z {
-                                min_z = z_n;
+        let input = Arc::new(input); // wrap input in an Arc
+
+        if slope_norm {
+            /////////////
+            // Erosion //
+            /////////////
+            let mut neighbourhood_min = vec![f64::MAX; n_points];
+            let (tx, rx) = mpsc::channel();
+            for tid in 0..num_procs {
+                let frs = frs.clone();
+                let input = input.clone();
+                let tx = tx.clone();
+                thread::spawn(move || {
+                    let mut index_n: usize;
+                    let mut z_n: f64;
+                    let mut min_z: f64;
+                    let mut ret: Vec<(usize, f64)>;
+                    for point_num in (0..n_points).filter(|point_num| point_num % num_procs == tid)
+                    {
+                        let p: PointData = input.get_point_info(point_num);
+                        if p.is_late_return() && !p.is_classified_noise() {
+                            ret = frs.search(p.x, p.y);
+                            min_z = f64::MAX;
+                            for j in 0..ret.len() {
+                                index_n = ret[j].0;
+                                z_n = input.get_point_info(index_n).z;
+                                if z_n < min_z {
+                                    min_z = z_n;
+                                }
                             }
+                            tx.send((point_num, min_z)).unwrap();
+                        } else {
+                            tx.send((point_num, f64::MAX)).unwrap();
                         }
-                        tx.send((point_num, min_z)).unwrap();
-                    } else {
-                        tx.send((point_num, f32::MAX)).unwrap();
+                    }
+                });
+            }
+
+            for i in 0..n_points {
+                let data = rx.recv().unwrap();
+                neighbourhood_min[data.0] = data.1;
+                if verbose {
+                    progress = (100.0_f64 * i as f64 / num_points) as i32;
+                    if progress != old_progress {
+                        println!("Erosion: {}%", progress);
+                        old_progress = progress;
                     }
                 }
-            });
-        }
-
-        for i in 0..n_points {
-            let data = rx.recv().unwrap();
-            neighbourhood_min[data.0] = data.1;
-            if verbose {
-                progress = (100.0_f64 * i as f64 / num_points) as i32;
-                if progress != old_progress {
-                    println!("Erosion: {}%", progress);
-                    old_progress = progress;
-                }
             }
-        }
 
-        //////////////
-        // Dilation //
-        //////////////
-        let neighbourhood_min = Arc::new(neighbourhood_min); // wrap neighbourhood_min in an Arc
-        for tid in 0..num_procs {
-            let frs = frs.clone();
-            let input = input.clone();
-            let neighbourhood_min = neighbourhood_min.clone();
-            let tx = tx.clone();
-            thread::spawn(move || {
-                let mut index_n: usize;
-                let mut z_n: f32;
-                let mut max_z: f32;
-                for point_num in (0..n_points).filter(|point_num| point_num % num_procs == tid) {
-                    let p: PointData = input.get_point_info(point_num);
-                    if p.is_late_return() && !p.is_classified_noise() {
-                        let ret = frs.search(p.x as f32, p.y as f32);
-                        max_z = f32::MIN;
-                        for j in 0..ret.len() {
-                            index_n = ret[j].0;
-                            z_n = neighbourhood_min[index_n] as f32;
-                            if z_n > max_z {
-                                max_z = z_n;
+            //////////////
+            // Dilation //
+            //////////////
+            let neighbourhood_min = Arc::new(neighbourhood_min); // wrap neighbourhood_min in an Arc
+            for tid in 0..num_procs {
+                let frs = frs.clone();
+                let input = input.clone();
+                let neighbourhood_min = neighbourhood_min.clone();
+                let tx = tx.clone();
+                thread::spawn(move || {
+                    let mut index_n: usize;
+                    let mut z_n: f64;
+                    let mut max_z: f64;
+                    let mut ret: Vec<(usize, f64)>;
+                    for point_num in (0..n_points).filter(|point_num| point_num % num_procs == tid)
+                    {
+                        let p: PointData = input.get_point_info(point_num);
+                        if p.is_late_return() && !p.is_classified_noise() {
+                            ret = frs.search(p.x, p.y);
+                            max_z = f64::MIN;
+                            for j in 0..ret.len() {
+                                index_n = ret[j].0;
+                                z_n = neighbourhood_min[index_n];
+                                if z_n > max_z {
+                                    max_z = z_n;
+                                }
                             }
+                            tx.send((point_num, max_z)).unwrap();
+                        } else {
+                            tx.send((point_num, f64::MIN)).unwrap();
                         }
-                        tx.send((point_num, max_z)).unwrap();
-                    } else {
-                        tx.send((point_num, f32::MIN)).unwrap();
+                    }
+                });
+            }
+
+            for i in 0..n_points {
+                let data = rx.recv().unwrap();
+                if data.1 != f64::MIN {
+                    let z = input.get_point_info(data.0).z;
+                    residuals[data.0] = z - data.1;
+                }
+                if verbose {
+                    progress = (100.0_f64 * i as f64 / num_points) as i32;
+                    if progress != old_progress {
+                        println!("Dilation: {}%", progress);
+                        old_progress = progress;
                     }
                 }
-            });
-        }
+            }
+        } else {
 
-        for i in 0..n_points {
-            let data = rx.recv().unwrap();
-            if data.1 != f32::MIN {
-                let z = input.get_point_info(data.0).z as f32;
-                residuals[data.0] = z - data.1;
-            }
-            if verbose {
-                progress = (100.0_f64 * i as f64 / num_points) as i32;
-                if progress != old_progress {
-                    println!("Dilation: {}%", progress);
-                    old_progress = progress;
-                }
-            }
         }
 
         ////////////////////////
@@ -368,20 +419,24 @@ impl WhiteboxTool for LidarGroundPointFilter {
             let tx = tx.clone();
             thread::spawn(move || {
                 let mut index_n: usize;
-                let mut max_slope: f32;
-                let mut slope: f32;
-                let mut dist: f32;
+                let mut max_slope: f64;
+                let mut slope: f64;
+                let mut dist: f64;
+                let mut ret: Vec<(usize, f64)>;
                 for point_num in (0..n_points).filter(|point_num| point_num % num_procs == tid) {
                     let p: PointData = input.get_point_info(point_num);
-                    if residuals[point_num] < height_threshold
+                    if (!slope_norm || residuals[point_num] < height_threshold)
                         && p.is_late_return()
                         && !p.is_classified_noise()
                     {
-                        let ret = frs.search(p.x as f32, p.y as f32);
-                        max_slope = f32::MIN;
+                        ret = frs.search(p.x, p.y);
+                        if ret.len() < min_neighbours {
+                            ret = frs.knn_search(p.x, p.y, min_neighbours);
+                        }
+                        max_slope = f64::MIN;
                         for j in 0..ret.len() {
                             dist = ret[j].1;
-                            if dist > 0f32 {
+                            if dist > 0f64 {
                                 index_n = ret[j].0;
                                 slope = (residuals[point_num] - residuals[index_n]) / dist.sqrt();
                                 if slope > max_slope {
@@ -401,7 +456,6 @@ impl WhiteboxTool for LidarGroundPointFilter {
             });
         }
 
-        let mut is_off_terrain = vec![false; n_points];
         for i in 0..n_points {
             let data = rx.recv().unwrap();
             is_off_terrain[data.0] = data.1;
@@ -418,21 +472,180 @@ impl WhiteboxTool for LidarGroundPointFilter {
         let mut output = LasFile::initialize_using_file(&output_file, &input);
         output.header.system_id = "EXTRACTION".to_string();
 
-        for i in 0..n_points {
-            if !is_off_terrain[i] {
-                output.add_point_record(input.get_record(i));
-            }
-            if verbose {
-                progress = (100.0_f64 * i as f64 / num_points) as i32;
-                if progress != old_progress {
-                    println!("Saving data: {}%", progress);
-                    old_progress = progress;
+        /////////////////////
+        // Output the data //
+        /////////////////////
+        let mut output = LasFile::initialize_using_file(&output_file, &input);
+        let mut num_points_filtered = 0;
+        if filter {
+            output.header.system_id = "EXTRACTION".to_string();
+
+            for point_num in 0..n_points {
+                if !is_off_terrain[point_num] {
+                    output.add_point_record(input.get_record(point_num));
+                } else {
+                    num_points_filtered += 1;
+                }
+                if verbose {
+                    progress = (100.0_f64 * point_num as f64 / num_points) as i32;
+                    if progress != old_progress {
+                        println!("Saving data: {}%", progress);
+                        old_progress = progress;
+                    }
                 }
             }
+        } else {
+            // classify
+            for point_num in 0..n_points {
+                let class_val = match !is_off_terrain[point_num] {
+                    true => ground_class_value,
+                    false => otp_class_value,
+                };
+                let pr = input.get_record(point_num);
+                let pr2: LidarPointRecord;
+                match pr {
+                    LidarPointRecord::PointRecord0 { mut point_data } => {
+                        point_data.set_classification(class_val);
+                        pr2 = LidarPointRecord::PointRecord0 {
+                            point_data: point_data,
+                        };
+                    }
+                    LidarPointRecord::PointRecord1 {
+                        mut point_data,
+                        gps_data,
+                    } => {
+                        point_data.set_classification(class_val);
+                        pr2 = LidarPointRecord::PointRecord1 {
+                            point_data: point_data,
+                            gps_data: gps_data,
+                        };
+                    }
+                    LidarPointRecord::PointRecord2 {
+                        mut point_data,
+                        colour_data,
+                    } => {
+                        point_data.set_classification(class_val);
+                        pr2 = LidarPointRecord::PointRecord2 {
+                            point_data: point_data,
+                            colour_data: colour_data,
+                        };
+                    }
+                    LidarPointRecord::PointRecord3 {
+                        mut point_data,
+                        gps_data,
+                        colour_data,
+                    } => {
+                        point_data.set_classification(class_val);
+                        pr2 = LidarPointRecord::PointRecord3 {
+                            point_data: point_data,
+                            gps_data: gps_data,
+                            colour_data: colour_data,
+                        };
+                    }
+                    LidarPointRecord::PointRecord4 {
+                        mut point_data,
+                        gps_data,
+                        wave_packet,
+                    } => {
+                        point_data.set_classification(class_val);
+                        pr2 = LidarPointRecord::PointRecord4 {
+                            point_data: point_data,
+                            gps_data: gps_data,
+                            wave_packet: wave_packet,
+                        };
+                    }
+                    LidarPointRecord::PointRecord5 {
+                        mut point_data,
+                        gps_data,
+                        colour_data,
+                        wave_packet,
+                    } => {
+                        point_data.set_classification(class_val);
+                        pr2 = LidarPointRecord::PointRecord5 {
+                            point_data: point_data,
+                            gps_data: gps_data,
+                            colour_data: colour_data,
+                            wave_packet: wave_packet,
+                        };
+                    }
+                    LidarPointRecord::PointRecord6 {
+                        mut point_data,
+                        gps_data,
+                    } => {
+                        point_data.set_classification(class_val);
+                        pr2 = LidarPointRecord::PointRecord6 {
+                            point_data: point_data,
+                            gps_data: gps_data,
+                        };
+                    }
+                    LidarPointRecord::PointRecord7 {
+                        mut point_data,
+                        gps_data,
+                        colour_data,
+                    } => {
+                        point_data.set_classification(class_val);
+                        pr2 = LidarPointRecord::PointRecord7 {
+                            point_data: point_data,
+                            gps_data: gps_data,
+                            colour_data: colour_data,
+                        };
+                    }
+                    LidarPointRecord::PointRecord8 {
+                        mut point_data,
+                        gps_data,
+                        colour_data,
+                    } => {
+                        point_data.set_classification(class_val);
+                        pr2 = LidarPointRecord::PointRecord8 {
+                            point_data: point_data,
+                            gps_data: gps_data,
+                            colour_data: colour_data,
+                        };
+                    }
+                    LidarPointRecord::PointRecord9 {
+                        mut point_data,
+                        gps_data,
+                        wave_packet,
+                    } => {
+                        point_data.set_classification(class_val);
+                        pr2 = LidarPointRecord::PointRecord9 {
+                            point_data: point_data,
+                            gps_data: gps_data,
+                            wave_packet: wave_packet,
+                        };
+                    }
+                    LidarPointRecord::PointRecord10 {
+                        mut point_data,
+                        gps_data,
+                        colour_data,
+                        wave_packet,
+                    } => {
+                        point_data.set_classification(class_val);
+                        pr2 = LidarPointRecord::PointRecord10 {
+                            point_data: point_data,
+                            gps_data: gps_data,
+                            colour_data: colour_data,
+                            wave_packet: wave_packet,
+                        };
+                    }
+                }
+                output.add_point_record(pr2);
+                if verbose {
+                    progress = (100.0_f64 * point_num as f64 / num_points) as i32;
+                    if progress != old_progress {
+                        println!("Saving data: {}%", progress);
+                        old_progress = progress;
+                    }
+                }
+            }
+            num_points_filtered = 1; // so it passes the saving
         }
 
-        let end = time::now();
-        let elapsed_time = end - start;
+        if num_points_filtered == 0 {
+            println!("Warning: No points were filtered from the point cloud.");
+        }
+
+        let elapsed_time = get_formatted_elapsed_time(start);
 
         if verbose {
             println!("Writing output LAS file...");
@@ -446,7 +659,7 @@ impl WhiteboxTool for LidarGroundPointFilter {
         if verbose {
             println!(
                 "{}",
-                &format!("Elapsed Time (excluding I/O): {}", elapsed_time).replace("PT", "")
+                &format!("Elapsed Time (excluding I/O): {}", elapsed_time)
             );
         }
 

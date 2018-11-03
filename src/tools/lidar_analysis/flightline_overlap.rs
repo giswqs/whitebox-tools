@@ -2,7 +2,7 @@
 This tool is part of the WhiteboxTools geospatial analysis library.
 Authors: Dr. John Lindsay
 Created: June 19, 2017
-Last Modified: 27/04/2018
+Last Modified: 12/10/2018
 License: MIT
 
 NOTES: This tool needs to be parallelized.
@@ -15,8 +15,7 @@ use std::f64;
 use std::fs;
 use std::io::{Error, ErrorKind};
 use std::path;
-use structures::FixedRadiusSearch2D;
-use time;
+use structures::{DistanceMetric, FixedRadiusSearch2D};
 use tools::*;
 
 pub struct FlightlineOverlap {
@@ -65,7 +64,8 @@ impl FlightlineOverlap {
         let sep: String = path::MAIN_SEPARATOR.to_string();
         let p = format!("{}", env::current_dir().unwrap().display());
         let e = format!("{}", env::current_exe().unwrap().display());
-        let mut short_exe = e.replace(&p, "")
+        let mut short_exe = e
+            .replace(&p, "")
             .replace(".exe", "")
             .replace(".", "")
             .replace(&sep, "");
@@ -175,7 +175,7 @@ impl WhiteboxTool for FlightlineOverlap {
             }
         }
 
-        let start = time::now();
+        let start = Instant::now();
 
         let mut inputs = vec![];
         let mut outputs = vec![];
@@ -243,7 +243,7 @@ impl WhiteboxTool for FlightlineOverlap {
                 Err(err) => panic!("Error reading file {}: {}", input_file, err),
             };
 
-            let start_run = time::now();
+            let start_run = Instant::now();
 
             if verbose && inputs.len() == 1 {
                 println!("Performing analysis...");
@@ -257,9 +257,8 @@ impl WhiteboxTool for FlightlineOverlap {
             let n_points = input.header.number_of_points as usize;
             let num_points: f64 = (input.header.number_of_points - 1) as f64; // used for progress calculation only
 
-            // let search_dist = grid_res / 2.0;
-            let mut frs: FixedRadiusSearch2D<usize> = FixedRadiusSearch2D::new(grid_res as f32);
-            frs.is_distance_squared(true);
+            let mut frs: FixedRadiusSearch2D<usize> =
+                FixedRadiusSearch2D::new(grid_res, DistanceMetric::SquaredEuclidean);
             let mut gps_times = vec![-1f64; n_points];
             let (mut x, mut y, mut gps_time): (f64, f64, f64);
             let mut progress: usize;
@@ -360,7 +359,7 @@ impl WhiteboxTool for FlightlineOverlap {
                         panic!("The input file has a Point Format that does not include GPS time, which is required for the operation of this tool.");
                     }
                 };
-                frs.insert(x as f32, y as f32, i);
+                frs.insert(x, y, i);
                 gps_times[i] = gps_time;
                 if verbose {
                     progress = (100.0_f64 * i as f64 / num_points) as usize;
@@ -409,7 +408,7 @@ impl WhiteboxTool for FlightlineOverlap {
                 for col in 0..columns as isize {
                     x = west + col as f64 * grid_res + 0.5;
                     y = north - row as f64 * grid_res - 0.5;
-                    let ret = frs.search(x as f32, y as f32);
+                    let ret = frs.search(x, y);
                     if ret.len() > 0 {
                         let mut times = vec![];
                         for j in 0..ret.len() {
@@ -449,16 +448,16 @@ impl WhiteboxTool for FlightlineOverlap {
                 }
             }
 
-            let end_run = time::now();
-            let elapsed_time_run = end_run - start_run;
+            let elapsed_time_run = get_formatted_elapsed_time(start_run);
             output.add_metadata_entry(format!(
                 "Created by whitebox_tools\' {} tool",
                 self.get_tool_name()
             ));
             output.add_metadata_entry(format!("Input file: {}", input_file));
-            output.add_metadata_entry(
-                format!("Elapsed Time (excluding I/O): {}", elapsed_time_run).replace("PT", ""),
-            );
+            output.add_metadata_entry(format!(
+                "Elapsed Time (excluding I/O): {}",
+                elapsed_time_run
+            ));
 
             if verbose {
                 println!("Saving data...")
@@ -473,12 +472,11 @@ impl WhiteboxTool for FlightlineOverlap {
             };
         }
 
-        let end = time::now();
-        let elapsed_time = end - start;
+        let elapsed_time = get_formatted_elapsed_time(start);
         if verbose {
             println!(
                 "{}",
-                &format!("Elapsed Time (excluding I/O): {}", elapsed_time).replace("PT", "")
+                &format!("Elapsed Time (excluding I/O): {}", elapsed_time)
             );
         }
 

@@ -9,7 +9,9 @@ pub mod terrain_analysis;
 
 use serde_json;
 use std::io::{Error, ErrorKind};
+use std::time::Instant;
 use tools;
+use utils::get_formatted_elapsed_time;
 
 #[derive(Default)]
 pub struct ToolManager {
@@ -25,13 +27,24 @@ impl ToolManager {
     ) -> Result<ToolManager, Error> {
         let mut tool_names = vec![];
         // data_tools
+        tool_names.push("AddPointCoordinatesToTable".to_string());
         tool_names.push("ConvertNodataToZero".to_string());
         tool_names.push("ConvertRasterFormat".to_string());
         tool_names.push("ExportTableToCsv".to_string());
-        tool_names.push("IdwInterpolation".to_string());
+        tool_names.push("JoinTables".to_string());
+        tool_names.push("LinesToPolygons".to_string());
+        tool_names.push("MergeTableWithCsv".to_string());
+        tool_names.push("MergeVectors".to_string());
+        tool_names.push("MultiPartToSinglePart".to_string());
         tool_names.push("NewRasterFromBase".to_string());
+        tool_names.push("PolygonsToLines".to_string());
         tool_names.push("PrintGeoTiffTags".to_string());
+        tool_names.push("RasterToVectorLines".to_string());
+        tool_names.push("RasterToVectorPoints".to_string());
+        tool_names.push("ReinitializeAttributeTable".to_string());
+        tool_names.push("RemovePolygonHoles".to_string());
         tool_names.push("SetNodataValue".to_string());
+        tool_names.push("SinglePartToMultiPart".to_string());
         tool_names.push("VectorLinesToRaster".to_string());
         tool_names.push("VectorPointsToRaster".to_string());
         tool_names.push("VectorPolygonsToRaster".to_string());
@@ -39,37 +52,75 @@ impl ToolManager {
         // gis_analysis
         tool_names.push("AggregateRaster".to_string());
         tool_names.push("AverageOverlay".to_string());
+        tool_names.push("BlockMaximumGridding".to_string());
+        tool_names.push("BlockMinimumGridding".to_string());
         tool_names.push("BufferRaster".to_string());
         tool_names.push("Centroid".to_string());
+        tool_names.push("CentroidVector".to_string());
         tool_names.push("ClipRasterToPolygon".to_string());
         tool_names.push("Clump".to_string());
+        tool_names.push("CompactnessRatio".to_string());
+        tool_names.push("ConstructVectorTIN".to_string());
         tool_names.push("CountIf".to_string());
         tool_names.push("CostAllocation".to_string());
         tool_names.push("CostDistance".to_string());
         tool_names.push("CostPathway".to_string());
+        tool_names.push("CreateHexagonalVectorGrid".to_string());
         tool_names.push("CreatePlane".to_string());
+        tool_names.push("CreateRectangularVectorGrid".to_string());
         tool_names.push("EdgeProportion".to_string());
+        tool_names.push("EliminateCoincidentPoints".to_string());
+        tool_names.push("ElongationRatio".to_string());
         tool_names.push("ErasePolygonFromRaster".to_string());
         tool_names.push("EuclideanAllocation".to_string());
         tool_names.push("EuclideanDistance".to_string());
+        tool_names.push("ExtendVectorLines".to_string());
+        tool_names.push("ExtractNodes".to_string());
         tool_names.push("ExtractRasterValuesAtPoints".to_string());
         tool_names.push("FindLowestOrHighestPoints".to_string());
         tool_names.push("FindPatchOrClassEdgeCells".to_string());
         tool_names.push("HighestPosition".to_string());
+        tool_names.push("HoleProportion".to_string());
+        tool_names.push("IdwInterpolation".to_string());
+        tool_names.push("LayerFootprint".to_string());
+        tool_names.push("LinearityIndex".to_string());
+        tool_names.push("LineIntersections".to_string());
         tool_names.push("LowestPosition".to_string());
         tool_names.push("MaxAbsoluteOverlay".to_string());
         tool_names.push("MaxOverlay".to_string());
+        tool_names.push("Medoid".to_string());
         tool_names.push("MinAbsoluteOverlay".to_string());
+        tool_names.push("MinimumBoundingBox".to_string());
+        tool_names.push("MinimumBoundingCircle".to_string());
+        tool_names.push("MinimumBoundingEnvelope".to_string());
+        tool_names.push("MinimumConvexHull".to_string());
+        tool_names.push("NearestNeighbourGridding".to_string());
         tool_names.push("MinOverlay".to_string());
+        tool_names.push("PatchOrientation".to_string());
         tool_names.push("PercentEqualTo".to_string());
         tool_names.push("PercentGreaterThan".to_string());
         tool_names.push("PercentLessThan".to_string());
+        tool_names.push("PerimeterAreaRatio".to_string());
         tool_names.push("PickFromList".to_string());
+        tool_names.push("PolygonArea".to_string());
+        tool_names.push("PolygonLongAxis".to_string());
+        tool_names.push("PolygonPerimeter".to_string());
+        tool_names.push("PolygonShortAxis".to_string());
+        tool_names.push("Polygonize".to_string());
         tool_names.push("RadiusOfGyration".to_string());
         tool_names.push("RasterCellAssignment".to_string());
         tool_names.push("Reclass".to_string());
         tool_names.push("ReclassEqualInterval".to_string());
         tool_names.push("ReclassFromFile".to_string());
+        tool_names.push("RelatedCircumscribingCircle".to_string());
+        tool_names.push("ShapeComplexityIndex".to_string());
+        // tool_names.push("SibsonInterpolation".to_string());
+        tool_names.push("SmoothVectors".to_string());
+        tool_names.push("SplitWithLines".to_string());
+        tool_names.push("SumOverlay".to_string());
+        tool_names.push("TINGridding".to_string());
+        tool_names.push("VectorHexBinning".to_string());
+        tool_names.push("VoronoiDiagram".to_string());
         tool_names.push("WeightedOverlay".to_string());
         tool_names.push("WeightedSum".to_string());
 
@@ -105,6 +156,7 @@ impl ToolManager {
         tool_names.push("ImpoundmentIndex".to_string());
         tool_names.push("Isobasins".to_string());
         tool_names.push("JensonSnapPourPoints".to_string());
+        tool_names.push("LongestFlowpath".to_string());
         tool_names.push("MaxUpslopeFlowpathLength".to_string());
         tool_names.push("NumInflowingNeighbours".to_string());
         tool_names.push("RaiseWalls".to_string());
@@ -139,6 +191,7 @@ impl ToolManager {
         tool_names.push("GaussianContrastStretch".to_string());
         tool_names.push("GaussianFilter".to_string());
         tool_names.push("HighPassFilter".to_string());
+        tool_names.push("HighPassMedianFilter".to_string());
         tool_names.push("HistogramEqualization".to_string());
         tool_names.push("HistogramMatching".to_string());
         tool_names.push("HistogramMatchingTwoImages".to_string());
@@ -186,8 +239,8 @@ impl ToolManager {
         tool_names.push("WriteFunctionMemoryInsertion".to_string());
 
         // lidar_analysis
-        tool_names.push("BlockMaximum".to_string());
-        tool_names.push("BlockMinimum".to_string());
+        tool_names.push("LidarBlockMaximum".to_string());
+        tool_names.push("LidarBlockMinimum".to_string());
         tool_names.push("ClassifyOverlapPoints".to_string());
         tool_names.push("ClipLidarToPolygon".to_string());
         tool_names.push("ErasePolygonFromLidar".to_string());
@@ -195,9 +248,14 @@ impl ToolManager {
         tool_names.push("FindFlightlineEdgePoints".to_string());
         tool_names.push("FlightlineOverlap".to_string());
         tool_names.push("LasToAscii".to_string());
+        tool_names.push("LasToMultipointShapefile".to_string());
+        tool_names.push("LasToShapefile".to_string());
+        tool_names.push("LidarClassifySubset".to_string());
         tool_names.push("LidarColourize".to_string());
+        tool_names.push("LidarConstructVectorTIN".to_string());
         tool_names.push("LidarElevationSlice".to_string());
         tool_names.push("LidarGroundPointFilter".to_string());
+        tool_names.push("LidarHexBinning".to_string());
         tool_names.push("LidarHillshade".to_string());
         tool_names.push("LidarHistogram".to_string());
         tool_names.push("LidarIdwInterpolation".to_string());
@@ -215,6 +273,7 @@ impl ToolManager {
         tool_names.push("LidarThinHighDensity".to_string());
         tool_names.push("LidarTile".to_string());
         tool_names.push("LidarTileFootprint".to_string());
+        tool_names.push("LidarTINGridding".to_string());
         tool_names.push("LidarTophatTransform".to_string());
         tool_names.push("NormalVectors".to_string());
         tool_names.push("SelectTilesByPolygon".to_string());
@@ -309,6 +368,7 @@ impl ToolManager {
         tool_names.push("LongProfile".to_string());
         tool_names.push("LongProfileFromPoints".to_string());
         tool_names.push("RasterizeStreams".to_string());
+        tool_names.push("RasterStreamsToVector".to_string());
         tool_names.push("RemoveShortStreams".to_string());
         tool_names.push("ShreveStreamMagnitude".to_string());
         tool_names.push("StrahlerStreamOrder".to_string());
@@ -322,15 +382,16 @@ impl ToolManager {
 
         // terrain_analysis
         tool_names.push("Aspect".to_string());
-        tool_names.push("FeaturePreservingDenoise".to_string());
         tool_names.push("DevFromMeanElev".to_string());
         tool_names.push("DiffFromMeanElev".to_string());
         tool_names.push("DirectionalRelief".to_string());
         tool_names.push("DownslopeIndex".to_string());
+        tool_names.push("DrainagePreservingSmoothing".to_string());
         tool_names.push("ElevAbovePit".to_string());
         tool_names.push("ElevPercentile".to_string());
         tool_names.push("ElevRelativeToMinMax".to_string());
         tool_names.push("ElevRelativeToWatershedMinMax".to_string());
+        tool_names.push("FeaturePreservingDenoise".to_string());
         tool_names.push("FetchAnalysis".to_string());
         tool_names.push("FillMissingData".to_string());
         tool_names.push("FindRidges".to_string());
@@ -383,13 +444,34 @@ impl ToolManager {
     fn get_tool(&self, tool_name: &str) -> Option<Box<WhiteboxTool + 'static>> {
         match tool_name.to_lowercase().replace("_", "").as_ref() {
             // data_tools
+            "addpointcoordinatestotable" => Some(Box::new(
+                tools::data_tools::AddPointCoordinatesToTable::new(),
+            )),
             "convertnodatatozero" => Some(Box::new(tools::data_tools::ConvertNodataToZero::new())),
             "convertrasterformat" => Some(Box::new(tools::data_tools::ConvertRasterFormat::new())),
             "exporttabletocsv" => Some(Box::new(tools::data_tools::ExportTableToCsv::new())),
-            "idwinterpolation" => Some(Box::new(tools::data_tools::IdwInterpolation::new())),
+            "jointables" => Some(Box::new(tools::data_tools::JoinTables::new())),
+            "linestopolygons" => Some(Box::new(tools::data_tools::LinesToPolygons::new())),
+            "mergetablewithcsv" => Some(Box::new(tools::data_tools::MergeTableWithCsv::new())),
+            "mergevectors" => Some(Box::new(tools::data_tools::MergeVectors::new())),
+            "multiparttosinglepart" => {
+                Some(Box::new(tools::data_tools::MultiPartToSinglePart::new()))
+            }
             "newrasterfrombase" => Some(Box::new(tools::data_tools::NewRasterFromBase::new())),
+            "polygonstolines" => Some(Box::new(tools::data_tools::PolygonsToLines::new())),
             "printgeotifftags" => Some(Box::new(tools::data_tools::PrintGeoTiffTags::new())),
+            "rastertovectorlines" => Some(Box::new(tools::data_tools::RasterToVectorLines::new())),
+            "rastertovectorpoints" => {
+                Some(Box::new(tools::data_tools::RasterToVectorPoints::new()))
+            }
+            "reinitializeattributetable" => Some(Box::new(
+                tools::data_tools::ReinitializeAttributeTable::new(),
+            )),
+            "removepolygonholes" => Some(Box::new(tools::data_tools::RemovePolygonHoles::new())),
             "setnodatavalue" => Some(Box::new(tools::data_tools::SetNodataValue::new())),
+            "singleparttomultipart" => {
+                Some(Box::new(tools::data_tools::SinglePartToMultiPart::new()))
+            }
             "vectorlinestoraster" => Some(Box::new(tools::data_tools::VectorLinesToRaster::new())),
             "vectorpointstoraster" => {
                 Some(Box::new(tools::data_tools::VectorPointsToRaster::new()))
@@ -401,18 +483,37 @@ impl ToolManager {
             // gis_analysis
             "aggregateraster" => Some(Box::new(tools::gis_analysis::AggregateRaster::new())),
             "averageoverlay" => Some(Box::new(tools::gis_analysis::AverageOverlay::new())),
+            "blockmaximumgridding" => {
+                Some(Box::new(tools::gis_analysis::BlockMaximumGridding::new()))
+            }
+            "blockminimumgridding" => {
+                Some(Box::new(tools::gis_analysis::BlockMinimumGridding::new()))
+            }
             "bufferraster" => Some(Box::new(tools::gis_analysis::BufferRaster::new())),
             "centroid" => Some(Box::new(tools::gis_analysis::Centroid::new())),
+            "centroidvector" => Some(Box::new(tools::gis_analysis::CentroidVector::new())),
             "cliprastertopolygon" => {
                 Some(Box::new(tools::gis_analysis::ClipRasterToPolygon::new()))
             }
             "clump" => Some(Box::new(tools::gis_analysis::Clump::new())),
+            "compactnessratio" => Some(Box::new(tools::gis_analysis::CompactnessRatio::new())),
+            "constructvectortin" => Some(Box::new(tools::gis_analysis::ConstructVectorTIN::new())),
             "countif" => Some(Box::new(tools::gis_analysis::CountIf::new())),
             "costallocation" => Some(Box::new(tools::gis_analysis::CostAllocation::new())),
             "costdistance" => Some(Box::new(tools::gis_analysis::CostDistance::new())),
             "costpathway" => Some(Box::new(tools::gis_analysis::CostPathway::new())),
+            "createhexagonalvectorgrid" => Some(Box::new(
+                tools::gis_analysis::CreateHexagonalVectorGrid::new(),
+            )),
             "createplane" => Some(Box::new(tools::gis_analysis::CreatePlane::new())),
+            "createrectangularvectorgrid" => Some(Box::new(
+                tools::gis_analysis::CreateRectangularVectorGrid::new(),
+            )),
             "edgeproportion" => Some(Box::new(tools::gis_analysis::EdgeProportion::new())),
+            "eliminatecoincidentpoints" => Some(Box::new(
+                tools::gis_analysis::EliminateCoincidentPoints::new(),
+            )),
+            "elongationratio" => Some(Box::new(tools::gis_analysis::ElongationRatio::new())),
             "erasepolygonfromraster" => {
                 Some(Box::new(tools::gis_analysis::ErasePolygonFromRaster::new()))
             }
@@ -420,6 +521,8 @@ impl ToolManager {
                 Some(Box::new(tools::gis_analysis::EuclideanAllocation::new()))
             }
             "euclideandistance" => Some(Box::new(tools::gis_analysis::EuclideanDistance::new())),
+            "extendvectorlines" => Some(Box::new(tools::gis_analysis::ExtendVectorLines::new())),
+            "extractnodes" => Some(Box::new(tools::gis_analysis::ExtractNodes::new())),
             "extractrastervaluesatpoints" => Some(Box::new(
                 tools::gis_analysis::ExtractRasterValuesAtPoints::new(),
             )),
@@ -430,15 +533,39 @@ impl ToolManager {
                 tools::gis_analysis::FindPatchOrClassEdgeCells::new(),
             )),
             "highestposition" => Some(Box::new(tools::gis_analysis::HighestPosition::new())),
+            "holeproportion" => Some(Box::new(tools::gis_analysis::HoleProportion::new())),
+            "idwinterpolation" => Some(Box::new(tools::gis_analysis::IdwInterpolation::new())),
+            "layerfootprint" => Some(Box::new(tools::gis_analysis::LayerFootprint::new())),
+            "lineintersections" => Some(Box::new(tools::gis_analysis::LineIntersections::new())),
+            "linearityindex" => Some(Box::new(tools::gis_analysis::LinearityIndex::new())),
             "lowestposition" => Some(Box::new(tools::gis_analysis::LowestPosition::new())),
             "maxabsoluteoverlay" => Some(Box::new(tools::gis_analysis::MaxAbsoluteOverlay::new())),
             "maxoverlay" => Some(Box::new(tools::gis_analysis::MaxOverlay::new())),
+            "medoid" => Some(Box::new(tools::gis_analysis::Medoid::new())),
             "minabsoluteoverlay" => Some(Box::new(tools::gis_analysis::MinAbsoluteOverlay::new())),
+            "minimumboundingbox" => Some(Box::new(tools::gis_analysis::MinimumBoundingBox::new())),
+            "minimumboundingcircle" => {
+                Some(Box::new(tools::gis_analysis::MinimumBoundingCircle::new()))
+            }
+            "minimumboundingenvelope" => {
+                Some(Box::new(tools::gis_analysis::MinimumBoundingEnvelope::new()))
+            }
+            "minimumconvexhull" => Some(Box::new(tools::gis_analysis::MinimumConvexHull::new())),
+            "nearestneighbourgridding" => Some(Box::new(
+                tools::gis_analysis::NearestNeighbourGridding::new(),
+            )),
             "minoverlay" => Some(Box::new(tools::gis_analysis::MinOverlay::new())),
+            "patchorientation" => Some(Box::new(tools::gis_analysis::PatchOrientation::new())),
             "percentequalto" => Some(Box::new(tools::gis_analysis::PercentEqualTo::new())),
             "percentgreaterthan" => Some(Box::new(tools::gis_analysis::PercentGreaterThan::new())),
             "percentlessthan" => Some(Box::new(tools::gis_analysis::PercentLessThan::new())),
+            "perimeterarearatio" => Some(Box::new(tools::gis_analysis::PerimeterAreaRatio::new())),
             "pickfromlist" => Some(Box::new(tools::gis_analysis::PickFromList::new())),
+            "polygonarea" => Some(Box::new(tools::gis_analysis::PolygonArea::new())),
+            "polygonlongaxis" => Some(Box::new(tools::gis_analysis::PolygonLongAxis::new())),
+            "polygonperimeter" => Some(Box::new(tools::gis_analysis::PolygonPerimeter::new())),
+            "polygonshortaxis" => Some(Box::new(tools::gis_analysis::PolygonShortAxis::new())),
+            "polygonize" => Some(Box::new(tools::gis_analysis::Polygonize::new())),
             "radiusofgyration" => Some(Box::new(tools::gis_analysis::RadiusOfGyration::new())),
             "rastercellassignment" => {
                 Some(Box::new(tools::gis_analysis::RasterCellAssignment::new()))
@@ -448,6 +575,21 @@ impl ToolManager {
                 Some(Box::new(tools::gis_analysis::ReclassEqualInterval::new()))
             }
             "reclassfromfile" => Some(Box::new(tools::gis_analysis::ReclassFromFile::new())),
+            "relatedcircumscribingcircle" => Some(Box::new(
+                tools::gis_analysis::RelatedCircumscribingCircle::new(),
+            )),
+            "shapecomplexityindex" => {
+                Some(Box::new(tools::gis_analysis::ShapeComplexityIndex::new()))
+            }
+            // "sibsoninterpolation" => {
+            //     Some(Box::new(tools::gis_analysis::SibsonInterpolation::new()))
+            // }
+            "smoothvectors" => Some(Box::new(tools::gis_analysis::SmoothVectors::new())),
+            "splitwithlines" => Some(Box::new(tools::gis_analysis::SplitWithLines::new())),
+            "sumoverlay" => Some(Box::new(tools::gis_analysis::SumOverlay::new())),
+            "tingridding" => Some(Box::new(tools::gis_analysis::TINGridding::new())),
+            "vectorhexbinning" => Some(Box::new(tools::gis_analysis::VectorHexBinning::new())),
+            "voronoidiagram" => Some(Box::new(tools::gis_analysis::VoronoiDiagram::new())),
             "weightedoverlay" => Some(Box::new(tools::gis_analysis::WeightedOverlay::new())),
             "weightedsum" => Some(Box::new(tools::gis_analysis::WeightedSum::new())),
 
@@ -509,6 +651,7 @@ impl ToolManager {
             "jensonsnappourpoints" => {
                 Some(Box::new(tools::hydro_analysis::JensonSnapPourPoints::new()))
             }
+            "longestflowpath" => Some(Box::new(tools::hydro_analysis::LongestFlowpath::new())),
             "maxupslopeflowpathlength" => Some(Box::new(
                 tools::hydro_analysis::MaxUpslopeFlowpathLength::new(),
             )),
@@ -571,6 +714,9 @@ impl ToolManager {
             )),
             "gaussianfilter" => Some(Box::new(tools::image_analysis::GaussianFilter::new())),
             "highpassfilter" => Some(Box::new(tools::image_analysis::HighPassFilter::new())),
+            "highpassmedianfilter" => {
+                Some(Box::new(tools::image_analysis::HighPassMedianFilter::new()))
+            }
             "histogramequalization" => {
                 Some(Box::new(tools::image_analysis::HistogramEqualization::new()))
             }
@@ -652,8 +798,8 @@ impl ToolManager {
             )),
 
             // lidar_analysis
-            "blockmaximum" => Some(Box::new(tools::lidar_analysis::BlockMaximum::new())),
-            "blockminimum" => Some(Box::new(tools::lidar_analysis::BlockMinimum::new())),
+            "lidarblockmaximum" => Some(Box::new(tools::lidar_analysis::LidarBlockMaximum::new())),
+            "lidarblockminimum" => Some(Box::new(tools::lidar_analysis::LidarBlockMinimum::new())),
             "classifyoverlappoints" => {
                 Some(Box::new(tools::lidar_analysis::ClassifyOverlapPoints::new()))
             }
@@ -671,13 +817,24 @@ impl ToolManager {
             )),
             "flightlineoverlap" => Some(Box::new(tools::lidar_analysis::FlightlineOverlap::new())),
             "lastoascii" => Some(Box::new(tools::lidar_analysis::LasToAscii::new())),
+            "lastomultipointshapefile" => Some(Box::new(
+                tools::lidar_analysis::LasToMultipointShapefile::new(),
+            )),
+            "lastoshapefile" => Some(Box::new(tools::lidar_analysis::LasToShapefile::new())),
+            "lidarclassifysubset" => {
+                Some(Box::new(tools::lidar_analysis::LidarClassifySubset::new()))
+            }
             "lidarcolourize" => Some(Box::new(tools::lidar_analysis::LidarColourize::new())),
+            "lidarconstructvectortin" => Some(Box::new(
+                tools::lidar_analysis::LidarConstructVectorTIN::new(),
+            )),
             "lidarelevationslice" => {
                 Some(Box::new(tools::lidar_analysis::LidarElevationSlice::new()))
             }
             "lidargroundpointfilter" => Some(Box::new(
                 tools::lidar_analysis::LidarGroundPointFilter::new(),
             )),
+            "lidarhexbinning" => Some(Box::new(tools::lidar_analysis::LidarHexBinning::new())),
             "lidarhillshade" => Some(Box::new(tools::lidar_analysis::LidarHillshade::new())),
             "lidarhistogram" => Some(Box::new(tools::lidar_analysis::LidarHistogram::new())),
             "lidaridwinterpolation" => {
@@ -709,6 +866,7 @@ impl ToolManager {
             "lidartilefootprint" => {
                 Some(Box::new(tools::lidar_analysis::LidarTileFootprint::new()))
             }
+            "lidartingridding" => Some(Box::new(tools::lidar_analysis::LidarTINGridding::new())),
             "lidartophattransform" => {
                 Some(Box::new(tools::lidar_analysis::LidarTophatTransform::new()))
             }
@@ -855,6 +1013,9 @@ impl ToolManager {
             "rasterizestreams" => Some(Box::new(
                 tools::stream_network_analysis::RasterizeStreams::new(),
             )),
+            "rasterstreamstovector" => Some(Box::new(
+                tools::stream_network_analysis::RasterStreamsToVector::new(),
+            )),
             "removeshortstreams" => Some(Box::new(
                 tools::stream_network_analysis::RemoveShortStreams::new(),
             )),
@@ -888,15 +1049,15 @@ impl ToolManager {
 
             // terrain_analysis
             "aspect" => Some(Box::new(tools::terrain_analysis::Aspect::new())),
-            "featurepreservingdenoise" => Some(Box::new(
-                tools::terrain_analysis::FeaturePreservingDenoise::new(),
-            )),
             "devfrommeanelev" => Some(Box::new(tools::terrain_analysis::DevFromMeanElev::new())),
             "difffrommeanelev" => Some(Box::new(tools::terrain_analysis::DiffFromMeanElev::new())),
             "directionalrelief" => {
                 Some(Box::new(tools::terrain_analysis::DirectionalRelief::new()))
             }
             "downslopeindex" => Some(Box::new(tools::terrain_analysis::DownslopeIndex::new())),
+            "drainagepreservingsmoothing" => Some(Box::new(
+                tools::terrain_analysis::DrainagePreservingSmoothing::new(),
+            )),
             "elevabovepit" => Some(Box::new(tools::terrain_analysis::ElevAbovePit::new())),
             "elevpercentile" => Some(Box::new(tools::terrain_analysis::ElevPercentile::new())),
             "elevrelativetominmax" => Some(Box::new(
@@ -904,6 +1065,9 @@ impl ToolManager {
             )),
             "elevrelativetowatershedminmax" => Some(Box::new(
                 tools::terrain_analysis::ElevRelativeToWatershedMinMax::new(),
+            )),
+            "featurepreservingdenoise" => Some(Box::new(
+                tools::terrain_analysis::FeaturePreservingDenoise::new(),
             )),
             "fetchanalysis" => Some(Box::new(tools::terrain_analysis::FetchAnalysis::new())),
             "fillmissingdata" => Some(Box::new(tools::terrain_analysis::FillMissingData::new())),

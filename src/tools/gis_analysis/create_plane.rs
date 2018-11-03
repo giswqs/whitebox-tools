@@ -2,19 +2,18 @@
 This tool is part of the WhiteboxTools geospatial analysis library.
 Authors: Dr. John Lindsay
 Created: July 11, 2017
-Last Modified: December 15, 2017
+Last Modified: 13/10/2018
 License: MIT
 */
 
-use time;
 use num_cpus;
+use raster::*;
 use std::env;
-use std::path;
 use std::f64;
 use std::io::{Error, ErrorKind};
+use std::path;
 use std::sync::mpsc;
 use std::thread;
-use raster::*;
 use tools::*;
 
 pub struct CreatePlane {
@@ -30,59 +29,61 @@ impl CreatePlane {
         // public constructor
         let name = "CreatePlane".to_string();
         let toolbox = "GIS Analysis".to_string();
-        let description = "Creates a raster image based on the equation for a simple plane."
-            .to_string();
+        let description =
+            "Creates a raster image based on the equation for a simple plane.".to_string();
 
         let mut parameters = vec![];
-        parameters.push(ToolParameter{
-            name: "Input Base File".to_owned(), 
-            flags: vec!["--base".to_owned()], 
+        parameters.push(ToolParameter {
+            name: "Input Base File".to_owned(),
+            flags: vec!["--base".to_owned()],
             description: "Input base raster file.".to_owned(),
             parameter_type: ParameterType::ExistingFile(ParameterFileType::Raster),
             default_value: None,
-            optional: false
+            optional: false,
         });
 
-        parameters.push(ToolParameter{
-            name: "Output File".to_owned(), 
-            flags: vec!["-o".to_owned(), "--output".to_owned()], 
+        parameters.push(ToolParameter {
+            name: "Output File".to_owned(),
+            flags: vec!["-o".to_owned(), "--output".to_owned()],
             description: "Output raster file.".to_owned(),
             parameter_type: ParameterType::NewFile(ParameterFileType::Raster),
             default_value: None,
-            optional: false
+            optional: false,
         });
 
-        parameters.push(ToolParameter{
-            name: "Gradient".to_owned(), 
-            flags: vec!["--gradient".to_owned()], 
+        parameters.push(ToolParameter {
+            name: "Gradient".to_owned(),
+            flags: vec!["--gradient".to_owned()],
             description: "Slope gradient in degrees (-85.0 to 85.0).".to_owned(),
             parameter_type: ParameterType::Float,
             default_value: Some("15.0".to_owned()),
-            optional: false
+            optional: false,
         });
 
-        parameters.push(ToolParameter{
-            name: "Aspect".to_owned(), 
-            flags: vec!["--aspect".to_owned()], 
-            description: "Aspect (direction) in degrees clockwise from north (0.0-360.0).".to_owned(),
+        parameters.push(ToolParameter {
+            name: "Aspect".to_owned(),
+            flags: vec!["--aspect".to_owned()],
+            description: "Aspect (direction) in degrees clockwise from north (0.0-360.0)."
+                .to_owned(),
             parameter_type: ParameterType::Float,
             default_value: Some("90.0".to_owned()),
-            optional: false
+            optional: false,
         });
 
-        parameters.push(ToolParameter{
-            name: "Constant".to_owned(), 
-            flags: vec!["--constant".to_owned()], 
+        parameters.push(ToolParameter {
+            name: "Constant".to_owned(),
+            flags: vec!["--constant".to_owned()],
             description: "Constant value.".to_owned(),
             parameter_type: ParameterType::Float,
             default_value: Some("0.0".to_owned()),
-            optional: false
+            optional: false,
         });
 
         let sep: String = path::MAIN_SEPARATOR.to_string();
         let p = format!("{}", env::current_dir().unwrap().display());
         let e = format!("{}", env::current_exe().unwrap().display());
-        let mut short_exe = e.replace(&p, "")
+        let mut short_exe = e
+            .replace(&p, "")
             .replace(".exe", "")
             .replace(".", "")
             .replace(&sep, "");
@@ -105,7 +106,7 @@ impl WhiteboxTool for CreatePlane {
     fn get_source_file(&self) -> String {
         String::from(file!())
     }
-    
+
     fn get_tool_name(&self) -> String {
         self.name.clone()
     }
@@ -129,11 +130,12 @@ impl WhiteboxTool for CreatePlane {
         self.toolbox.clone()
     }
 
-    fn run<'a>(&self,
-               args: Vec<String>,
-               working_directory: &'a str,
-               verbose: bool)
-               -> Result<(), Error> {
+    fn run<'a>(
+        &self,
+        args: Vec<String>,
+        working_directory: &'a str,
+        verbose: bool,
+    ) -> Result<(), Error> {
         let mut base_file = String::new();
         let mut output_file = String::new();
         let mut slope = 15.0;
@@ -141,8 +143,10 @@ impl WhiteboxTool for CreatePlane {
         let mut constant_val = 0.0;
 
         if args.len() == 0 {
-            return Err(Error::new(ErrorKind::InvalidInput,
-                                  "Tool run with no paramters."));
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "Tool run with no paramters.",
+            ));
         }
         for i in 0..args.len() {
             let mut arg = args[i].replace("\"", "");
@@ -177,8 +181,8 @@ impl WhiteboxTool for CreatePlane {
                 } else {
                     aspect = args[i + 1].to_string().parse::<f64>().unwrap();
                 }
-            } else if vec[0].to_lowercase() == "-constant" ||
-                      vec[0].to_lowercase() == "--constant" {
+            } else if vec[0].to_lowercase() == "-constant" || vec[0].to_lowercase() == "--constant"
+            {
                 if keyval {
                     constant_val = vec[1].to_string().parse::<f64>().unwrap();
                 } else {
@@ -204,7 +208,7 @@ impl WhiteboxTool for CreatePlane {
 
         let base = Raster::new(&base_file, "r")?;
 
-        let start = time::now();
+        let start = Instant::now();
         let mut progress: i32;
         let mut old_progress: i32 = -1;
         if slope < -85.0 {
@@ -227,7 +231,7 @@ impl WhiteboxTool for CreatePlane {
         } else {
             aspect += 180.0;
         }
-        slope = slope.to_radians();
+        slope = slope.to_radians().tan();
         aspect = aspect.to_radians();
 
         let rows = base.configs.rows as isize;
@@ -255,9 +259,8 @@ impl WhiteboxTool for CreatePlane {
                     for col in 0..columns {
                         x = west + xrange * (col as f64 / (columns as f64 - 1f64));
                         y = north - yrange * (row as f64 / (rows as f64 - 1f64));
-                        data[col as usize] = slope.tan() * aspect.sin() * x +
-                                             slope.tan() * aspect.cos() * y +
-                                             constant_val;
+                        data[col as usize] =
+                            slope * aspect.sin() * x + slope * aspect.cos() * y + constant_val;
                     }
                     tx.send((row, data)).unwrap();
                 }
@@ -276,16 +279,16 @@ impl WhiteboxTool for CreatePlane {
             }
         }
 
-        let end = time::now();
-        let elapsed_time = end - start;
-        output.add_metadata_entry(format!("Created by whitebox_tools\' {} tool",
-                                          self.get_tool_name()));
+        let elapsed_time = get_formatted_elapsed_time(start);
+        output.add_metadata_entry(format!(
+            "Created by whitebox_tools\' {} tool",
+            self.get_tool_name()
+        ));
         output.add_metadata_entry(format!("Base raster file: {}", base_file));
         output.add_metadata_entry(format!("Slope: {}", slope));
         output.add_metadata_entry(format!("Aspect: {}", aspect));
         output.add_metadata_entry(format!("Constant: {}", constant_val));
-        output.add_metadata_entry(format!("Elapsed Time (excluding I/O): {}", elapsed_time)
-                                      .replace("PT", ""));
+        output.add_metadata_entry(format!("Elapsed Time (excluding I/O): {}", elapsed_time));
 
         if verbose {
             println!("Saving data...")
@@ -300,8 +303,10 @@ impl WhiteboxTool for CreatePlane {
         };
 
         if verbose {
-            println!("{}",
-                 &format!("Elapsed Time (excluding I/O): {}", elapsed_time).replace("PT", ""));
+            println!(
+                "{}",
+                &format!("Elapsed Time (excluding I/O): {}", elapsed_time)
+            );
         }
 
         Ok(())

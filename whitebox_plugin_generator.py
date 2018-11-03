@@ -122,7 +122,7 @@ for tool, description in tools.items():
         fn_def += d
 
     # fn_def = fn_def.rstrip(', ')
-    fn_def += "callback=default_callback):"
+    fn_def += "callback=None):"
     doc_str += "{}callback -- Custom function for handling tool text outputs.".format(
         st_val)
 
@@ -151,7 +151,7 @@ for key, value in sorted(tb_dict.items()):
     f.write("\n    {}\n".format('#' * (len(key) + 4)))
     f.write("    # {} #\n".format(key))
     f.write("    {}\n".format('#' * (len(key) + 4)))
-    for v in value:
+    for v in sorted(value):
         # print(v)
         f.write("{}\n".format(v))
 

@@ -2,12 +2,13 @@
 This file is part of the WhiteboxTools geospatial analysis library.
 Authors: Dr. John Lindsay
 Created: 10/04/2018
-Last Modified: 31/08/2018
+Last Modified: 30/09/2018
 License: MIT
 */
+use algorithms::point_in_poly;
 use std::f64;
 use std::fmt;
-use structures::Point2D;
+use structures::{BoundingBox, Point2D};
 
 #[derive(Clone)]
 pub struct ShapefileGeometry {
@@ -115,6 +116,8 @@ impl ShapefileGeometry {
     /// Adds a part of Point2Ds to the ShapefileGeometry.
     pub fn add_part(&mut self, points: &[Point2D]) {
         self.parts.push(self.points.len() as i32);
+        self.num_parts += 1i32;
+
         for p in points {
             self.points.push(*p);
             if p.x < self.x_min {
@@ -131,7 +134,6 @@ impl ShapefileGeometry {
             }
         }
         self.num_points += points.len() as i32;
-        self.num_parts += 1i32;
     }
 
     /// Adds a part of Point2Ds and measures to the ShapefileGeometry.
@@ -164,6 +166,7 @@ impl ShapefileGeometry {
             if m > self.m_max {
                 self.m_max = m;
             }
+            self.m_array.push(m);
         }
         self.num_points += points.len() as i32;
         self.num_parts += 1i32;
@@ -206,15 +209,21 @@ impl ShapefileGeometry {
             if m > self.m_max {
                 self.m_max = m;
             }
+            self.m_array.push(m);
             if z < self.z_min {
                 self.z_min = z;
             }
             if z > self.z_max {
                 self.z_max = z;
             }
+            self.z_array.push(z);
         }
         self.num_points += points.len() as i32;
         self.num_parts += 1i32;
+    }
+
+    pub fn get_bounding_box(&self) -> BoundingBox {
+        BoundingBox::new(self.x_min, self.x_max, self.y_min, self.y_max)
     }
 
     /// Returns the length of the ShapefileGeometry, including the header, in bytes.
@@ -244,6 +253,25 @@ impl ShapefileGeometry {
         };
 
         ret
+    }
+
+    /// Checks whether a point is within the hull of the geometry. If
+    /// the geometry is not of POLYGON base ShapeType, the function
+    /// will return false.
+    pub fn is_point_within_hull(&self, point: &Point2D) -> bool {
+        // see if it's a polygon
+        if self.shape_type.base_shape_type() != ShapeType::Polygon {
+            // it's not a polygon
+            return false;
+        }
+        // get the first and last points in the hull.
+        let last_point = if self.num_parts > 1 {
+            self.parts[1] as usize
+        } else {
+            self.num_points as usize
+        };
+
+        point_in_poly(&point, &(self.points[0..last_point]))
     }
 
     /// Checks whether or not a part in a polygon is a hole.
@@ -494,6 +522,32 @@ impl ShapeType {
             }
         }
     }
+
+    pub fn dimension(&self) -> ShapeTypeDimension {
+        match self {
+            &ShapeType::Null
+            | &ShapeType::MultiPoint
+            | &ShapeType::Point
+            | &ShapeType::Polygon
+            | &ShapeType::PolyLine => ShapeTypeDimension::XY,
+            &ShapeType::MultiPointM
+            | &ShapeType::PointM
+            | &ShapeType::PolygonM
+            | &ShapeType::PolyLineM => ShapeTypeDimension::Measure,
+            &ShapeType::MultiPointZ
+            | &ShapeType::PointZ
+            | &ShapeType::PolygonZ
+            | &ShapeType::PolyLineZ => ShapeTypeDimension::Z,
+        }
+    }
+}
+
+#[repr(u16)]
+#[derive(Copy, Clone, PartialEq)]
+pub enum ShapeTypeDimension {
+    XY,
+    Measure,
+    Z,
 }
 
 impl Default for ShapeType {

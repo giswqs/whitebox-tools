@@ -2,7 +2,7 @@
 This tool is part of the WhiteboxTools geospatial analysis library.
 Authors: Dr. John Lindsay
 Created: 24/04/2018
-Last Modified: 24/04/2018
+Last Modified: 12/10/2018
 License: MIT
 */
 
@@ -10,13 +10,20 @@ use std::env;
 use std::f64;
 use std::fs::File;
 use std::io::prelude::*;
-use std::io::BufWriter;
-use std::io::{Error, ErrorKind};
+use std::io::{BufWriter, Error, ErrorKind};
 use std::path;
-use time;
 use tools::*;
 use vector::{FieldData, Shapefile};
 
+/// This tool can be used to export a vector's attribute table to a comma separated values (CSV)
+/// file. CSV files stores tabular data (numbers and text) in plain-text form such that each row
+/// corresponds to a record and each column to a field. Fields are typically separated by commas
+/// within records. The user must specify the name of the vector (and associated attribute file),
+/// the name of the output CSV file, and whether or not to include the field names as a header
+/// column in the output CSV file.
+///
+/// # See Also
+/// `MergeTableWithCsv`
 pub struct ExportTableToCsv {
     name: String,
     description: String,
@@ -65,7 +72,8 @@ impl ExportTableToCsv {
         let sep: String = path::MAIN_SEPARATOR.to_string();
         let p = format!("{}", env::current_dir().unwrap().display());
         let e = format!("{}", env::current_exe().unwrap().display());
-        let mut short_exe = e.replace(&p, "")
+        let mut short_exe = e
+            .replace(&p, "")
             .replace(".exe", "")
             .replace(".", "")
             .replace(&sep, "");
@@ -181,7 +189,7 @@ impl WhiteboxTool for ExportTableToCsv {
         };
         let vector_data = Shapefile::read(&input_file)?;
 
-        let start = time::now();
+        let start = Instant::now();
 
         let f = File::create(&output_file)?;
         let mut writer = BufWriter::new(f);
@@ -211,9 +219,6 @@ impl WhiteboxTool for ExportTableToCsv {
                     FieldData::Int(ref val) => {
                         s.push_str(&format!(",{}", val));
                     }
-                    // FieldData::Int64(ref val) => {
-                    //     s.push_str(&format!(",{}", val));
-                    // },
                     FieldData::Real(ref val) => {
                         s.push_str(&format!(",{}", (val * multiplier).round() / multiplier));
                     }
@@ -240,18 +245,17 @@ impl WhiteboxTool for ExportTableToCsv {
                 progress =
                     (100.0_f64 * record_num as f64 / (vector_data.num_records - 1) as f64) as usize;
                 if progress != old_progress {
-                    println!("Writting attributes: {}%", progress);
+                    println!("Writing attributes: {}%", progress);
                     old_progress = progress;
                 }
             }
         }
 
         if verbose {
-            let end = time::now();
-            let elapsed_time = end - start;
+            let elapsed_time = get_formatted_elapsed_time(start);
             println!(
                 "{}",
-                &format!("Elapsed Time (excluding I/O): {}", elapsed_time).replace("PT", "")
+                &format!("Elapsed Time (excluding I/O): {}", elapsed_time)
             );
         }
 
